@@ -1,17 +1,26 @@
 <?php
-/*
-Handles the routing of pages
+/**
+* @file
+* @author Matthew Shafer <matt@niftystopwatch.com>
+* 
+* @brief Handles simple routing of pages
 */
 
 class router
 {
-	private $uri = null;
-	private $firstPart = null;
-	private $uriArray = null;
-	private $htaccess = null;
-	private $requestMethod = null;
+	protected $uri = null;
+	protected $firstPart = null;
+	protected $uriArray = null;
+	protected $htaccess = null;
+	protected $requestMethod = null;
 	
-	function __construct($htaccess)
+	
+	/**
+	* Constructor which sets up what is needed
+	* 
+	* @param htaccess If we are using this to remove index.php
+	*/
+	public function __construct($htaccess)
 	{
 		$this->htaccess = $htaccess;
 		$this->uri = $_SERVER['REQUEST_URI'];
@@ -19,6 +28,11 @@ class router
 		$this->buildRouting();
 	}
 	
+	/**
+	* @brief buildRouting breaks down the URI and stores it in the uriArray
+	*
+	*
+	*/
 	private function buildRouting()
 	{
 		// figure out what happens when using htaccess
@@ -68,11 +82,19 @@ class router
 		//print_r($this->uriArray);
 	}
 	
+	/**
+	* pageType simply returns the first part of the array
+	* we can do this because the first part of the URI is most likely going to contain to determine which page to load
+	*/
 	public function pageType()
 	{
 		return $this->firstPart;
 	}
 	
+	/**
+	* @brief fullURI returns the uri, formatted ofcourse
+	*
+	*/
 	public function fullURI()
 	{
 		return $this->uri;
