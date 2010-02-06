@@ -1,0 +1,1 @@
+This directory is for images for themes.  You should put your images in ./themeName/

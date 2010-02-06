@@ -1,0 +1,1 @@
+This directory is for scripts for themes.  You should put your scripts in ./themeName/
