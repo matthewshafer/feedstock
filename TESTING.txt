@@ -1,0 +1,11 @@
+Cache
+	purge cache
+	
+Templates
+	Need to test for one variable in tags/cats
+	
+Router
+	htaccess redirecting and how it messes with the / used for uri's.  router line 26 and 35.
+	
+FileServe
+	test serving files with speed in php-fcgi

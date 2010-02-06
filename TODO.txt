@@ -1,0 +1,30 @@
+Things to do in no preticular order
+
+Cacher
+	finish file checking
+	needs a purge function
+	check if writeable
+	
+Database
+	everything
+	
+Visions
+	--
+	
+Themes
+	get them set up in a way where they can access data that they would need
+	possibly calling functions? see how other things use themes
+	another possibility is to pass them all the data they could use and then they can handle what to do with it, probably not good though
+	A better idea is to pass them an object we created that allows them to get all the info they need
+	Visions could create something like $data.  themes could call $this->data-getPosts().  this sounds like a better idea.
+	
+router
+	function to return a specific piece of the uri
+	
+templateEngine
+	Checking for null pagedata in render()
+	
+	Categories and tags need to have a null check
+	
+fileServe
+	check how it reacts when htaccess is setup.  specifically %2F
