@@ -16,10 +16,13 @@ class router
 	
 	
 	/**
-	* Constructor which sets up what is needed
-	* 
-	* @param htaccess If we are using this to remove index.php
-	*/
+	 * __construct function.
+	 * 
+	 * @brief Sets everything up
+	 * @access public
+	 * @param mixed $htaccess
+	 * @return void
+	 */
 	public function __construct($htaccess)
 	{
 		$this->htaccess = $htaccess;
@@ -28,11 +31,13 @@ class router
 		$this->buildRouting();
 	}
 	
+	
 	/**
-	* @brief buildRouting breaks down the URI and stores it in the uriArray
-	*
-	*
-	*/
+	 * buildRouting function.
+	 * 
+	 * @access private
+	 * @return void
+	 */
 	private function buildRouting()
 	{
 		// figure out what happens when using htaccess
@@ -100,6 +105,15 @@ class router
 		return $this->uri;
 	}
 	
+
+	/**
+	 * getUriPosition function.
+	 * 
+	 * @brief returns the value of hte uri at the sepcific position
+	 * @access public
+	 * @param mixed $position
+	 * @return If the position exists then it returns that value, else it returns null
+	 */
 	public function getUriPosition($position)
 	{
 		$return = null;
@@ -114,32 +128,36 @@ class router
 		return $return;
 	}
 	
+	/**
+	 * requestMethod function.
+	 * 
+	 * @brief returns the type of the request, GET/POST
+	 * @access public
+	 * @return String
+	 */
 	public function requestMethod()
 	{
 		return $this->requestMethod;
 	}
 	
-	public function returnPart($position)
-	{
-		$return = null;
-		
-		if($position >= count($this->uriArray))
-		{
-			;
-		}
-		else
-		{
-			$return = $this->uriArray[$position];
-		}
-		
-		return $return;
-	}
-	
+	/**
+	 * uriLength function.
+	 * 
+	 * @access public
+	 * @return Integer
+	 */
 	public function uriLength()
 	{
 		return count($this->uriArray);
 	}
 	
+	/**
+	 * getPageOffset function.
+	 * 
+	 * @brief Figures out what page we are on from the URI and returns what it figures out
+	 * @access public
+	 * @return Integer
+	 */
 	public function getPageOffset()
 	{
 		$page = 0;

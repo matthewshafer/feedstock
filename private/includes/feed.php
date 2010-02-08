@@ -7,6 +7,14 @@ class feed
 	private $pageData = null;
 	private $feedType = null;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $db
+	 * @param mixed $router
+	 * @return void
+	 */
 	public function __construct($db, $router)
 	{
 		$this->db = $db;
@@ -15,6 +23,13 @@ class feed
 		$this->pageData = $this->db->getPosts(0);
 	}
 	
+	/**
+	 * render function.
+	 * 
+	 * @brief generates the feed to either RSS 2.0 or ATOM. Should be valid for either one
+	 * @access public
+	 * @return void
+	 */
 	public function render()
 	{
 		ob_start();

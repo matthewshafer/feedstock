@@ -13,7 +13,12 @@ class feedstock
 	private $router = null;
 	private $db = null;
 	
-	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function __construct()
 	{
 		require_once("../config.php");
@@ -99,7 +104,12 @@ class feedstock
 		}
 	}
 	
-	// primairally here for me to test some output
+	 /**
+	  * talk function.
+	  * 
+	  * @access public
+	  * @return void
+	  */
 	 public function talk()
 	{
 		echo $this->address;
@@ -109,6 +119,12 @@ class feedstock
 		echo $this->tableprefix;
 	}
 	
+	/**
+	 * test function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function test()
 	{
 		//include("test.php");

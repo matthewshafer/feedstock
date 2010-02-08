@@ -5,25 +5,29 @@ class fileServe
 	protected $router;
 	protected $fileLoc;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $database
+	 * @param mixed $router
+	 * @return void
+	 */
 	public function __construct($database, $router)
 	{
 		$this->database = $database;
 		$this->router = $router;
 		
 		$this->fileLoc = V_BASELOC . "/private/files/" . $this->router->getUriPosition(2);
-		//header('Content-Description: File Transfer');
-		// just a placeholder but this is what a pdf would do
-		//header('Content-Type: application/pdf');
-		//header('Content-Length: ' . filesize($this->fileLoc));
-		//view in browser
-		//header('Content-Disposition: inline; filename=' . basename($file));
-		
-		//download
-		//header('Content-Disposition: attachment; filename=' . basename($this->fileLoc));
-		
-		//readfile($file);
 	}
 	
+	/**
+	 * render function.
+	 * 
+	 * @brief Sets headers and sends the file at the speed set in config.php
+	 * @access public
+	 * @return void
+	 */
 	public function render()
 	{
 	
@@ -62,6 +66,13 @@ class fileServe
 		
 	}
 	
+	/**
+	 * getContentType function.
+	 * 
+	 * @brief figures out the content type else uses the default file type
+	 * @access protected
+	 * @return String
+	 */
 	protected function getContentType()
 	{
 		$return = null;

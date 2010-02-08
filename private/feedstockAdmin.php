@@ -11,7 +11,13 @@ class feedstockAdmin
 	private $templateLoader = null;
 	private $router = null;
 	private $db = null;
-
+	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function __construct()
 	{
 		require_once("../config.php");
