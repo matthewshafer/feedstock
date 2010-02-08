@@ -14,7 +14,7 @@ class templateEngine
 	private $arrayPosition = -1;
 	private $errorText = null;
 	
-	function __construct($database, $router)
+	public function __construct($database, $router)
 	{
 		$this->database = $database;
 		$this->router = $router;
