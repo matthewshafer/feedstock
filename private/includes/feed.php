@@ -71,9 +71,9 @@ class feed
 			echo "\t\t" . '<link rel="self" href="' . V_URL . 'feed/atom/" type="application/atom+xml" />' . "\n";
 			
 			echo "\t\t" . '<author>' . "\n";
-			echo "\t\t\t" . '<name>matt</name>' . "\n";
-			echo "\t\t\t" . '<uri>http://niftystopwatch.com</uri>' . "\n";
-			echo "\t\t\t" . '<email>matt@niftystopwatch.com</email>' . "\n";
+			echo "\t\t\t" . '<name>'. F_AUTHOR . '</name>' . "\n";
+			echo "\t\t\t" . '<uri>' . V_URL . V_HTTPBASE . '</uri>' . "\n";
+			echo "\t\t\t" . '<email>' . F_AUTHOREMAIL . '</email>' . "\n";
 			echo "\t\t" . '</author>';
 			
 			foreach($this->pageData as $key)

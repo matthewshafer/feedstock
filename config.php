@@ -14,6 +14,11 @@ define("V_HTTPBASE", "niftysvn/feedstock/public/");
 define("V_POSTFORMAT", "%MONTH%/%DAY%/%YEAR%/%TITLE%");
 
 
+/* Feed Settings */
+define("F_AUTHOR", "username");
+define("F_AUTHOREMAIL", "some@email.com");
+
+
 /* File Download Settings */
 // Are we using build in file downloading?
 define("F_FILEDOWNLOAD", true);
