@@ -23,7 +23,6 @@ class feedstock
 	{
 		require_once("../config.php");
 		//echo V_THEME;
-		//echo $address;
 		$this->address = $address;
 		$this->password = $password;
 		$this->username = $username;
@@ -39,8 +38,6 @@ class feedstock
 		
 			if(V_CACHE)
 			{
-				// just a debug line
-				//echo "cacher is true!";
 				// Should create the cacher first so that we can check if a file exists before we even create a database
 				// for example if the database goes down we can still serve up pages, until they "expire" which would give us
 				// a little bit of time to get the DB back up and running
@@ -80,7 +77,6 @@ class feedstock
 	{
 		require_once("includes/" . V_DATABASE . ".php");
 		$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
-		//$this->db->getPosts(0);
 				
 		if($this->router->pageType() == "feed")
 		{
@@ -90,7 +86,6 @@ class feedstock
 		}
 		else if($this->router->pageType() == "file")
 		{
-			//echo "file will be here sometime soon<br>";
 			require_once("includes/fileServe.php");
 			$fileServe = new fileServe($this->db, $this->router);
 			$data = $fileServe->render();
@@ -105,35 +100,6 @@ class feedstock
 		}
 		return $data;
 	}
-	
-	 /**
-	  * talk function.
-	  * 
-	  * @access public
-	  * @return void
-	  */
-	 public function talk()
-	{
-		echo $this->address;
-		echo $this->username;
-		echo $this->password;
-		echo $this->database;
-		echo $this->tableprefix;
-	}
-	
-	/**
-	 * test function.
-	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function test()
-	{
-		//include("test.php");
-	}
-	
-	//function visions()
-
 }
 
 ?>
