@@ -1,18 +1,30 @@
 <?php
-// Site Title
+/* General Site Information */
 define("V_SITETITLE", "Feedstock Test");
 define("V_DESCRIPTION", "Just a little test!");
-// Theme to use, must be in private/themes/ with this foldername
-// all of the script/css/image files for the theme must be in their respective directories in /public
 define("V_THEME", "stopwatch");
-
-// if we are using htaccess to rewrite url's or not
+// Are we using HTACCESS or rewrite rules?
 define("V_HTACCESS", false);
+// Web address and base location
+define("V_URL", "http://localhost:8888/");
 define("V_HTTPBASE", "niftysvn/feedstock/public/");
 
-define("V_DATABASE", "mysql");
 
-// database information
+/* Post Settings */
+define("V_POSTFORMAT", "%MONTH%/%DAY%/%YEAR%/%TITLE%");
+
+
+/* File Download Settings */
+// Are we using build in file downloading?
+define("F_FILEDOWNLOAD", true);
+// file download speed in KB/s
+define("V_FILEDOWNLOADSPEED", 200);
+
+
+/* Database Information */
+// database type
+define("V_DATABASE", "mysql");
+// database connection info
 $username = "root";
 $password = "root";
 $address = "localhost";
@@ -20,18 +32,12 @@ $database = "feedstock";
 $tableprefix = "fs_";
 
 
-// caching.  private/cache must be writeable
+/* Caching Settings */
 define("V_CACHE",false);
 
 
-// define the root location of versions on the server
+/* Other Configs.  You probably don't need to change these */
 define("V_BASELOC", dirname(__FILE__));
-
-define("V_URL", "http://localhost:8888/");
-
-define("V_POSTFORMAT", "%MONTH%/%DAY%/%YEAR%/%TITLE%");
-
-define("V_FILEDOWNLOADSPEED", 20);
 
 
 ?>

@@ -28,7 +28,7 @@ class feed
 	 * 
 	 * @brief generates the feed to either RSS 2.0 or ATOM. Should be valid for either one
 	 * @access public
-	 * @return void
+	 * @return Generated feed
 	 */
 	public function render()
 	{

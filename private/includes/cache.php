@@ -26,7 +26,7 @@ class cache
 	{
 		// setting up the variables
 		$this->cacheloc = V_BASELOC . "/private/cache/";
-		echo $this->cacheloc;
+		//echo $this->cacheloc;
 		$this->uri = $uri;
 		// magic quotes?
 		if(get_magic_quotes_gpc())

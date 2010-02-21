@@ -1,11 +1,27 @@
 <?php
-
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief standard mysql class
+ * 
+ */
 class database
 {
 	protected $dbConn = null;
 	protected $dBaseValid = null;
 	protected $tablePrefix = null;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $username
+	 * @param mixed $password
+	 * @param mixed $serverAddress
+	 * @param mixed $dbname
+	 * @param mixed $tablePrefix
+	 * @return void
+	 */
 	public function __construct($username, $password, $serverAddress, $dbname, $tablePrefix)
 	{
 		$this->dbConn = mysql_connect($serverAddress, $username, $password);
@@ -24,16 +40,36 @@ class database
 		$this->tablePrefix = mysql_real_escape_string($tablePrefix, $this->dbConn);
 	}
 	
+	/**
+	 * closeConnection function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function closeConnection()
 	{
 		mysql_close($this->dbConn);
 	}
 	
-	// gets the posts from the start to finish locations
-	public function getPosts($offset)
+	/**
+	 * getPosts function.
+	 * 
+	 * @access public
+	 * @param mixed $offset
+	 * @param bool $draft. (default: false)
+	 * @return void
+	 */
+	public function getPosts($offset, $draft = false)
 	{
-		//$query = "SELECT * FROM " . $this->tablePrefix . "posts order by date DESC LIMIT 10 OFFSET " . $offset;
-		$query = sprintf("SELECT * FROM %sposts order by date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+		if(!$draft)
+		{
+			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+		}
+		else
+		{
+			$query = sprintf("SELECT * FROM %sposts order by date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+		}
+		
 		$result = mysql_query($query , $this->dbConn);
 		
 		$return = array();
@@ -48,10 +84,16 @@ class database
 		return $return;
 	}
 	
-	public function getPage($URI)
+	public function getPage($URI, $draft = false)
 	{
-		//$query = "SELECT * FROM " . $this->tablePrefix . "pages WHERE URI='/" . $URI . "'";
-		$query = sprintf("SELECT * FROM %spages WHERE URI='/%s'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+		if(!$draft)
+		{
+			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+		}
+		else
+		{
+			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+		}
 		//echo $query;
 		$result = mysql_query($query , $this->dbConn);
 		
@@ -66,10 +108,17 @@ class database
 		return $return;
 	}
 	
-	public function getSinglePost($URI)
+	public function getSinglePost($URI, $draft = false)
 	{
-		//$query = "SELECT * FROM " . $this->tablePrefix . "posts WHERE URI='/" . $URI . "'";
-		$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+		if(!$draft)
+		{
+			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+		}
+		else
+		{
+			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+		}
+		
 		$result = mysql_query($query , $this->dbConn);
 		
 		$return = array();
@@ -141,7 +190,7 @@ class database
 	}
 	
 	// still need to finish the getting the posts part.
-	public function getPostsInCategoryOrTag($URIName, $type)
+	public function getPostsInCategoryOrTag($URIName, $type, $draft = false)
 	{
 		$query = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, mysql_real_escape_string($URIName, $this->dbConn), mysql_real_escape_string($type, $this->dbConn));
 		$result = mysql_query($query, $this->dbConn);
@@ -159,7 +208,14 @@ class database
 		
 		while($temp = mysql_fetch_assoc($result2))
 		{
-			$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($temp["PostID"], $this->dbConn));
+			if(!$draft)
+			{
+				$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($temp["PostID"], $this->dbConn));
+			}
+			else
+			{
+				$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($temp["PostID"], $this->dbConn));
+			}
 			$result3 = mysql_query($query3, $this->dbConn);
 			
 			array_push($return, mysql_fetch_assoc($result3));
@@ -183,11 +239,6 @@ class database
 		}
 		
 		return $return;
-	}
-	
-	public function addPost($title, $data, $uri, $author, $date, $category, $tags)
-	{
-		
 	}
 	
 }

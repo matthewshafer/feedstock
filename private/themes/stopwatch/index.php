@@ -1,5 +1,4 @@
 <?php
-
 echo "<br><br>this is the theme talking<br>";
 
 //print_r($this->templateEngine->getPageData());
@@ -28,14 +27,4 @@ while($this->templateEngine->postNext())
 	echo "<br>";
 	
 }
-
-//$this->render();
-
-//foreach($array as $key)
-//{
-//	echo "<br>";
-//	echo $key['Tags'];
-//}
-
-
 ?>

@@ -53,55 +53,57 @@ class feedstock
 				}
 				else
 				{
-				if($this->router->pageType() == "feed")
-				{
-					require_once("includes/feed.php");
-					$feed = new feed($this->db, $this->router);
-					$themeData = $feed->render();
-				}
-				else
-				{
-					require_once("includes/templateEngine.php");
-					$this->templateEngine = new templateEngine($this->db, $this->router);
-					require_once("includes/templateLoader.php");
-					$this->templateLoader = new templateLoader($this->templateEngine);
-					$themeData = $this->templateLoader->render();
-				}
-				echo $themeData;
-					$this->cacher->writeCachedFile($themeData);
+					$themeData = $this->heavyLift();
+					echo $themeData;
+					
+					if($this->router->pageType() != "file")
+					{
+						$this->cacher->writeCachedFile($themeData);
+					}
 				}
 			
 			}
 			else
 			{
-				require_once("includes/" . V_DATABASE . ".php");
-				$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
-				//$this->db->getPosts(0);
-				
-				if($this->router->pageType() == "feed")
-				{
-					require_once("includes/feed.php");
-					$feed = new feed($this->db, $this->router);
-					$themeData = $feed->render();
-				}
-				else if($this->router->pageType() == "file")
-				{
-					//echo "file will be here sometime soon<br>";
-					require_once("includes/fileServe.php");
-					$fileServe = new fileServe($this->db, $this->router);
-					$themeData = $fileServe->render();
-				}
-				else
-				{
-					require_once("includes/templateEngine.php");
-					$this->templateEngine = new templateEngine($this->db, $this->router);
-					require_once("includes/templateLoader.php");
-					$this->templateLoader = new templateLoader($this->templateEngine);
-					$themeData = $this->templateLoader->render();
-				}
-				echo $themeData;
+				echo $this->heavyLift();
 			}
 		}
+	}
+	
+	/**
+	 * heavyLift function.
+	 * 
+	 * @access private
+	 * @return html data
+	 */
+	private function heavyLift()
+	{
+		require_once("includes/" . V_DATABASE . ".php");
+		$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+		//$this->db->getPosts(0);
+				
+		if($this->router->pageType() == "feed")
+		{
+			require_once("includes/feed.php");
+			$feed = new feed($this->db, $this->router);
+			$data = $feed->render();
+		}
+		else if($this->router->pageType() == "file")
+		{
+			//echo "file will be here sometime soon<br>";
+			require_once("includes/fileServe.php");
+			$fileServe = new fileServe($this->db, $this->router);
+			$data = $fileServe->render();
+		}
+		else
+		{
+			require_once("includes/templateEngine.php");
+			$this->templateEngine = new templateEngine($this->db, $this->router);
+			require_once("includes/templateLoader.php");
+			$this->templateLoader = new templateLoader($this->templateEngine);
+			$data = $this->templateLoader->render();
+		}
+		return $data;
 	}
 	
 	 /**

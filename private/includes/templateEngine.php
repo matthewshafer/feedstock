@@ -1,8 +1,10 @@
 <?php
-/*
-templateEngine handles the executing of template files
-*/
-
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief Does all the heavy lifting for themes
+ * 
+ */
 class templateEngine
 {
 
@@ -26,25 +28,25 @@ class templateEngine
 		}
 	}
 	
-	/*
-	This should never be used by ANY templates
-	see the way we read themes they can access render but render would just make things go into an endless loop
-	if used in themes. The core needs render so it can get the html that was generated.  If only I could figure out how to make
-	files that are included not be able to access protected functions
-	*/
+	/**
+	 * getThemeLoc function.
+	 * 
+	 * @brief simply calls our private function which should return the location of the theme file
+	 * @access public
+	 * @return void
+	 */
 	public function getThemeLoc()
 	{
-		//ob_start();
-		
-		return($this->request());
-		
-		
-		//return ob_get_clean();
+		return($this->request());	
 	}
 	
-	/*
-	Generic checking if a theme file exists
-	*/
+	/**
+	 * themeFileIsValid function.
+	 * 
+	 * @access private
+	 * @param mixed $file
+	 * @return void
+	 */
 	private function themeFileIsValid($file)
 	{
 		$loc = V_BASELOC . "/private/themes/" . V_THEME;
@@ -62,8 +64,13 @@ class templateEngine
 		return $return;
 	}
 
-	//This is the new request function.  It is even better than the old one.  Making this more CMS ish.  Sick though
-	
+
+	/**
+	 * request function.
+	 * 
+	 * @access private
+	 * @return void
+	 */	
 	private function request()
 	{
 		$return = V_BASELOC . "/private/themes/" . V_THEME;
@@ -273,11 +280,23 @@ class templateEngine
 		return $return;
 	}
 	
+	/**
+	 * getPageData function.
+	 * 
+	 * @access public
+	 * @return pageData
+	 */
 	public function getPageData()
 	{
 		return $this->pageData;
 	}
 	
+	/**
+	 * postNext function.
+	 * 
+	 * @access public
+	 * @return True (if we have another post) or False (if we don't)
+	 */
 	public function postNext()
 	{
 		$return = null;
@@ -292,21 +311,45 @@ class templateEngine
 		return $return;
 	}
 	
+	/**
+	 * getPostTitle function.
+	 * 
+	 * @access public
+	 * @return Title of the current post
+	 */
 	public function getPostTitle()
 	{
 		return $this->pageData[$this->arrayPosition]["Title"];
 	}
 	
+	/**
+	 * getPostURI function.
+	 * 
+	 * @access public
+	 * @return URI of the current post
+	 */
 	public function getPostURI()
 	{
 		return $this->pageData[$this->arrayPosition]["URI"];
 	}
 	
+	/**
+	 * getPostBody function.
+	 * 
+	 * @access public
+	 * @return The body of the current post
+	 */
 	public function getPostBody()
 	{
 		return $this->pageData[$this->arrayPosition]["PostData"];
 	}
 	
+	/**
+	 * getPostAuthor function.
+	 * 
+	 * @access public
+	 * @return Author of the current post
+	 */
 	public function getPostAuthor()
 	{
 		return $this->pageData[$this->arrayPosition]["Author"];
@@ -506,6 +549,12 @@ class templateEngine
 		}
 	}
 	
+	/**
+	 * haveError function.
+	 * 
+	 * @access public
+	 * @return Boolean
+	 */
 	public function haveError()
 	{
 		$return = true;
@@ -518,6 +567,12 @@ class templateEngine
 		return $return;
 	}
 	
+	/**
+	 * getError function.
+	 * 
+	 * @access public
+	 * @return String with the error encountered
+	 */
 	public function getError()
 	{
 		return $this->errorText;
