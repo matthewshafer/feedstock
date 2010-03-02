@@ -241,6 +241,21 @@ class database
 		return $return;
 	}
 	
+	public function corralPage($ID)
+	{
+		$query = sprintf("SELECT * FROM %spages WHERE Corral='%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($ID, $this->dbConn));
+		$result = mysql_query($query, $this->dbConn);
+		
+		$return = array();
+		
+		while($temp = mysql_fetch_assoc($result))
+		{
+			array_push($return, $temp);
+		}
+		
+		return $return;
+	}
+	
 }
 
 

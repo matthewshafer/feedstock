@@ -438,15 +438,18 @@ class templateEngine
 		foreach($this->pageCategory[$this->arrayPosition] as $key)
 		{
 			//print_r($key);
-			$return .= '<a href="' . V_URL . V_HTTPBASE;
+			$tmp = V_URL . V_HTTPBASE;
 			if(!V_HTACCESS)
 			{
-				$return .= 'index.php/';
+				$tmp .= 'index.php/';
 			}
 			
-			$return .= 'category/' .  $this->generateSubCategoryURI($key) . '">' . $key["Name"] . '</a>, ';
+			$tmp .= 'category/' .  $this->generateSubCategoryURI($key);
+			
+			$return .= sprintf('<a href="%s">%s</a>', $tmp, $key["Name"]);
 		}
 		
+		// need to test this out after pretty much rewriting the previous lines
 		$return = substr($return, 0, -2);
 		
 		
@@ -461,6 +464,43 @@ class templateEngine
 		$result = $this->db->getCategory();
 	}
 	
+	public function pageCorralName($id)
+	{
+		$id = intval($id);
+		
+		$pages = $this->db->corralPage($id);
+		$return = null;
+		
+		foreach($pages as $key)
+		{
+			$return .= sprintf('<a href="%s">%s</a>', generateUrlFromUri($key["URI"]), $key["Title"]);
+		}
+		
+		return $return;
+	}
+	
+	
+	private function generateUrlFromUri($URI)
+	{
+		// need to remove slashes from the begining of the URI if we are using htaccess
+		$return = V_URL . V_HTTPBASE;
+		
+		if(V_HTACCESS)
+		{
+			$return .= "index.php";
+		}
+		else
+		{
+			if($return[strlen($return) - 1] == "/" and $URI[0] == "/")
+			{
+				$return = substr($return, 0, strlen($return) - 1);
+			}
+		}
+		
+		$return .= $URI;
+		
+		return $return;
+	}
 	
 	// needs to check for null and no data in the array
 	private function generateSubCategoryURI($array)

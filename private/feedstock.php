@@ -50,6 +50,7 @@ class feedstock
 				}
 				else
 				{
+					// need to figure out how to grab this yet if there is an error I need to keep using cached data.
 					$themeData = $this->heavyLift();
 					echo $themeData;
 					
