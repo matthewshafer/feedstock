@@ -13,6 +13,7 @@ class router
 	protected $uriArray = null;
 	protected $htaccess = null;
 	protected $requestMethod = null;
+	protected $base = null;
 	
 	
 	/**
@@ -21,13 +22,15 @@ class router
 	 * @brief Sets everything up
 	 * @access public
 	 * @param mixed $htaccess
+	 * @param mixed $base (default = V_HTTPBASE)
 	 * @return void
 	 */
-	public function __construct($htaccess)
+	public function __construct($htaccess, $base = V_HTTPBASE)
 	{
 		$this->htaccess = $htaccess;
 		$this->uri = $_SERVER['REQUEST_URI'];
 		$this->requestMethod = $_SERVER['REQUEST_METHOD'];
+		$this->base = $base;
 		$this->buildRouting();
 	}
 	
@@ -41,9 +44,9 @@ class router
 	private function buildRouting()
 	{
 		// figure out what happens when using htaccess
-		if(V_HTTPBASE != "/")
+		if($this->base != "/")
 		{
-			$temp = explode(V_HTTPBASE, $this->uri);
+			$temp = explode($this->base, $this->uri);
 			$this->uri = $temp[1];
 		}
 		// this else statement is here to strip off the first / as it will explode to nothing in an array

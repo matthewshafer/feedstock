@@ -7,6 +7,8 @@
 */
 class cookieMonster
 {
+	protected $db = null;
+	protected $userID = null;
 	/**
 	* Constructor which grabs the client cookie and stores what it has locally
 	* 
@@ -14,28 +16,83 @@ class cookieMonster
 	*/
 	public function __construct($db)
 	{
-	
+		$this->db = $db;
 	}
+	
 	/**
-	* 
-	*/
-	public function createCookie()
+	 * createCookie function.
+	 * 
+	 * @access public
+	 * @param mixed $userID
+	 * @return void
+	 */
+	public function createCookie($userID)
 	{
-	
+		$val = null;
+		
+		// this is only for login, since we can't set a cookie and then read it right away
+		$this->userID = $userID;
+		// need to generate the value for the cookie
+		$val = sprintf("%s%d%s", $userID, time(), V_URL);
+		
+		// we could always use mcrypt but for now I should just get crypt working
+		$val = crypt($val);
+		
+		// we need to write the value to the DB so we can do checking later
+		// i should probably create this function
+		$this->db->updateCookieVal($userID, $val);
+		
+		// ok time to make the cookie
+		setcookie(F_COOKIENAME, $val, 0, "/", V_URL, false, true);
 	}
+	
 	/**
-	* 
-	*/
-	public function removeCookie()
+	 * removeCookie function.
+	 * 
+	 * @access public
+	 * @param mixed $userID
+	 * @return void
+	 */
+	public function removeCookie($userID)
 	{
-	
+		// remove the cookie from the db
+		$this->db->updateCookieVal($userID);
+		
+		unset($_COOKIE[F_COOKIENAME]);
 	}
+	
 	/**
-	*
-	*/
+	 * checkCookie function.
+	 * 
+	 * @access public
+	 * @return Boolean
+	 */
 	public function checkCookie()
 	{
+		$return = false;
+		// if the db is null the cookie doesn't exist
+		if($this->userID == null)
+		{
+			$this->userID = $this->db->findCookie($_COOKIE[F_COOKIENAME]);
+		}
+		
+		if($this->userID != null)
+		{
+			$return = true;
+		}
+		
+		return $return;
+	}
 	
+	/**
+	 * getUserID function.
+	 * 
+	 * @access public
+	 * @return Integer
+	 */
+	public function getUserID()
+	{
+		return $this->userID;
 	}
 }
 ?>

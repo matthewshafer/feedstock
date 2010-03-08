@@ -37,7 +37,7 @@ class templateEngine
 	 */
 	public function getThemeLoc()
 	{
-		return($this->request());	
+		return $this->request();	
 	}
 	
 	/**
