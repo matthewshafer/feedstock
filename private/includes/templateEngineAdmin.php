@@ -9,6 +9,7 @@ class templateEngineAdmin
 {
 	protected $db;
 	protected $router;
+	protected $isLoggedIn = false;
 	
 	/**
 	 * __construct function.
@@ -24,15 +25,47 @@ class templateEngineAdmin
 		$this->router = $router;
 	}
 	
+	public function loggedIn($areWe)
+	{
+		$this->isLoggedIn = $areWe;
+	}
+	
 	/**
 	 * getThemeLoc function.
 	 * 
 	 * @access public
+	 * @param bool $loggedIn. (default: false)
 	 * @return void
 	 */
 	public function getThemeLoc()
 	{
 		return $this->request();
+	}
+	
+	/**
+	 * themeFileIsValid function.
+	 * 
+	 * @brief Checks admin theme files, only because I allow custom themes to be created otherwise I could do without this
+	 * @access private
+	 * @param mixed $file
+	 * @return void
+	 */
+	private function themeFileIsValid($file)
+	{
+		// need to fix the part that says stock because what if you were using a different theme.
+		$loc = V_BASELOC . "/private/themesAdmin/" . "stock";
+		$return = null;
+		
+		if(file_exists($loc . "/" . $file) && is_readable($loc . "/" . $file))
+		{
+			$return = true;
+		}
+		else
+		{
+			$return = false;
+		}
+		
+		return $return;
 	}
 	
 	/**
@@ -43,7 +76,18 @@ class templateEngineAdmin
 	 */
 	private function request()
 	{
+		$return = V_BASELOC . "/private/themesAdmin/" . "stock";
 		
+		if($this->isLoggedIn)
+		{
+			$return .= "/login.php";
+		}
+		else
+		{
+			$return .= "/login.php";
+		}
+		
+		return $return;
 	}
 }
 ?>

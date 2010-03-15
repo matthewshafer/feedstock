@@ -9,15 +9,15 @@ echo '
 	
 	<body>
 		<div id="center">
-			<form name="LOGIN" method="post" action="index.php">
+			<form name="login" method="post" action="./index.php">
 				Username: <br>
-				<input name="USERNAME" type="text" id="USERNAME">
+				<input name="username" type="text">
 				<br>
 				Password: <br>
-				<input name="PASSWORD" type="text" id="PASSWORD">
-				<input name="TYPE" type="hidden" id="TYPE" value="LOGIN">
+				<input name="password" type="text">
+				<input name="type" type="hidden" value="login">
 				<br>
-				<input name="SUBMIT" type="button" id="SUBMIT" value="Login">
+				<input name="submit" type=submit value="Login">
 			</form>
 		</div>
 	</body>

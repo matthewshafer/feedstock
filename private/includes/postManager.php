@@ -19,11 +19,11 @@ class postManager
 		// it would be a good thing to sanitize the data and then put that in our own array
 		foreach(array_keys($_POST) as $key)
 		{
-			if($key == "ID")
+			if($key == "id")
 			{
 				$data = intval($_POST[$key]);
 			}
-			else if($key == "POSTORPAGEDATA")
+			else if($key == "postorpagedata")
 			{
 				$data = htmlspecialchars($_POST[$key]);
 			}
@@ -34,6 +34,9 @@ class postManager
 			
 			$this->postArray[$key] = $data;
 		}
+		
+		// allows me to examine the post arrays
+		//print_r($this->postArray);
 	}
 	
 	/**
@@ -46,9 +49,20 @@ class postManager
 	{
 		$return = null;
 		
-		if(isset($this->postArray["TYPE"]))
+		if(isset($this->postArray["type"]))
 		{
-			$return = $this->postArray["TYPE"];
+			$return = $this->postArray["type"];
+		}
+		
+		return $return;
+	}
+	
+	public function getPostByName($lookup)
+	{
+		$return = null;
+		if(isset($this->postArray[$lookup]))
+		{
+			$return = $this->postArray[$lookup];
 		}
 		
 		return $return;

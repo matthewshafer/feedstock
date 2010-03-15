@@ -47,7 +47,7 @@ define("F_COOKIENAME", "FeedStock");
 define("F_PSALT", "ChangeThisToSomething");
 
 /* Admin Settings */
-define("F_ADMINBASE", V_HTTPBASE . "admin");
+define("F_ADMINBASE", V_HTTPBASE . "admin/");
 define("F_ADMINHTACCESS", false);
 
 /* Other Configs.  You probably don't need to change these */

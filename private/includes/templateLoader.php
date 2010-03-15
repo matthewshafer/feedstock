@@ -22,7 +22,7 @@ class templateLoader
 	public function __construct($templateEngine)
 	{
 		$this->templateEngine = $templateEngine;
-		$this->themeLoc = $this->templateEngine->getThemeLoc();
+		//$this->themeLoc = $this->templateEngine->getThemeLoc();
 	}
 	
 	/**
@@ -33,6 +33,7 @@ class templateLoader
 	 */
 	public function render()
 	{
+		$this->themeLoc = $this->templateEngine->getThemeLoc();
 		ob_start();
 		include $this->themeLoc;
 		return ob_get_clean();

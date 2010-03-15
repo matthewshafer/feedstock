@@ -43,7 +43,7 @@ class cookieMonster
 		$this->db->updateCookieVal($userID, $val);
 		
 		// ok time to make the cookie
-		setcookie(F_COOKIENAME, $val, 0, "/", V_URL, false, true);
+		setcookie(F_COOKIENAME, $val, 0, "/", V_URL . V_HTTPBASE, false, true);
 	}
 	
 	/**
@@ -71,13 +71,15 @@ class cookieMonster
 	{
 		$return = false;
 		// if the db is null the cookie doesn't exist
-		if($this->userID == null)
+		if($this->userID == null and isset($_COOKIE[F_COOKIENAME]))
 		{
+			print_r($_COOKIE);
 			$this->userID = $this->db->findCookie($_COOKIE[F_COOKIENAME]);
 		}
 		
 		if($this->userID != null)
 		{
+			print_r($_COOKIE);
 			$return = true;
 		}
 		

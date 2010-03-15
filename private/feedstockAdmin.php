@@ -21,7 +21,7 @@ class feedstockAdmin
 	 */
 	public function __construct()
 	{
-		require_once("../config.php");
+		require_once("../../config.php");
 		$this->address = $address;
 		$this->password = $password;
 		$this->username = $username;
@@ -46,32 +46,75 @@ class feedstockAdmin
 		
 		require_once("includes/templateEngineAdmin.php");
 		
-		require_once("includes/templateLoader.php");
+		$this->templateEngine = new templateEngineAdmin($this->database, $this->router);
 		
-		if($this->postManager->getPostType() == "LOGIN")
+		require_once("includes/templateLoader.php");
+		$this->templateLoader = new templateLoader($this->templateEngine);
+		
+		if($this->postManager->getPostType() == "login")
 		{
 			// check the login info and then set the cookie
-			if($this->postManager->getPostByName("USERNAME") != null and $this->postManager->getPostByName("PASSWORD") != null)
+			if($this->postManager->getPostByName("username") != null and $this->postManager->getPostByName("username") != null)
 			{
-				$userArray = $this->dbAdmin->getUser($this->postManager->getPostByName("USERNAME"));
+				$userArray = $this->dbAdmin->getUserByUserName($this->postManager->getPostByName("username"));
 				
-				// run some encryption on the password entered
-				
-				// check that with what we have in the database
-				
+				// this should be true if the person supplied the correct information
+				if($userArray["Password"] == $this->makePasswordHash($this->postManager->getPostByName("username"), F_PSALT))
+				{
+					$this->cookieMonster->createCookie($userArray["UserID"]);
+				}
 			}
-			
 		}
 		
 		if(!$this->cookieMonster->checkCookie())
 		{
-			// user is logged in
+			// user is NOT logged in
+			echo $this->templateLoader->render();
 		
 		}
 		else
 		{
-			// user isn't logged in
+			// so we want to check for post values first so we can process them
+			// something like this should work
+			if($this->postManager->havePostValues())
+			{
+				$this->handlePosts();
+			}
+			$this->templateEngine->loggedIn(true);
+			echo $this->templateLoader->render();
+			// user is logged in
 		
+		}
+	}
+	
+	private function handlePosts()
+	{
+		switch($this->postManager->getPostType())
+		{
+			case "postAdd":
+				echo "post Add";
+				break;
+			case "postRemove":
+				echo "post Remove";
+				break;
+			case "pageAdd":
+				echo "page Add";
+				break;
+			case "pageRemove":
+				echo "page Remove";
+				break;
+			case "categoryAdd":
+				echo "category Add";
+				break;
+			case "categoryRemove":
+				echo "category Remove";
+				break;
+			case "tagAdd":
+				echo "tag Add";
+				break;
+			case "tagRemove":
+				echo "tag Remove";
+				break;
 		}
 	}
 	
