@@ -44,7 +44,7 @@ class router
 	private function buildRouting()
 	{
 		// figure out what happens when using htaccess
-		if($this->base != "/")
+		if($this->base != "/" and $this->base != null)
 		{
 			$temp = explode($this->base, $this->uri);
 			$this->uri = $temp[1];
