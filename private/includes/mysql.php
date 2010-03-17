@@ -1,15 +1,16 @@
 <?php
 /**
- * @file
- * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief standard mysql class
- * 
- */
+* @file
+* @author Matthew Shafer <matt@niftystopwatch.com>
+* @brief standard mysql class
+* 
+*/
 class database
 {
 	protected $dbConn = null;
 	protected $dBaseValid = null;
 	protected $tablePrefix = null;
+	protected $connError = null;
 	
 	/**
 	 * __construct function.
@@ -28,16 +29,26 @@ class database
 		
 		if(!is_resource($this->dbConn))
 		{
-			die("Unable to connect to the Database Server");
+			//die("Unable to connect to the Database Server");
+			$this->connError = "Unable to connect to the Database Server";
 		}
-		$this->dBaseValid = mysql_select_db($dbname, $this->dbConn);
-		
-		if(!$this->dBaseValid)
+		if($this->connError == null)
 		{
-			die("Unable to connect to the database");
-		}
+			$this->dBaseValid = mysql_select_db($dbname, $this->dbConn);
 		
-		$this->tablePrefix = mysql_real_escape_string($tablePrefix, $this->dbConn);
+			if(!$this->dBaseValid)
+			{
+				//die("Unable to connect to the database");
+				$this->connError = "Unable to connect to the database";
+			}
+		
+			$this->tablePrefix = mysql_real_escape_string($tablePrefix, $this->dbConn);
+		}
+	}
+	
+	public function haveConnError()
+	{
+		return $this->connError;
 	}
 	
 	/**

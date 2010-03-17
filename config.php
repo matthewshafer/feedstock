@@ -38,7 +38,8 @@ $tableprefix = "fs_";
 
 
 /* Caching Settings */
-define("V_CACHE",false);
+define("V_CACHE", false);
+define("F_EXPIRECACHETIME", 1);
 
 /* Cookie Settings */
 define("F_COOKIENAME", "FeedStock");
@@ -52,6 +53,10 @@ define("F_ADMINHTACCESS", false);
 
 /* Other Configs.  You probably don't need to change these */
 define("V_BASELOC", dirname(__FILE__));
+
+// error reporting, we want it on for testing
+ini_set('display_errors',1); 
+error_reporting(E_ALL);
 
 
 ?>

@@ -10,6 +10,7 @@ class templateEngineAdmin
 	protected $db;
 	protected $router;
 	protected $isLoggedIn = false;
+	protected $theData = array();
 	
 	/**
 	 * __construct function.
@@ -80,7 +81,7 @@ class templateEngineAdmin
 		
 		if($this->isLoggedIn)
 		{
-			$return .= "/login.php";
+			$return .= itsNotMeItsYou();
 		}
 		else
 		{
@@ -94,7 +95,7 @@ class templateEngineAdmin
 	{
 		$return = null;
 		
-		switch(strtolower($this->router->pageType()) == ""))
+		switch(strtolower($this->router->pageType()))
 		{
 			case "":
 				$return = "/index.php";
@@ -103,18 +104,28 @@ class templateEngineAdmin
 			case "post":
 				$return = "/createPost.php";
 				// set up some vars, we want to check if we have an ID in the uri and if we do we need to load that from the db and set up the vars
+				if($this->router->getUriPosition(2) != null)
+				{
+					$this->theData = $this->db->getPostDataByID(intval($this->router->getUriPosition(2)));
+				}
 				break;
 			case "page":
 				$return = "/createPage.php";
 				// set up some vars, we want to check if we have an ID in the uri and we need to load that and set up some stuff
+				if($this->router->getUriPosition(2) != null)
+				{
+					$this->theData = $this->db->getPageDataByID(intval($this->router->getUriPosition(2)));
+				}
 				break;
 			case "posts":
 				$return = "/postList.php";
 				// gonna want to set some stuff up
+				$this->theData = $this->db->getPostList();
 				break;
 			case "pages":
 				$return = "/pagesList.php";
 				// gonna want to set some stuff up
+				$this->theData = $this->db->getPostList();
 				break;
 		}
 		
@@ -123,6 +134,8 @@ class templateEngineAdmin
 			// lets make it something that doesnt exist
 			$return = "/404.php";
 		}
+		
+		return $return;
 	}
 }
 ?>

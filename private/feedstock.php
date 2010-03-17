@@ -1,5 +1,10 @@
 <?php
-
+/**
+* @file
+* @author Matthew Shafer <matt@niftystopwatch.com>
+* @brief Makes everything we need to generate the front facing pages. You can think of it as the brain's of the operation.
+* 
+*/
 class feedstock
 {
 	private $username = null;
@@ -22,7 +27,7 @@ class feedstock
 	public function __construct()
 	{
 		require_once("../config.php");
-		//echo V_THEME;
+		// We need to set these because they are used in another function in this class. If we didn't they would be in the wrong scope (that wouldn't be a good thing)
 		$this->address = $address;
 		$this->password = $password;
 		$this->username = $username;
@@ -36,7 +41,7 @@ class feedstock
 		if($this->router->requestMethod() == "GET")
 		{
 		
-			if(V_CACHE)
+			if(V_CACHE and is_writable(V_BASELOC . "/private/cache"))
 			{
 				// Should create the cacher first so that we can check if a file exists before we even create a database
 				// for example if the database goes down we can still serve up pages, until they "expire" which would give us
@@ -52,12 +57,13 @@ class feedstock
 				{
 					// need to figure out how to grab this yet if there is an error I need to keep using cached data.
 					$themeData = $this->heavyLift();
-					echo $themeData;
+					//echo $themeData;
 					
 					if($this->router->pageType() != "file")
 					{
 						$this->cacher->writeCachedFile($themeData);
 					}
+					echo $this->cacher->getCachedData();
 				}
 			
 			}
@@ -78,7 +84,9 @@ class feedstock
 	{
 		require_once("includes/" . V_DATABASE . ".php");
 		$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
-				
+		
+		if($this->db->haveConnError() == null)
+		{		
 		if($this->router->pageType() == "feed")
 		{
 			require_once("includes/feed.php");
@@ -99,6 +107,9 @@ class feedstock
 			$this->templateLoader = new templateLoader($this->templateEngine);
 			$data = $this->templateLoader->render();
 		}
+		}
+		else
+		$data = $this->db->haveConnError();
 		return $data;
 	}
 }

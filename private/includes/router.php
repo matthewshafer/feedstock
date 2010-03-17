@@ -5,7 +5,6 @@
 * 
 * @brief Handles simple routing of pages
 */
-
 class router
 {
 	protected $uri = null;
@@ -38,6 +37,7 @@ class router
 	/**
 	 * buildRouting function.
 	 * 
+	 * @brief Makes cool things happen.
 	 * @access private
 	 * @return void
 	 */
@@ -92,18 +92,24 @@ class router
 	}
 	
 	/**
-	* pageType simply returns the first part of the array
-	* we can do this because the first part of the URI is most likely going to contain to determine which page to load
-	*/
+	 * pageType function.
+	 * 
+	 * @brief Returns the first part of the uri. /test/1234/hello would return test. / returns "" (an empty string).
+	 * @access public
+	 * @return String
+	 */
 	public function pageType()
 	{
 		return $this->firstPart;
 	}
 	
 	/**
-	* @brief fullURI returns the uri, formatted ofcourse
-	*
-	*/
+	 * fullURI function.
+	 * 
+	 * @brief Returns the uri as a string.
+	 * @access public
+	 * @return String
+	 */
 	public function fullURI()
 	{
 		return $this->uri;
@@ -147,6 +153,7 @@ class router
 	/**
 	 * uriLength function.
 	 * 
+	 * @brief Returns the number of items in the uri.  /test/123/afs/ would return 3.
 	 * @access public
 	 * @return Integer
 	 */

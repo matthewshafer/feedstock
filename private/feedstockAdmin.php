@@ -1,5 +1,10 @@
 <?php
-
+/**
+* @file
+* @author Matthew Shafer <matt@niftystopwatch.com>
+* @brief Build's all the admin things.
+* 
+*/
 class feedstockAdmin
 {
 	private $username = null;
