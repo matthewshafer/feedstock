@@ -89,5 +89,40 @@ class templateEngineAdmin
 		
 		return $return;
 	}
+	
+	private function itsNotMeItsYou()
+	{
+		$return = null;
+		
+		switch(strtolower($this->router->pageType()) == ""))
+		{
+			case "":
+				$return = "/index.php";
+				// want to set up the page variables and stuff, yay
+				break;
+			case "post":
+				$return = "/createPost.php";
+				// set up some vars, we want to check if we have an ID in the uri and if we do we need to load that from the db and set up the vars
+				break;
+			case "page":
+				$return = "/createPage.php";
+				// set up some vars, we want to check if we have an ID in the uri and we need to load that and set up some stuff
+				break;
+			case "posts":
+				$return = "/postList.php";
+				// gonna want to set some stuff up
+				break;
+			case "pages":
+				$return = "/pagesList.php";
+				// gonna want to set some stuff up
+				break;
+		}
+		
+		if($return == null)
+		{
+			// lets make it something that doesnt exist
+			$return = "/404.php";
+		}
+	}
 }
 ?>
