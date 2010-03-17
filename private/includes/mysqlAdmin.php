@@ -148,7 +148,7 @@ class databaseAdmin extends database
 		$result = null;
 		if(isset($array["id"]))
 		{
-			$return = (intval)$array["id"];
+			$return = $array["id"];
 		}
 		
 		return $result;

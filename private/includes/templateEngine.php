@@ -8,7 +8,7 @@
 class templateEngine
 {
 
-	private $database = null
+	private $database = null;
 	private $router = null;
 	private $pageData = null;
 	private $pageCategory = null;
