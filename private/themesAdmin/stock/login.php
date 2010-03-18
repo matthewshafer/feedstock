@@ -12,7 +12,7 @@
 				<input name="username" type="text">
 				<br>
 				Password: <br>
-				<input name="password" type="text">
+				<input name="password" type="password">
 				<input name="type" type="hidden" value="login">
 				<br>
 				<input name="submit" type=submit value="Login">

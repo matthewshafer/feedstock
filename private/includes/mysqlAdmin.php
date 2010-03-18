@@ -242,7 +242,7 @@ class databaseAdmin extends database
 		
 	}
 	
-	public function getPostList()
+	public function getPageList()
 	{
 		
 	}
