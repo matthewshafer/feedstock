@@ -127,6 +127,8 @@ class databaseAdmin extends database
 		mysql_real_escape_string($val, parent::$this->dbConn), 
 		mysql_real_escape_string($userID, parent::$this->dbConn)
 		);
+		
+		$result = mysql_query($query, parent::$this->dbConn);
 	}
 	
 	/**
@@ -142,16 +144,16 @@ class databaseAdmin extends database
 		
 		$result = mysql_query($query, parent::$this->dbConn);
 		
-		$array = array();
+		$array = mysql_fetch_assoc($result);
 		
-		array_push($array, mysql_fetch_assoc($result));
-		$result = null;
+		//array_push($array, mysql_fetch_assoc($result));
+		$return = null;
 		if(isset($array["id"]))
 		{
 			$return = $array["id"];
 		}
 		
-		return $result;
+		return $return;
 	}
 	
 	public function getUserByUserName($username)
@@ -162,12 +164,12 @@ class databaseAdmin extends database
 		
 		$return = array();
 		
-		while($temp = mysql_fetch_assoc($result))
-		{
-			array_push($return, $temp);
-		}
+		//while($temp = mysql_fetch_assoc($result))
+		//{
+			//array_push($return, $temp);
+		//}
 		
-		return $return;
+		return mysql_fetch_assoc($result);
 	}
 	
 	public function addUser($username, $displayName, $passHash, $salt, $permissions = 99, $canAdministrateUsers = 0)
@@ -185,6 +187,7 @@ class databaseAdmin extends database
 		
 		return mysql_query($query, parent::$this->dbConn);
 	}
+	
 	
 	public function removeUser($userRemoveID, $currUserID)
 	{
@@ -219,7 +222,30 @@ class databaseAdmin extends database
 		
 		return $return;
 	}
-
+	
+	// all these next guys need to get the comment/tag/corral data also and that needs to be pushed into the assoc array.
+	// I'll get this done over the weekend since its almost 2am and im pretty sleepy.
+	
+	
+	public function getPostDataByID($id)
+	{
+		
+	}
+	
+	public function getPageDataByID($id)
+	{
+		
+	}
+	
+	public function getPostList()
+	{
+		
+	}
+	
+	public function getPostList()
+	{
+		
+	}
 
 
 }

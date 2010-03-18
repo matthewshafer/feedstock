@@ -81,7 +81,7 @@ class templateEngineAdmin
 		
 		if($this->isLoggedIn)
 		{
-			$return .= itsNotMeItsYou();
+			$return .= $this->itsNotMeItsYou();
 		}
 		else
 		{
@@ -123,7 +123,7 @@ class templateEngineAdmin
 				$this->theData = $this->db->getPostList();
 				break;
 			case "pages":
-				$return = "/pagesList.php";
+				$return = "/pageList.php";
 				// gonna want to set some stuff up
 				$this->theData = $this->db->getPostList();
 				break;

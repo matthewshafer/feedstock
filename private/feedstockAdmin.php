@@ -62,11 +62,13 @@ class feedstockAdmin
 			if($this->postManager->getPostByName("username") != null and $this->postManager->getPostByName("username") != null)
 			{
 				$userArray = $this->dbAdmin->getUserByUserName($this->postManager->getPostByName("username"));
+				//print_r($userArray);
 				
 				// this should be true if the person supplied the correct information
-				if($userArray["Password"] == $this->makePasswordHash($this->postManager->getPostByName("username"), F_PSALT))
+				if($userArray["PasswordHash"] == $this->makePasswordHash($this->postManager->getPostByName("password"), $userArray["Salt"]))
 				{
-					$this->cookieMonster->createCookie($userArray["UserID"]);
+					//echo "hit";
+					$this->cookieMonster->createCookie($userArray["id"]);
 				}
 			}
 		}

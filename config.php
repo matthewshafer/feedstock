@@ -39,6 +39,7 @@ $tableprefix = "fs_";
 
 /* Caching Settings */
 define("V_CACHE", false);
+// This is in seconds. Should set to something like 1400.  Currently set low to help with testing.
 define("F_EXPIRECACHETIME", 1);
 
 /* Cookie Settings */
@@ -54,7 +55,7 @@ define("F_ADMINHTACCESS", false);
 /* Other Configs.  You probably don't need to change these */
 define("V_BASELOC", dirname(__FILE__));
 
-// error reporting, we want it on for testing
+// Error reporting, we want it on for testing
 ini_set('display_errors',1); 
 error_reporting(E_ALL);
 

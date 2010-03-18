@@ -1,5 +1,3 @@
-<?php
-echo '
 <!DOCTYPE html>
 <html>
 	<head>
@@ -9,7 +7,7 @@ echo '
 	
 	<body>
 		<div id="center">
-			<form name="login" method="post" action="./index.php">
+			<form name="login" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
 				Username: <br>
 				<input name="username" type="text">
 				<br>
@@ -22,5 +20,3 @@ echo '
 		</div>
 	</body>
 </html>
-';
-?>

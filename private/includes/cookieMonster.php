@@ -32,18 +32,19 @@ class cookieMonster
 		
 		// this is only for login, since we can't set a cookie and then read it right away
 		$this->userID = $userID;
+		//echo $userID;
 		// need to generate the value for the cookie
 		$val = sprintf("%s%d%s", $userID, time(), V_URL);
 		
 		// we could always use mcrypt but for now I should just get crypt working
 		$val = crypt($val);
-		
+		//echo $val;
 		// we need to write the value to the DB so we can do checking later
 		// i should probably create this function
 		$this->db->updateCookieVal($userID, $val);
 		
 		// ok time to make the cookie
-		setcookie(F_COOKIENAME, $val, 0, "/", V_URL . V_HTTPBASE, false, true);
+		setcookie(F_COOKIENAME, $val, 0);
 	}
 	
 	/**
@@ -73,13 +74,13 @@ class cookieMonster
 		// if the db is null the cookie doesn't exist
 		if($this->userID == null and isset($_COOKIE[F_COOKIENAME]))
 		{
-			print_r($_COOKIE);
+			//print_r($_COOKIE);
 			$this->userID = $this->db->findCookie($_COOKIE[F_COOKIENAME]);
 		}
 		
 		if($this->userID != null)
 		{
-			print_r($_COOKIE);
+			//print_r($_COOKIE);
 			$return = true;
 		}
 		

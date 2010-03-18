@@ -6,6 +6,7 @@
 class postManager
 {
 	private $postArray = array();
+	private $haveVals = false;
 	
 	/**
 	 * __construct function.
@@ -33,6 +34,7 @@ class postManager
 			}
 			
 			$this->postArray[$key] = $data;
+			$this->haveVals = true;
 		}
 		
 		// allows me to examine the post arrays
@@ -66,6 +68,11 @@ class postManager
 		}
 		
 		return $return;
+	}
+	
+	public function havePostValues()
+	{
+		return $this->haveVals;
 	}
 }
 ?>
