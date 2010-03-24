@@ -106,8 +106,15 @@ class templateEngine
 				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
 				if($this->pageData != null)
 				{
-					// need to make sure this theme file is legit
-					$file = "/" . $this->pageData[0]["themeFile"];
+					// uses the single page if there is none in the db
+					if($this->pageData[0]["themeFile"] == null)
+					{
+						$file = "/single.php";
+					}
+					else
+					{
+						$file = "/" . $this->pageData[0]["themeFile"];
+					}
 				}
 				else
 				{
@@ -191,8 +198,16 @@ class templateEngine
 					// need some error checking for null pagedata
 					if($this->pageData != null)
 					{
-						// need to make sure this theme file is legit
-						$file = "/" . $this->pageData[0]["themeFile"];
+						// by default it uses page.php  that is if none is in the db for it to use
+						if($this->pageData[0]["themeFile"] == null)
+						{
+							$file = "/page.php";
+						}
+						else
+						{
+							// need to make sure this theme file is legit
+							$file = "/" . $this->pageData[0]["themeFile"];
+						}
 					}
 					else
 					{
@@ -254,11 +269,12 @@ class templateEngine
 							$isBad = true;
 						}
 						break;
-					case "%CATEGORY%":
+					/* case "%CATEGORY%":
 						if(!$this->db->categoryCheck($this->router->getUriPosition($i + 1)))
 						{
 							$isBad = true;
 						}
+						break; */
 					default:
 						$isBad = true;
 						break;

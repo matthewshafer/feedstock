@@ -59,6 +59,38 @@ class postManager
 		return $return;
 	}
 	
+	public function checkPostVal($name)
+	{
+		$return = false;
+		
+		if(isset($this->postArray[$name]))
+		{
+			$return = true;
+		}
+		
+		return $return;
+	}
+	
+	public function checkPostWithArray($array)
+	{
+		$return = true;
+		
+		if($array == null)
+		{
+			$return = false;
+		}
+		
+		foreach($array as $value)
+		{
+			if(!isset($this->postArray[$value]))
+			{
+				$return = false;
+			}
+		}
+		
+		return $return;
+	}
+	
 	public function getPostByName($lookup)
 	{
 		$return = null;

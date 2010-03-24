@@ -100,22 +100,30 @@ class feedstockAdmin
 		{
 			case "postAdd":
 				echo "post Add";
+				$this->addPost();
 				break;
 			case "postRemove":
 				echo "post Remove";
+				$this->removePost();
 				break;
 			case "pageAdd":
 				echo "page Add";
+				$this->addPage();
 				break;
 			case "pageRemove":
 				echo "page Remove";
+				$this->removePage();
 				break;
 			case "categoryAdd":
 				echo "category Add";
+				$this->addCategory();
 				break;
 			case "categoryRemove":
 				echo "category Remove";
+				$this->removeCategory();
 				break;
+			// these next two are coming later as they they operate differently than categories (removing them is like categories though)
+			// normally you have more tags than categories.
 			case "tagAdd":
 				echo "tag Add";
 				break;
@@ -123,6 +131,144 @@ class feedstockAdmin
 				echo "tag Remove";
 				break;
 		}
+	}
+	
+	private function addPost()
+	{
+		//$postsNeeded = array("postTitle", "postorpagedata", "postCategories", "postTags", "draft", "id");
+		$postsNeeded = array("postTitle", "postorpagedata", "draft", "id");
+		
+		if($this->postManager->checkPostWithArray($postsNeeded))
+		{
+			//echo "<br>" . $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")));
+			//print_r($this->postManager->getPostByName("postCategories"));
+			if($this->postManager->getPostByName("id") != -1)
+			{
+				// update
+				
+				
+				//$this->dbAdmin->addPost($this->postManager->getPostByName("postTitle"), $this->postManager->getPostByName("postorpagedata"), $niceTitle, $uri, $author, $date, $category, $tags, $draft, $id);
+			}
+			else
+			{
+				//echo "test";
+				//echo "<br>" . $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"));
+				$this->dbAdmin->addPost(
+				$this->postManager->getPostByName("postTitle"), 
+				$this->postManager->getPostByName("postorpagedata"), 
+				$this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), 
+				$this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), 
+				$this->cookieMonster->getUserID(), 
+				date("Y-m-d H:i:s", time()), 
+				$this->postManager->getPostByName("postCategories"), 
+				$this->postManager->getPostByName("postTags"), 
+				$this->postManager->getPostByName("draft")
+				);
+			}
+		}
+	}
+	
+	private function removePost()
+	{
+	
+	}
+	
+	private function addPage()
+	{
+	
+	}
+	
+	private function removePage()
+	{
+	
+	}
+	
+	private function addCategory()
+	{
+	
+	}
+	
+	private function removeCategory()
+	{
+		
+	}
+	
+	private function checkAndFixNiceTitleCollision($niceTitle)
+	{
+		
+	}
+	
+	
+	private function uriFriendlyTitle($title)
+	{
+		$return = null;
+		if($title != null)
+		{
+			//echo $title;
+			// slightly modified from http://cubiq.org/the-perfect-php-clean-url-generator/12
+			$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $title);
+			$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+			$clean = strtolower(trim($clean, '-'));
+			$clean = preg_replace("/[\/_|+ -]+/", '-', $clean);
+			
+			$return = $clean;
+		}
+		else
+		{
+			// error, we should do something
+		}
+		
+		return $return;
+	}
+	
+	/**
+	 * generatePostUri function.
+	 * 
+	 * @access private
+	 * @brief give us a nice title and we'll give you a full on uri for the post
+	 * @param mixed $nice
+	 * @param mixed $date. (default: null)
+	 * @return String
+	 */
+	private function generatePostUri($nice, $date = null)
+	{
+		$temp = explode("/", V_POSTFORMAT);
+		print_r($temp);
+		$tmpStr = "/";
+		
+		if($date == null)
+		{
+			$date = time();
+		}
+		
+		for($i = 0; $i < count($temp); $i++)
+		{
+			switch((string)$temp[$i])
+			{
+				case "%MONTH%":
+					$tmpStr .= date("m", $date) . "/";
+					break;
+				case "%DAY%":
+					$tmpStr .= date("d", $date) . "/";
+					break;
+				case "%YEAR%":
+					$tmpStr .= date("Y", $date) . "/";
+					break;
+				case "%TITLE%":
+					$tmpStr .= $nice . "/";
+					break;
+					// CATEGORY DOESN't WORK
+				//case "%CATEGORY%":
+					//break;
+			}
+		}
+		
+		if($tmpStr[strlen($tmpStr) - 1] == "/")
+		{
+			$tmpStr = substr($tmpStr, 0, -1);
+		}
+		
+		return $tmpStr;
 	}
 	
 	private function makePasswordHash($p, $s)

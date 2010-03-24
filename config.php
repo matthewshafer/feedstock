@@ -54,6 +54,7 @@ define("F_ADMINHTACCESS", false);
 
 /* Other Configs.  You probably don't need to change these */
 define("V_BASELOC", dirname(__FILE__));
+setlocale(LC_ALL, 'en_US.UTF8');
 
 // Error reporting, we want it on for testing
 ini_set('display_errors',1); 

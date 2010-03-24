@@ -120,7 +120,8 @@ class templateEngineAdmin
 			case "posts":
 				$return = "/postList.php";
 				// gonna want to set some stuff up
-				$this->theData = $this->db->getPostList();
+				//$this->theData = $this->db->getPostList();
+				$this->theData = $this->getPostList();
 				break;
 			case "pages":
 				$return = "/pageList.php";
@@ -136,6 +137,48 @@ class templateEngineAdmin
 		}
 		
 		return $return;
+	}
+	
+	public function getPostList()
+	{
+		$offset = intval($this->router->getUriPosition(2));
+		
+		// the one thing is if you do like /posts/omg it just sends you to the begining
+		if($offset < 2 or $offset = null)
+		{
+			$offset = 0;
+		}
+		
+		// sets up the offset 
+		// need to run some tests to see if we need this. Unfortunately I don't have internet right now so I cant check this out
+		//$offset = $offset * 10;
+		
+		return $this->db->getPostList($offset);
+	}
+	
+	public function postTitleID()
+	{
+		return "title";
+	}
+	
+	public function postBodyID()
+	{
+		return "body";
+	}
+	
+	public function postCategoriesID()
+	{
+		return "cat1, cat2, cat3";
+	}
+	
+	public function postTagsID()
+	{
+		return "tag1, tag2, tag3";
+	}
+	
+	public function postID()
+	{
+		return -1;
 	}
 }
 ?>

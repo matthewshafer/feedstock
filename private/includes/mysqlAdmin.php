@@ -39,17 +39,21 @@ class databaseAdmin extends database
 	 * @param mixed $id. (default: null)
 	 * @return void 
 	 */
-	public function addPost($title, $data, $uri, $author, $date, $category, $tags, $draft, $id = null)
+	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $category, $tags, $draft, $id = null)
 	{
 		$query = null;
+		
+		// need to do something with category and tags
+		// for real
 		
 		if($id == null)
 		{
 			// add the new post
 			$query = sprintf(
-			"INSERT INTO %sposts (Title, URI, PostData, Author, Date, Draft) VALUES('%s', '%s', '%s', '%s', '%s', '%s')",
+			"INSERT INTO %sposts (Title, NiceTitle, URI, PostData, Author, Date, Draft) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 			parent::$this->tablePrefix, 
 			mysql_real_escape_string($title, parent::$this->dbConn), 
+			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
 			mysql_real_escape_string($uri, parent::$this->dbConn), 
 			mysql_real_escape_string($data, parent::$this->dbConn), 
 			mysql_real_escape_string($author, parent::$this->dbConn), 
@@ -82,6 +86,11 @@ class databaseAdmin extends database
 		}
 		
 		return $result;
+	}
+	
+	public function deletePost($id)
+	{
+		
 	}
 	
 	public function checkDuplicateURI($type, $uri)
@@ -223,26 +232,80 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	public function checkNiceTitleExists($title, $id = null)
+	{
+		$query = sprintf("SELECT * from %sposts WHERE NiceTitle='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($title, parent::$this->dbConn));
+		
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		$temp = mysql_fetch_assoc($result);
+		
+		if(is_null($temp["NiceTitle"]))
+		{
+			$return = false;
+		}
+		else
+		{
+			if($id != null and $temp["PrimaryKey"] == $id)
+			{
+				$return = false;
+			}
+			else
+			{
+				$return = true;
+			}
+		}
+		
+		return $return;
+	}
+	
 	// all these next guys need to get the comment/tag/corral data also and that needs to be pushed into the assoc array.
 	// I'll get this done over the weekend since its almost 2am and im pretty sleepy.
 	
-	
+	/**
+	 * getPostDataByID function.
+	 * 
+	 * @access public
+	 * @param mixed $id
+	 * @return Array of Post info
+	 */
 	public function getPostDataByID($id)
 	{
 		
 	}
 	
+	/**
+	 * getPageDataByID function.
+	 * 
+	 * @access public
+	 * @param mixed $id
+	 * @return Array of Page info
+	 */
 	public function getPageDataByID($id)
 	{
 		
 	}
 	
-	public function getPostList()
+	/**
+	 * getPostList function.
+	 * 
+	 * @access public
+	 * @param mixed $offset
+	 * @return Array of Posts
+	 */
+	public function getPostList($offset)
 	{
 		
 	}
 	
-	public function getPageList()
+	/**
+	 * getPageList function.
+	 * 
+	 * @access public
+	 * @param mixed $offset
+	 * @return Array of Pages
+	 */
+	public function getPageList($offset)
 	{
 		
 	}
