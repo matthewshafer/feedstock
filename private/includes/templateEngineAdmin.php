@@ -180,5 +180,20 @@ class templateEngineAdmin
 	{
 		return -1;
 	}
+	
+	public function pageTitleID()
+	{
+		return "title";
+	}
+	
+	public function pageBodyID()
+	{
+		return "body";
+	}
+	
+	public function pageID()
+	{
+		return -1;
+	}
 }
 ?>

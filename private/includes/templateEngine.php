@@ -546,7 +546,7 @@ class templateEngine
 			$subTag = $array["SubCat"];
 			$URI = $array["URIName"];
 			
-			while($subTag != 0)
+			while($subTag > -1)
 			{
 				$data = $this->database->getCategoryOrTag($subTag, 1);
 				$temp = $data[0]["URIName"];

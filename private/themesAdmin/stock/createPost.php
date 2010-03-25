@@ -7,7 +7,7 @@
 	
 	<body>
 		<div id="center">
-			<form name="login" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
+			<form name="createPost" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
 				Post Title: (We create a URI based off this)<br>
 				<input name="postTitle" type="text" value="<?php echo $this->templateEngine->postTitleID(); ?>"><br>
 				Post Body: <br>

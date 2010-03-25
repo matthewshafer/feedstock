@@ -151,21 +151,50 @@ class feedstockAdmin
 			}
 			else
 			{
+				//$this->tagsToArray();
 				//echo "test";
 				//echo "<br>" . $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"));
+				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")));
+				// doing it this way allows to only have 1 of the same title and 1 of the same uri.  So if the user changes the structure we'll be fine
+				$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))));
+				
 				$this->dbAdmin->addPost(
 				$this->postManager->getPostByName("postTitle"), 
 				$this->postManager->getPostByName("postorpagedata"), 
-				$this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), 
-				$this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), 
+				$niceCheckedTitle, 
+				$goodUri, 
 				$this->cookieMonster->getUserID(), 
 				date("Y-m-d H:i:s", time()), 
-				$this->postManager->getPostByName("postCategories"), 
-				$this->postManager->getPostByName("postTags"), 
 				$this->postManager->getPostByName("draft")
 				);
+				
+				$id = $this->dbAdmin->getPostIDNiceCheckedTitle($niceCheckedTitle);
+				
+				//$this->dbAdmin->addCategories($id, $categoriesArray);
+				$this->dbAdmin->processTags($id, $this->tagsToArray());
 			}
 		}
+	}
+	
+	private function tagsToArray()
+	{
+		// this really doesnt error check so don't put a trailing , at the end
+		$tempArr = array();
+		$tempArr = explode(",", $this->postManager->getPostByName("postTags"));
+		
+		$tempArr2 = array();
+		
+		for($i = 0; $i < count($tempArr); $i++)
+		{
+			$tmp = array("Title" => $tempArr[$i], "NiceTitle" => $this->uriFriendlyTitle(trim($tempArr[$i])));
+			
+			array_push($tempArr2, $tmp);
+		}
+		
+		//print_r($tempArr2);
+		//print_r($tempArr);
+		
+		return $tempArr2;
 	}
 	
 	private function removePost()
@@ -175,8 +204,42 @@ class feedstockAdmin
 	
 	private function addPage()
 	{
-	
+		$pagesNeeded = array("pageTitle", "postorpagedata", "draft", "id");
+		
+		if($this->postManager->checkPostWithArray($pagesNeeded))
+		{
+			if($this->postManager->getPostByName("id") != -1)
+			{
+				//update
+			}
+			else
+			{
+				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("page", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")));
+				// I can make this a bunch better
+				
+				if($this->postManager->getPostByName("pageUri") == "")
+				{
+					$nonCheckedUri = sprintf("/%s", $this->postManager->getPostByName("pageTitle"));
+				}
+				else
+				{
+					$nonCheckedUri = $this->postManager->getPostByName("pageUri");
+				}
+				$goodUri = $this->checkAndFixNiceUriCollision("page", $nonCheckedUri);
+				
+				$this->dbAdmin->addPage(
+				$this->postManager->getPostByName("pageTitle"), 
+				$this->postManager->getPostByName("postorpagedata"), 
+				$niceCheckedTitle, 
+				$goodUri, 
+				$this->cookieMonster->getUserID(), 
+				date("Y-m-d H:i:s", time()), 
+				$this->postManager->getPostByName("draft")
+				);
+			}
+		}
 	}
+	
 	
 	private function removePage()
 	{
@@ -193,9 +256,56 @@ class feedstockAdmin
 		
 	}
 	
-	private function checkAndFixNiceTitleCollision($niceTitle)
+	private function checkAndFixNiceTitleCollision($type, $niceTitle, $id = null)
 	{
+		$i = 1;
+		$moreThanOne = true;
+		$temp = null;
 		
+		$moreThanOne = $this->dbAdmin->checkDuplicateTitle($type, $niceTitle, $id);
+		
+		
+		while($moreThanOne == false)
+		{
+			$tmp = $niceTitle . "-" . ($i + 1);
+			//echo $tmp;
+			$moreThanOne = $this->dbAdmin->checkDuplicateTitle($type, $tmp, $id);
+			
+			$i++;
+		}
+		
+		if($i > 1)
+		{
+			$niceTitle = $niceTitle . "-" . $i;
+		}
+		
+		//echo $niceTitle;
+		
+		return $niceTitle;
+	}
+	
+	private function checkAndFixNiceUriCollision($type, $niceUri, $id = null)
+	{
+		$i = 1;
+		$moreThanOne = true;
+		
+		$moreThanOne = $this->dbAdmin->checkDuplicateURI($type, $niceUri, $id);
+		
+		while(!$moreThanOne)
+		{
+			$tmp = $niceUri . "-" . ($i + 1);
+			
+			$moreThanOne = $this->dbAdmin->checkDuplicateURI($type, $tmp, $id);
+			
+			$i++;
+		}
+		
+		if($i > 1)
+		{
+			$niceUri = $niceUri . "-" . $i;
+		}
+		
+		return $niceUri;
 	}
 	
 	
@@ -233,7 +343,7 @@ class feedstockAdmin
 	private function generatePostUri($nice, $date = null)
 	{
 		$temp = explode("/", V_POSTFORMAT);
-		print_r($temp);
+		//print_r($temp);
 		$tmpStr = "/";
 		
 		if($date == null)

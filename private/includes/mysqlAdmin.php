@@ -39,7 +39,7 @@ class databaseAdmin extends database
 	 * @param mixed $id. (default: null)
 	 * @return void 
 	 */
-	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $category, $tags, $draft, $id = null)
+	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $draft, $id = null)
 	{
 		$query = null;
 		
@@ -88,30 +88,128 @@ class databaseAdmin extends database
 		return $result;
 	}
 	
+	public function processTags($id, $tagArray)
+	{
+		$tmpArr = array();
+		
+		foreach($tagArray as $key)
+		{
+			$query = sprintf("SELECT * FROM %scatstags WHERE Name='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["Title"], parent::$this->dbConn));
+			
+			$result = mysql_query($query, parent::$this->dbConn);
+			
+			$arr = mysql_fetch_assoc($result);
+			
+			if(is_null($arr["PrimaryKey"]))
+			{
+				// add to db
+				$query2 = sprintf(
+				"INSERT INTO %scatstags (Name, URIName, Type) VALUES('%s', '%s', '%d')",
+				parent::$this->tablePrefix, 
+				mysql_real_escape_string($key["Title"], parent::$this->dbConn), 
+				mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn), 
+				1);
+				
+				$result4 = mysql_query($query2, parent::$this->dbConn);
+				
+				$query3 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE Name='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["Title"], parent::$this->dbConn));
+				$result2 = mysql_query($query3, parent::$this->dbConn);
+				$ttttttmp = mysql_fetch_assoc($result2);
+				
+				array_push($tmpArr, $ttttttmp["PrimaryKey"]);
+				
+			}
+			else
+			{
+				array_push($tmpArr, $arr["PrimaryKey"]);
+			}
+		}
+		
+		print_r($tmpArr);
+		
+		
+		// clearing out the current tags the post has since we are re-creating them.
+		$query = sprintf("DELETE FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		for($i = 0; $i < count($tmpArr); $i++)
+		{
+			$query = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn), $tmpArr[$i]);
+			$result = mysql_query($query, parent::$this->dbConn);
+		}
+	}
+	
+	public function getPostIDNiceCheckedTitle($nice)
+	{
+		$query = sprintf("SELECT PrimaryKey FROM %sposts WHERE NiceTitle='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($nice, parent::$this->dbConn));
+		$arr = mysql_fetch_assoc(mysql_query($query, parent::$this->dbConn));
+		
+		return $arr["PrimaryKey"];
+	}
+	
 	public function deletePost($id)
 	{
 		
 	}
 	
-	public function checkDuplicateURI($type, $uri)
+	public function checkDuplicateURI($type, $uri, $id = null)
 	{
 		$query = null;
 		$return = false;
 		
 		if($type == "post")
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE URI='%s'", parent::$this->tablePrefix, mysql_real_escape_string($uri, parent::$this->dbConn));
+			$query = sprintf("SELECT * FROM %sposts WHERE URI='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($uri, parent::$this->dbConn));
 		}
 		else if($type == "page")
 		{
-			$query = sprintf("SELECT * FROM %spages WHERE URI='%s'", parent::$this->tablePrefix, mysql_real_escape_string($uri, parent::$this->dbConn));
+			$query = sprintf("SELECT * FROM %spages WHERE URI='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($uri, parent::$this->dbConn));
 		}
 		
 		if($query != null)
 		{
 			$result = mysql_query($query, parent::$this->dbConn);
 			
-			if($result != null)
+			$result2 = mysql_fetch_assoc($result);
+			
+			if(is_null($result2["PrimaryKey"]))
+			{
+				$return = true;
+			}
+			else if($id != null and $result["PrimaryKey"] == $id)
+			{
+				$return = true;
+			}
+		}
+		
+		return $return;
+	}
+	
+	public function checkDuplicateTitle($type, $niceTitle, $id = null)
+	{
+		$query = null;
+		$return = false;
+		
+		if($type == "post")
+		{
+			$query = sprintf("SELECT * FROM %sposts WHERE NiceTitle='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($niceTitle, parent::$this->dbConn));
+		}
+		else if($type == "page")
+		{
+			$query = sprintf("SELECT * FROM %spages WHERE NiceTitle='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($niceTitle, parent::$this->dbConn));
+		}
+		
+		if($query != null)
+		{
+			$result = mysql_query($query, parent::$this->dbConn);
+			
+			$result2 = mysql_fetch_assoc($result);
+			
+			if(!isset($result2["PrimaryKey"]))
+			{
+				$return = true;
+			}
+			else if($id != null and $result["PrimaryKey"] == $id)
 			{
 				$return = true;
 			}
@@ -232,33 +330,6 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
-	public function checkNiceTitleExists($title, $id = null)
-	{
-		$query = sprintf("SELECT * from %sposts WHERE NiceTitle='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($title, parent::$this->dbConn));
-		
-		$result = mysql_query($query, parent::$this->dbConn);
-		
-		$temp = mysql_fetch_assoc($result);
-		
-		if(is_null($temp["NiceTitle"]))
-		{
-			$return = false;
-		}
-		else
-		{
-			if($id != null and $temp["PrimaryKey"] == $id)
-			{
-				$return = false;
-			}
-			else
-			{
-				$return = true;
-			}
-		}
-		
-		return $return;
-	}
-	
 	// all these next guys need to get the comment/tag/corral data also and that needs to be pushed into the assoc array.
 	// I'll get this done over the weekend since its almost 2am and im pretty sleepy.
 	
@@ -308,6 +379,43 @@ class databaseAdmin extends database
 	public function getPageList($offset)
 	{
 		
+	}
+	
+	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $id = null)
+	{
+		$query = null;
+		$result = false;
+		
+		if($id == null)
+		{
+			if($corral == null)
+			{
+				$corral = -1;
+			}
+			
+			$query = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", 
+			parent::$this->tablePrefix, 
+			mysql_real_escape_string($title, parent::$this->dbConn), 
+			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
+			mysql_real_escape_string($uri, parent::$this->dbConn), 
+			mysql_real_escape_string($data, parent::$this->dbConn), 
+			mysql_real_escape_string($author, parent::$this->dbConn), 
+			mysql_real_escape_string($date, parent::$this->dbConn), 
+			mysql_real_escape_string($draft, parent::$this->dbConn), 
+			mysql_real_escape_string($corral, parent::$this->dbConn)
+			);
+		}
+		else
+		{
+			// updating a post
+		}
+		
+		if($query != null)
+		{
+			$result = mysql_query($query, parent::$this->dbConn);
+		}
+		
+		return $result;
 	}
 
 
