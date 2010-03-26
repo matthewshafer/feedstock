@@ -78,7 +78,8 @@ class templateEngine
 		
 		if(strtolower($this->router->pageType()) == "" || strtolower($this->router->pageType()) == "page")
 		{
-			$this->pageData = $this->database->getPosts($this->router->getPageOffset());
+			$offset = $this->router->getPageOffset() * 10;
+			$this->pageData = $this->database->getPosts($offset);
 			//print_r($this->database->getPostCategory(2));
 			// this is just here to debug a function
 			/*

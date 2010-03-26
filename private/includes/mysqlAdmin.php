@@ -94,11 +94,16 @@ class databaseAdmin extends database
 		
 		foreach($tagArray as $key)
 		{
-			$query = sprintf("SELECT * FROM %scatstags WHERE Name='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["Title"], parent::$this->dbConn));
+			// changed Name to URIName.  Test it
+			$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
 			
 			$result = mysql_query($query, parent::$this->dbConn);
 			
 			$arr = mysql_fetch_assoc($result);
+			
+			//echo "<br>";
+			//print_r($arr);
+			
 			
 			if(is_null($arr["PrimaryKey"]))
 			{
@@ -112,7 +117,7 @@ class databaseAdmin extends database
 				
 				$result4 = mysql_query($query2, parent::$this->dbConn);
 				
-				$query3 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE Name='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["Title"], parent::$this->dbConn));
+				$query3 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
 				$result2 = mysql_query($query3, parent::$this->dbConn);
 				$ttttttmp = mysql_fetch_assoc($result2);
 				
@@ -364,9 +369,26 @@ class databaseAdmin extends database
 	 * @param mixed $offset
 	 * @return Array of Posts
 	 */
-	public function getPostList($offset)
+	public function getPostList($limit, $offset)
 	{
+		$return = array();
 		
+		$query = sprintf(
+		"SELECT * FROM %sposts ORDER BY PrimaryKey desc LIMIT %d OFFSET %d", 
+		parent::$this->tablePrefix, 
+		mysql_real_escape_string($limit, parent::$this->dbConn), 
+		mysql_real_escape_string($offset, parent::$this->dbConn)
+		);
+		
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		while($tmp = mysql_fetch_assoc($result))
+		{
+			array_push($return, $tmp);
+		}
+		
+		
+		return $return;
 	}
 	
 	/**
@@ -376,9 +398,26 @@ class databaseAdmin extends database
 	 * @param mixed $offset
 	 * @return Array of Pages
 	 */
-	public function getPageList($offset)
+	public function getPageList($limit, $offset)
 	{
+		$return = array();
 		
+		$query = sprintf(
+		"SELECT * FROM %spages ORDER BY PrimaryKey desc LIMIT %d OFFSET %d", 
+		parent::$this->tablePrefix, 
+		mysql_real_escape_string($limit, parent::$this->dbConn), 
+		mysql_real_escape_string($offset, parent::$this->dbConn)
+		);
+		
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		while($tmp = mysql_fetch_assoc($result))
+		{
+			array_push($return, $tmp);
+		}
+		
+		
+		return $return;
 	}
 	
 	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $id = null)

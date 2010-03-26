@@ -11,6 +11,8 @@ class templateEngineAdmin
 	protected $router;
 	protected $isLoggedIn = false;
 	protected $theData = array();
+	private $haveNextPage = false;
+	private $count = -1;
 	
 	/**
 	 * __construct function.
@@ -121,12 +123,12 @@ class templateEngineAdmin
 				$return = "/postList.php";
 				// gonna want to set some stuff up
 				//$this->theData = $this->db->getPostList();
-				$this->theData = $this->getPostList();
+				$this->theData = $this->getPostOrPageList("post");
 				break;
 			case "pages":
 				$return = "/pageList.php";
 				// gonna want to set some stuff up
-				$this->theData = $this->db->getPostList();
+				$this->theData = $this->getPostOrPageList("page");
 				break;
 		}
 		
@@ -139,21 +141,51 @@ class templateEngineAdmin
 		return $return;
 	}
 	
-	public function getPostList()
+	private function getPostOrPageList($type)
 	{
 		$offset = intval($this->router->getUriPosition(2));
-		
+		$tmpArr = array();
 		// the one thing is if you do like /posts/omg it just sends you to the begining
-		if($offset < 2 or $offset = null)
+		if($offset < 2 or $offset == null)
 		{
 			$offset = 0;
 		}
-		
+		else
+		{
+			$offset = $offset - 1;
+		}
 		// sets up the offset 
 		// need to run some tests to see if we need this. Unfortunately I don't have internet right now so I cant check this out
-		//$offset = $offset * 10;
+		$offset = $offset * 10;
+		// we are doing 1 more than what we want for the limit so we can find out if there would be another page
+		$limit = 11;
 		
-		return $this->db->getPostList($offset);
+		
+		if($type == "post")
+		{
+			$tmpArr = $this->db->getPostList($limit, $offset);
+		}
+		else
+		{
+			$tmpArr = $this->db->getPageList($limit, $offset);
+		}
+		
+		if(count($tmpArr) == $limit)
+		{
+			$this->haveNextPage = true;
+		}
+		
+		if(!isset($tmpArr[0]["PrimaryKey"]))
+		{
+			array_pop($tmpArr);
+		}
+		
+		return $tmpArr;
+	}
+	
+	public function getTheData()
+	{
+		return $this->theData;
 	}
 	
 	public function postTitleID()

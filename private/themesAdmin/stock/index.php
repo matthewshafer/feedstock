@@ -7,7 +7,7 @@
 	
 	<body>
 		<div id="links">
-			<a href="./index.php">Index</a>
+			<a href="./">Index</a>
 			<a href="./index.php/posts">Posts</a>
 			<a href="./index.php/pages">Pages</a>
 			<a href="./index.php/post">New Post</a>

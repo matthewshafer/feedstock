@@ -51,7 +51,7 @@ class feedstockAdmin
 		
 		require_once("includes/templateEngineAdmin.php");
 		
-		$this->templateEngine = new templateEngineAdmin($this->database, $this->router);
+		$this->templateEngine = new templateEngineAdmin($this->dbAdmin, $this->router);
 		
 		require_once("includes/templateLoader.php");
 		$this->templateLoader = new templateLoader($this->templateEngine);
@@ -191,7 +191,7 @@ class feedstockAdmin
 			array_push($tempArr2, $tmp);
 		}
 		
-		//print_r($tempArr2);
+		print_r($tempArr2);
 		//print_r($tempArr);
 		
 		return $tempArr2;
@@ -219,11 +219,11 @@ class feedstockAdmin
 				
 				if($this->postManager->getPostByName("pageUri") == "")
 				{
-					$nonCheckedUri = sprintf("/%s", $this->postManager->getPostByName("pageTitle"));
+					$nonCheckedUri = sprintf("/%s", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")));
 				}
 				else
 				{
-					$nonCheckedUri = $this->postManager->getPostByName("pageUri");
+					$nonCheckedUri = $this->uriFriendlyTitle($this->postManager->getPostByName("pageUri"));
 				}
 				$goodUri = $this->checkAndFixNiceUriCollision("page", $nonCheckedUri);
 				
