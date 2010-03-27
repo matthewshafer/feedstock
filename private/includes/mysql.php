@@ -11,6 +11,7 @@ class database
 	protected $dBaseValid = null;
 	protected $tablePrefix = null;
 	protected $connError = null;
+	public $queries = 0;
 	
 	/**
 	 * __construct function.
@@ -72,22 +73,50 @@ class database
 	 */
 	public function getPosts($offset, $draft = false)
 	{
+		$authorArr = array();
+		
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+			$this->queries++;
 		}
 		else
 		{
 			$query = sprintf("SELECT * FROM %sposts order by date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+			$this->queries++;
 		}
 		
-		$result = mysql_query($query , $this->dbConn);
+		$result = mysql_query($query, $this->dbConn);
 		
 		$return = array();
 		// need to check if anything is in the array
 		
 		while($temp = mysql_fetch_assoc($result))
 		{
+			
+			if(isset($authorArr[$temp["Author"]]))
+			{
+				$temp["Author"] = $authorArr[$temp["Author"]];
+			}
+			else
+			{
+				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
+				$this->queries++;
+				$result2 = mysql_query($query, $this->dbConn);
+				$tmpArr = mysql_fetch_assoc($result2);
+				
+				if(isset($tmpArr["DisplayName"]))
+				{
+					$authorArr[$temp["Author"]] = $tmpArr["DisplayName"];
+					$temp["Author"] = $authorArr[$temp["Author"]];
+				}
+			}
+			
+			if(isset($temp["PostData"]))
+			{
+				$temp["PostData"] = stripslashes($temp["PostData"]);
+			}
+			
 			array_push($return, $temp);
 		}
 		
@@ -100,10 +129,12 @@ class database
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			$this->queries++;
 		}
 		else
 		{
 			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			$this->queries++;
 		}
 		//echo $query;
 		$result = mysql_query($query , $this->dbConn);
@@ -124,10 +155,12 @@ class database
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			$this->queries++;
 		}
 		else
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			$this->queries++;
 		}
 		
 		$result = mysql_query($query , $this->dbConn);
@@ -146,6 +179,7 @@ class database
 	{
 		$return = false;
 		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, mysql_real_escape_string($name, $this->dbConn), mysql_real_escape_string($type, $this->dbConn));
+		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		
 		if(mysql_fetch_assoc($result))
@@ -160,6 +194,7 @@ class database
 	{
 		//$query = "SELECT * FROM " . $this->tablePrefix . "tags LIMIT" . $number;
 		$query = sprintf("SELECT * FROM %scatstags WHERE Type='%s'", $this->tablePrefix, mysql_real_escape_string($type, $this->dbConn));
+		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		
 		$return = array();
@@ -172,38 +207,68 @@ class database
 		return $return;
 	}
 	
-	public function getPostCategoryOrTag($ID, $type)
+	
+	public function getPostCategoryOrTag($IdArray, $type)
 	{
-		$query = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID='%s'", $this->tablePrefix, mysql_real_escape_string($ID, $this->dbConn));
-		$result = mysql_query($query, $this->dbConn);
+		$tmpArr1 = array();
+		$tmpArr2 = array();
+		$tmpArr3 = array();
+		$queryStr = null;
 		
-		$return = array();
-		
-		while($temp = mysql_fetch_assoc($result))
+		foreach($IdArray as $key)
 		{
-			//print_r($temp);
-			$query2 = sprintf("SELECT * FROM %scatstags WHERE TYPE='%s' AND PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($type, $this->dbConn), mysql_real_escape_string($temp["CatTagID"], $this->dbConn));
-			$result2 = mysql_query($query2);
+			$query = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID='%s'", $this->tablePrefix, mysql_real_escape_string($key, $this->dbConn));
+			$this->queries++;
+			$result = mysql_query($query, $this->dbConn);
 			
-			// see if there is a better way to implement this
-			// could probably do without the loop
-			while($temp = mysql_fetch_assoc($result2))
+			$tmpArr[$key] = array();
+			
+			while($tmp = mysql_fetch_assoc($result))
 			{
-				if($temp != null)
+				if(!isset($tmpArr2[$tmp["CatTagID"]]))
 				{
-					array_push($return, $temp);
+					$tmpArr2[$tmp["CatTagID"]] = $tmp["CatTagID"];
 				}
+				array_push($tmpArr[$key], $tmp["CatTagID"]);
 			}
 		}
 		
-		//print_r($return);
-		return $return;
+		
+		$queryStr = implode(", ", $tmpArr2);
+		//echo "QueryStr: " . $queryStr;
+		$query = sprintf("SELECT * FROM %scatstags WHERE PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+		$result = mysql_query($query, $this->dbConn);
+		while($tmp = mysql_fetch_assoc($result))
+		{
+			$tmpArr3[$tmp["PrimaryKey"]] = $tmp;
+		}
+		
+		//print_r($tmpArr3);
+		//print_r($tmpArr);
+		
+		while($tmp = each($tmpArr))
+		{
+			$srsTemp = array();
+			while($tmp2 = each($tmp["value"]))
+			{
+				if(isset($tmpArr3[$tmp2["value"]]))
+				{
+					$srsTemp[$tmp2["key"]] = $tmpArr3[$tmp2["value"]];
+				}
+			}
+			
+			$tmpArr[$tmp["key"]] = $srsTemp;
+		}
+		
+		//print_r($tmpArr);
+		return $tmpArr;
 	}
 	
 	// still need to finish the getting the posts part.
 	public function getPostsInCategoryOrTag($URIName, $type, $draft = false)
 	{
 		$query = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, mysql_real_escape_string($URIName, $this->dbConn), mysql_real_escape_string($type, $this->dbConn));
+		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		
 		$return = array();
@@ -215,6 +280,7 @@ class database
 		//print_r($temp);
 		
 		$query2 = sprintf("SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'", $this->tablePrefix, mysql_real_escape_string($temp["PrimaryKey"], $this->dbConn));
+		$this->queries++;
 		$result2 = mysql_query($query2, $this->dbConn);
 		
 		while($temp = mysql_fetch_assoc($result2))
@@ -222,10 +288,12 @@ class database
 			if(!$draft)
 			{
 				$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($temp["PostID"], $this->dbConn));
+				$this->queries++;
 			}
 			else
 			{
 				$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($temp["PostID"], $this->dbConn));
+				$this->queries++;
 			}
 			$result3 = mysql_query($query3, $this->dbConn);
 			
@@ -239,6 +307,7 @@ class database
 	public function getCategoryOrTag($ID, $type)
 	{
 		$query = sprintf("SELECT * FROM %scatstags WHERE TYPE='%s' AND PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($type, $this->dbConn), mysql_real_escape_string($ID, $this->dbConn));
+		$this->queries++;
 		//echo $query;
 		$result = mysql_query($query, $this->dbConn);
 		
@@ -255,6 +324,7 @@ class database
 	public function corralPage($ID)
 	{
 		$query = sprintf("SELECT * FROM %spages WHERE Corral='%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($ID, $this->dbConn));
+		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		
 		$return = array();

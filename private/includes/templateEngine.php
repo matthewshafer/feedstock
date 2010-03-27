@@ -228,7 +228,6 @@ class templateEngine
 		// we can provbably streamline this
 		$return .= $file;
 		$this->getCategoriesForPageData();
-		$this->getTagsForPageData();
 		return $return;
 	}
 	
@@ -382,33 +381,24 @@ class templateEngine
 	// returns the tags for a post unformatted
 	public function getPostTags()
 	{
-		return $this->pageData[$this->arrayPosition]["Tags"];
+		$return = null;
+		
+		foreach($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+		{
+			$return .= $key["Name"] . ", ";
+		}
+		
+		$return = substr($return, 0, -2);
+		return $return;
 	}
 	// generates a formatted string with the tags properly formated in links that take them to /tags/tagname
 	public function getPostTagsFormatted()
 	{
 		$return = null;
-		/*
-		$array = explode(", ", $this->pageData[$this->arrayPosition]["Tags"]);
-		foreach($array as $key)
-		{
-			if($key != null)
-			{
-				if(substr($key, (strlen($key) -1)) == ",")
-					$key = substr($key, 0, -1);
-				$return .= '<a href="' . V_URL . V_HTTPBASE;
-				if(!V_HTACCESS)
-				{
-					$return .= "index.php/";
-				}
-				$return .= 'tag/' . $key . '">' . $key . '</a>, ';
-			}
-		}
-		$return = substr($return, 0, -2);
 		
-		*/
+		//print_r($this->pageTag);
 		
-		foreach($this->pageTag[$this->arrayPosition] as $key)
+		foreach($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
 		{
 			$return .= '<a href="' . V_URL .V_HTTPBASE;
 			if(!V_HTACCESS)
@@ -416,9 +406,9 @@ class templateEngine
 				$return .= 'index.php/';
 			}
 			
-			$return .= 'tag/' . $this->generateSubTagURI($key) . '">' . $key["Name"] . '</a>';
+			$return .= 'tag/' . $this->generateSubTagURI($key) . '">' . $key["Name"] . '</a>, ';
 		}
-		
+		$return = substr($return, 0, -2);
 		return $return;
 	}
 	
@@ -565,45 +555,27 @@ class templateEngine
 		
 	}
 	
+	public function generateTags()
+	{
+		if($this->pageData != null and $this->pageTag == null)
+		{
+			$tmpArr = array();
+			
+			foreach($this->pageData as $key)
+			{
+				array_push($tmpArr, $key["PrimaryKey"]);
+			}
+			
+			//print_r($tmpArr);
+			
+			$this->pageTag = $this->database->getPostCategoryOrTag($tmpArr, "post");
+		}
+	}
+	
 	private function getCategoriesForPageData()
 	{
 		
 		
-		if($this->pageData != null)
-		{
-			$temp = array();
-			
-			foreach($this->pageData as $key)
-			{
-				array_push($temp, $this->database->getPostCategoryOrTag($key["PrimaryKey"], 0));
-			}
-			$this->pageCategory = $temp;
-		}
-		else
-		{
-			$this->pageCategory = null;
-		}
-		
-		//print_r($temp);
-		
-	}
-	
-	private function getTagsForPageData()
-	{
-		if($this->pageData != null)
-		{
-			$temp = array();
-			
-			foreach($this->pageData as $key)
-			{
-				array_push($temp, $this->database->getPostCategoryOrTag($key["PrimaryKey"], 1));
-			}
-			$this->pageTag = $temp;
-		}
-		else
-		{
-			$this->pageTag = null;
-		}
 	}
 	
 	/**

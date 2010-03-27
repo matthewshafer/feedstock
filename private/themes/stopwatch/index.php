@@ -3,6 +3,8 @@ echo "<br><br>this is the theme talking<br>";
 
 //print_r($this->templateEngine->getPageData());
 
+$this->templateEngine->generateTags();
+
 while($this->templateEngine->postNext())
 {
 	echo "<br>";
@@ -27,4 +29,5 @@ while($this->templateEngine->postNext())
 	echo "<br>";
 	
 }
+
 ?>
