@@ -148,6 +148,8 @@ class feedstockAdmin
 				
 				
 				//$this->dbAdmin->addPost($this->postManager->getPostByName("postTitle"), $this->postManager->getPostByName("postorpagedata"), $niceTitle, $uri, $author, $date, $category, $tags, $draft, $id);
+				// only need to unlink updates
+				//$this->dbAdmin->unlinkPostCatsAndTags($id);
 			}
 			else
 			{
@@ -170,7 +172,9 @@ class feedstockAdmin
 				
 				$id = $this->dbAdmin->getPostIDNiceCheckedTitle($niceCheckedTitle);
 				
-				//$this->dbAdmin->addCategories($id, $categoriesArray);
+				
+				//print_r($this->postManager->getPostByName("postCategories"));
+				$this->dbAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
 				$this->dbAdmin->processTags($id, $this->tagsToArray());
 			}
 		}
@@ -248,7 +252,21 @@ class feedstockAdmin
 	
 	private function addCategory()
 	{
-	
+		$categoriesNeeded = array("categoryTitle", "id");
+		
+		if($this->postManager->checkPostWithArray($categoriesNeeded))
+		{
+			if($this->postManager->getPostByName("id") != -1)
+			{
+				// update
+			}
+			else
+			{
+				$niceTitle = $this->uriFriendlyTitle($this->postManager->getPostByName("categoryTitle"));
+				
+				$this->dbAdmin->addCategory($this->postManager->getPostByName("categoryTitle"), $niceTitle);
+			}
+		}
 	}
 	
 	private function removeCategory()

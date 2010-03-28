@@ -92,7 +92,7 @@ class templateEngine
 			*/
 			
 			// need to move this so it gets called all the time
-			$this->getCategoriesForPageData();
+			//$this->getCategoriesForPageData();
 			
 			$file = "/index.php";
 		}
@@ -227,7 +227,7 @@ class templateEngine
 		}
 		// we can provbably streamline this
 		$return .= $file;
-		$this->getCategoriesForPageData();
+		//$this->getCategoriesForPageData();
 		return $return;
 	}
 	
@@ -382,13 +382,15 @@ class templateEngine
 	public function getPostTags()
 	{
 		$return = null;
-		
-		foreach($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+		if(isset($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
-			$return .= $key["Name"] . ", ";
-		}
+			foreach($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+			{
+				$return .= $key["Name"] . ", ";
+			}
 		
-		$return = substr($return, 0, -2);
+			$return = substr($return, 0, -2);
+		}
 		return $return;
 	}
 	// generates a formatted string with the tags properly formated in links that take them to /tags/tagname
@@ -397,25 +399,38 @@ class templateEngine
 		$return = null;
 		
 		//print_r($this->pageTag);
-		
-		foreach($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+		if(isset($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
-			$return .= '<a href="' . V_URL .V_HTTPBASE;
-			if(!V_HTACCESS)
+			foreach($this->pageTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
 			{
-				$return .= 'index.php/';
-			}
+				$return .= '<a href="' . V_URL .V_HTTPBASE;
+				if(!V_HTACCESS)
+				{
+					$return .= 'index.php/';
+				}
 			
-			$return .= 'tag/' . $this->generateSubTagURI($key) . '">' . $key["Name"] . '</a>, ';
+				$return .= 'tag/' . $this->generateSubTagURI($key) . '">' . $key["Name"] . '</a>, ';
+			}
+			$return = substr($return, 0, -2);
 		}
-		$return = substr($return, 0, -2);
 		return $return;
 	}
 	
 	// returns the cats for a post unformatted
 	public function getPostCats()
 	{
-		return $this->pageData[$this->arrayPosition]["Category"];
+		$return = null;
+		
+		if(isset($this->pageCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
+		{
+			foreach($this->pageCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+			{
+				$return .= $key["Name"] . ", ";
+			}
+			
+			$return = substr($return, 0, -2);
+		}
+		return $return;
 	}
 	
 	// generates a formatted string with the categories properly formatted in links that take them to /categories/category
@@ -442,23 +457,25 @@ class templateEngine
 		*/
 		//echo count($this->pageCategory[$this->arrayPosition]);
 		//print_r($this->pageCategory[$this->arrayPosition]);
-		foreach($this->pageCategory[$this->arrayPosition] as $key)
+		if(isset($this->pageCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
-			//print_r($key);
-			$tmp = V_URL . V_HTTPBASE;
-			if(!V_HTACCESS)
+			foreach($this->pageCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
 			{
-				$tmp .= 'index.php/';
+				//print_r($key);
+				$tmp = V_URL . V_HTTPBASE;
+				if(!V_HTACCESS)
+				{
+					$tmp .= 'index.php/';
+				}
+			
+				$tmp .= 'category/' .  $this->generateSubCategoryURI($key);
+			
+				$return .= sprintf('<a href="%s">%s</a>', $tmp, $key["Name"]);
 			}
-			
-			$tmp .= 'category/' .  $this->generateSubCategoryURI($key);
-			
-			$return .= sprintf('<a href="%s">%s</a>', $tmp, $key["Name"]);
+		
+			// need to test this out after pretty much rewriting the previous lines
+			//$return = substr($return, 0, -2);
 		}
-		
-		// need to test this out after pretty much rewriting the previous lines
-		$return = substr($return, 0, -2);
-		
 		
 		
 		
@@ -514,7 +531,7 @@ class templateEngine
 	{
 		$subCat = $array["SubCat"];
 		$URI = $array["URIName"];
-		while($subCat != 0)
+		while($subCat > -1)
 		{
 			//echo $subCat;
 			$data = $this->database->getCategoryOrTag($subCat, 0);
@@ -568,14 +585,23 @@ class templateEngine
 			
 			//print_r($tmpArr);
 			
-			$this->pageTag = $this->database->getPostCategoryOrTag($tmpArr, "post");
+			$this->pageTag = $this->database->getPostCategoryOrTag($tmpArr, "tag");
 		}
 	}
 	
-	private function getCategoriesForPageData()
+	public function generateCategories()
 	{
-		
-		
+		if($this->pageData != null and $this->pageCategory == null)
+		{
+			$tmpArr = array();
+			
+			foreach($this->pageData as $key)
+			{
+				array_push($tmpArr, $key["PrimaryKey"]);
+			}
+			
+			$this->pageCategory = $this->database->getPostCategoryOrTag($tmpArr, "category");
+		}
 	}
 	
 	/**

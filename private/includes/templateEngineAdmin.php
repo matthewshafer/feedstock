@@ -11,6 +11,7 @@ class templateEngineAdmin
 	protected $router;
 	protected $isLoggedIn = false;
 	protected $theData = array();
+	protected $theCategoryData = array();
 	private $haveNextPage = false;
 	private $count = -1;
 	
@@ -110,6 +111,7 @@ class templateEngineAdmin
 				{
 					$this->theData = $this->db->getPostDataByID(intval($this->router->getUriPosition(2)));
 				}
+				$this->theCategoryData = $this->getCategoriesList();
 				break;
 			case "page":
 				$return = "/createPage.php";
@@ -129,6 +131,10 @@ class templateEngineAdmin
 				$return = "/pageList.php";
 				// gonna want to set some stuff up
 				$this->theData = $this->getPostOrPageList("page");
+				break;
+			case "categories":
+				$return = "/categories.php";
+				$this->theCategoryData = $this->getCategoriesList();
 				break;
 		}
 		
@@ -183,9 +189,19 @@ class templateEngineAdmin
 		return $tmpArr;
 	}
 	
+	private function getCategoriesList()
+	{
+		return $this->db->listCategoriesOrTags(0);
+	}
+	
 	public function getTheData()
 	{
 		return $this->theData;
+	}
+	
+	public function getCategoryData()
+	{
+		return $this->theCategoryData;
 	}
 	
 	public function postTitleID()
@@ -224,6 +240,16 @@ class templateEngineAdmin
 	}
 	
 	public function pageID()
+	{
+		return -1;
+	}
+	
+	public function categoryTitleID()
+	{
+		return "test";
+	}
+	
+	public function categoryID()
 	{
 		return -1;
 	}

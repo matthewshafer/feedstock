@@ -4,6 +4,7 @@ echo "<br><br>this is the theme talking<br>";
 //print_r($this->templateEngine->getPageData());
 
 $this->templateEngine->generateTags();
+$this->templateEngine->generateCategories();
 
 while($this->templateEngine->postNext())
 {

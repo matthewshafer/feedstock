@@ -210,34 +210,58 @@ class database
 	
 	public function getPostCategoryOrTag($IdArray, $type)
 	{
-		$tmpArr1 = array();
+		$tmpArr = array();
 		$tmpArr2 = array();
 		$tmpArr3 = array();
 		$queryStr = null;
+		static $arrWithPostTax = null;
+		static $queryStr;
 		
-		foreach($IdArray as $key)
+		if($arrWithPostTax == null)
 		{
-			$query = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID='%s'", $this->tablePrefix, mysql_real_escape_string($key, $this->dbConn));
-			$this->queries++;
-			$result = mysql_query($query, $this->dbConn);
-			
-			$tmpArr[$key] = array();
-			
-			while($tmp = mysql_fetch_assoc($result))
+			foreach($IdArray as $key)
 			{
-				if(!isset($tmpArr2[$tmp["CatTagID"]]))
+				$query = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID='%s'", $this->tablePrefix, mysql_real_escape_string($key, $this->dbConn));
+				$this->queries++;
+				$result = mysql_query($query, $this->dbConn);
+			
+				$tmpArr[$key] = array();
+			
+				while($tmp = mysql_fetch_assoc($result))
 				{
-					$tmpArr2[$tmp["CatTagID"]] = $tmp["CatTagID"];
+					if(!isset($tmpArr2[$tmp["CatTagID"]]))
+					{
+						$tmpArr2[$tmp["CatTagID"]] = $tmp["CatTagID"];
+					}
+					array_push($tmpArr[$key], $tmp["CatTagID"]);
 				}
-				array_push($tmpArr[$key], $tmp["CatTagID"]);
 			}
+		
+			// store tmpArr so if we do cats we already have the values
+			$arrWithPostTax = $tmpArr;
+			$queryStr = implode(", ", $tmpArr2);
+		}
+		else
+		{
+			$tmpArr = $arrWithPostTax;
 		}
 		
-		
-		$queryStr = implode(", ", $tmpArr2);
 		//echo "QueryStr: " . $queryStr;
-		$query = sprintf("SELECT * FROM %scatstags WHERE PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+		
+		if($type == "tag")
+		{
+			$query = sprintf("SELECT * FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+			$this->queries++;
+		}
+		else
+		{
+			$query = sprintf("SELECT * FROM %scatstags WHERE Type='0' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+			//echo $query;
+			$this->queries++;
+		}
+		
 		$result = mysql_query($query, $this->dbConn);
+		
 		while($tmp = mysql_fetch_assoc($result))
 		{
 			$tmpArr3[$tmp["PrimaryKey"]] = $tmp;

@@ -15,8 +15,13 @@
 				<br>
 				Categories: (This is going to be a formatted list where you check boxes.)<br>
 				<!-- <input name="postCategories" type="text" value="<?php echo $this->templateEngine->postCategoriesID(); ?>"><br> -->
-				<input name="postCategories[]" type="checkbox" value="test1">
-				<input name="postCategories[]" type="checkbox" value="test2">
+				
+				<?php foreach($this->templateEngine->getCategoryData() as $key)
+				{
+				echo '<input name="postCategories[]" type="checkbox" value="' . $key["PrimaryKey"] . '">' . $key["Name"] . '<br>' . "\n\t\t\t\t";
+				} 
+				echo "\n";
+				?>
 				Tags: (separate with a ,)<br>
 				<input name="postTags" type="text" value="<?php echo $this->templateEngine->postTagsID(); ?>"><br>
 				Draft: <br>

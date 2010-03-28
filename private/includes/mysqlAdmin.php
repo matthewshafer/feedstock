@@ -95,7 +95,7 @@ class databaseAdmin extends database
 		foreach($tagArray as $key)
 		{
 			// changed Name to URIName.  Test it
-			$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
+			$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='1' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
 			
 			$result = mysql_query($query, parent::$this->dbConn);
 			
@@ -117,7 +117,7 @@ class databaseAdmin extends database
 				
 				$result4 = mysql_query($query2, parent::$this->dbConn);
 				
-				$query3 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
+				$query3 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' AND Type='1' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
 				$result2 = mysql_query($query3, parent::$this->dbConn);
 				$ttttttmp = mysql_fetch_assoc($result2);
 				
@@ -133,14 +133,52 @@ class databaseAdmin extends database
 		print_r($tmpArr);
 		
 		
-		// clearing out the current tags the post has since we are re-creating them.
-		$query = sprintf("DELETE FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
-		$result = mysql_query($query, parent::$this->dbConn);
-		
 		for($i = 0; $i < count($tmpArr); $i++)
 		{
 			$query = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn), $tmpArr[$i]);
 			$result = mysql_query($query, parent::$this->dbConn);
+		}
+	}
+	
+	public function processPostCategories($id, $catArr)
+	{
+		foreach($catArr as $key)
+		{
+			$query = sprintf(
+			"INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", 
+			parent::$this->tablePrefix, 
+			mysql_real_escape_string($id, parent::$this->dbConn), 
+			mysql_real_escape_string($key, parent::$this->dbConn));
+			
+			$result = mysql_query($query, parent::$this->dbConn);
+		}
+	}
+	
+	public function unlinkPostCatsAndTags($id)
+	{
+		// clearing out the current tags the post has since we are re-creating them.
+		echo $id;
+		$query = sprintf("DELETE FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		$result = mysql_query($query, parent::$this->dbConn);
+	}
+	
+	public function addCategory($name, $niceTitle)
+	{
+		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='0' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($niceTitle, parent::$this->dbConn));
+		//echo $query;
+		$result = mysql_query($query, parent::$this->dbConn);
+		$arr = mysql_fetch_assoc($result);
+		
+		if(is_null($arr["PrimaryKey"]))
+		{
+			$query2 = sprintf(
+			"INSERT INTO %scatstags (Name, URIName, Type) VALUES('%s', '%s', '%d')", 
+			parent::$this->tablePrefix, 
+			mysql_real_escape_string($name, parent::$this->dbConn), 
+			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
+			0);
+			echo $query2;
+			$result2 = mysql_query($query2, parent::$this->dbConn);
 		}
 	}
 	
