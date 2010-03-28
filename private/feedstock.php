@@ -70,7 +70,7 @@ class feedstock
 			else
 			{
 				echo $this->heavyLift();
-				echo "<br><br>Queries: " . $this->db->queries;
+				//echo "<br><br>Queries: " . $this->db->queries;
 			}
 		}
 	}

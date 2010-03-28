@@ -16,13 +16,13 @@
 			</form>
 			<br><br>
 			<?php
-			foreach($this->templateEngine->getCategoryTheData() as $key)
+			foreach($this->templateEngine->getCategoryData() as $key)
 			{
 				echo "Category: " . $key["Name"] . " " . "URI: " . $key["URIName"] . "<br><br>";
 			}
 
 			echo "<br><br> The array of all the data<br>";
-			print_r($this->templateEngine->getTheData());
+			print_r($this->templateEngine->getCategoryData());
 			?>
 		</div>
 	</body>

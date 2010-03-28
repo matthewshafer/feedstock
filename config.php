@@ -20,7 +20,7 @@ define("F_AUTHOREMAIL", "some@email.com");
 
 
 /* File Download Settings */
-// Are we using build in file downloading?
+// Are we using built in file downloading?
 define("F_FILEDOWNLOAD", true);
 // file download speed in KB/s
 define("V_FILEDOWNLOADSPEED", 200);

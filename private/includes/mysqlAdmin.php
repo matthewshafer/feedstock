@@ -335,6 +335,7 @@ class databaseAdmin extends database
 		mysql_real_escape_string($canAdministrateUsers, parent::$this->dbConn)
 		);
 		
+		
 		return mysql_query($query, parent::$this->dbConn);
 	}
 	
