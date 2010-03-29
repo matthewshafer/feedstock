@@ -1,21 +1,22 @@
+<?php
+$this->templateEngine->generateTags();
+$this->templateEngine->generateCategories();
+?>
+
 <!DOCTYPE html>
 <head>
-	<title></title>
-</head
+	<title><?php echo $this->templateEngine->getHtmlTitle(); ?></title>
+</head>
+
+<body>
 <?php
 //echo "<br><br>this is the theme talking<br>";
 
 //print_r($this->templateEngine->getPageData());
 
-$this->templateEngine->generateTags();
-$this->templateEngine->generateCategories();
-
 while($this->templateEngine->postNext())
 {
-	echo "<br>";
-	echo "Title: " . $this->templateEngine->getPostTitle();
-	echo "<br>";
-	echo "URI: " . $this->templateEngine->getPostURI();
+	echo '<a href="' . $this->templateEngine->getPostURL() . '">' . $this->templateEngine->getPostTitle() . '</a>';
 	echo "<br>";
 	echo "Author: " . $this->templateEngine->getPostAuthor();
 	echo "<br>";
@@ -29,10 +30,12 @@ while($this->templateEngine->postNext())
 	echo "<br>";
 	echo "Categories: " . $this->templateEngine->getPostCatsFormatted();
 	echo "<br>";
-	echo "Date: " . $this->templateEngine->getPostTime("m / d / y");
+	echo "Date: " . $this->templateEngine->getPostTime("m/d/y");
 	echo "<br>";
 	echo "<br>";
 	
 }
 
 ?>
+
+</body>

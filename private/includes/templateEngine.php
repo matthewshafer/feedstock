@@ -349,6 +349,17 @@ class templateEngine
 		return $this->pageData[$this->arrayPosition]["URI"];
 	}
 	
+	public function getPostURL()
+	{
+		return sprintf("%s%s%s", V_URL, V_HTTPBASE, $this->pageData[$this->arrayPosition]["URI"])
+	}
+	
+	public function getHtmlTitle()
+	{
+		// need to add logic to this so it can decide what title to return based on the page that is loaded
+		return V_SITETITLE;
+	}
+	
 	/**
 	 * getPostBody function.
 	 * 
