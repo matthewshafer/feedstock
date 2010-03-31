@@ -99,12 +99,13 @@ class templateEngine
 		else
 		{
 			$temp = explode("/", V_POSTFORMAT);
-			echo $this->router->uriLength() . "<br>";
-			echo count($temp). "<br>";
+			//echo $this->router->uriLength() . "<br>";
+			//echo count($temp). "<br>";
 			if($this->checkUriPost())
 			{
-				echo "blah";
+				//echo "blah";
 				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
+				$this->arrayPosition = 0;
 				if($this->pageData != null)
 				{
 					// uses the single page if there is none in the db
@@ -152,7 +153,7 @@ class templateEngine
 					if($this->pageData != null)
 					{
 						// just here for default
-						$file = "/index.php";
+						$file = "/category.php";
 					}
 					else
 					{
@@ -174,10 +175,10 @@ class templateEngine
 						
 					}
 					// need some error checking for null pagedata
-					if($this->pageData == null)
+					if($this->pageData != null)
 					{
 						// just here for default
-						$file = "/index.php";
+						$file = "/tag.php";
 					}
 					else
 					{
@@ -351,7 +352,22 @@ class templateEngine
 	
 	public function getPostURL()
 	{
-		return sprintf("%s%s%s", V_URL, V_HTTPBASE, $this->pageData[$this->arrayPosition]["URI"])
+		if(!V_HTACCESS)
+		{
+			$return = sprintf("%s%s%s%s", V_URL, V_HTTPBASE, "index.php", $this->pageData[$this->arrayPosition]["URI"]);
+		}
+		else
+		{
+			$tmp = V_HTTPBASE;
+			$len = strlen($tmp);
+			if($tmp[$len-1] == "/")
+			{
+				$tmp = substr($tmp, 0, -1);
+			}
+			$return = sprintf("%s%s%s", V_URL, $tmp, $this->pageData[$this->arrayPosition]["URI"]);
+		}
+		
+		return $return;
 	}
 	
 	public function getHtmlTitle()
@@ -368,9 +384,13 @@ class templateEngine
 	 */
 	public function getPostBody()
 	{
-		return $this->pageData[$this->arrayPosition]["PostData"];
+		return stripslashes($this->pageData[$this->arrayPosition]["PostData"]);
 	}
 	
+	public function getPostBodyHTML()
+	{
+		return html_entity_decode(stripslashes($this->pageData[$this->arrayPosition]["PostData"]));
+	}
 	/**
 	 * getPostAuthor function.
 	 * 

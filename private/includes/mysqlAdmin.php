@@ -142,15 +142,18 @@ class databaseAdmin extends database
 	
 	public function processPostCategories($id, $catArr)
 	{
-		foreach($catArr as $key)
+		if($catArr != null or !empty($catArr))
 		{
-			$query = sprintf(
-			"INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", 
-			parent::$this->tablePrefix, 
-			mysql_real_escape_string($id, parent::$this->dbConn), 
-			mysql_real_escape_string($key, parent::$this->dbConn));
-			
-			$result = mysql_query($query, parent::$this->dbConn);
+			foreach($catArr as $key)
+			{
+				$query = sprintf(
+				"INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", 
+				parent::$this->tablePrefix, 
+				mysql_real_escape_string($id, parent::$this->dbConn), 
+				mysql_real_escape_string($key, parent::$this->dbConn));
+				
+				$result = mysql_query($query, parent::$this->dbConn);
+			}
 		}
 	}
 	
