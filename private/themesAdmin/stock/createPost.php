@@ -6,7 +6,7 @@
 	</head>
 	
 	<body>
-		<div id="center">
+		<div class="centerCreatePost">
 			<form name="createPost" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
 				Post Title: (We create a URI based off this)<br>
 				<input name="postTitle" type="text" value="<?php echo $this->templateEngine->postTitleID(); ?>"><br>

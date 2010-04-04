@@ -195,7 +195,8 @@ class databaseAdmin extends database
 	
 	public function deletePost($id)
 	{
-		
+		$query = sprintf("DELETE FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		return mysql_query($query, parent::$this->dbConn);
 	}
 	
 	public function checkDuplicateURI($type, $uri, $id = null)
@@ -497,6 +498,12 @@ class databaseAdmin extends database
 		}
 		
 		return $result;
+	}
+	
+	public function removePage($id)
+	{
+		$query = sprintf("DELETE FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		return mysql_query($query, parent::$this->dbConn);
 	}
 
 

@@ -102,7 +102,7 @@ class feedstockAdmin
 				echo "post Add";
 				$this->addPost();
 				break;
-			case "postRemove":
+			case "postsRemove":
 				echo "post Remove";
 				$this->removePost();
 				break;
@@ -203,7 +203,16 @@ class feedstockAdmin
 	
 	private function removePost()
 	{
-	
+		$neededInfo = array("postsDelete");
+		
+		if($this->postManager->checkPostWithArray($neededInfo))
+		{
+			//print_r($this->postManager->getPostByName("postsDelete"));
+			foreach($this->postManager->getPostByName("postsDelete") as $key)
+			{
+				$this->dbAdmin->deletePost($key);
+			}
+		}
 	}
 	
 	private function addPage()
@@ -247,7 +256,15 @@ class feedstockAdmin
 	
 	private function removePage()
 	{
-	
+		$neededItems = array("pageDelete");
+		
+		if($this->postManager->checkPostWithArray($neededItems))
+		{
+			foreach($this->postManager->getPostByName("pageDelete") as $key)
+			{
+				$this->dbAdmin->removePage($key);
+			}
+		}
 	}
 	
 	private function addCategory()
