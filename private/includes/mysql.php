@@ -77,12 +77,12 @@ class database
 		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
 			$this->queries++;
 		}
 		else
 		{
-			$query = sprintf("SELECT * FROM %sposts order by date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
 			$this->queries++;
 		}
 		

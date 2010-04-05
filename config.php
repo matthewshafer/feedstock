@@ -42,19 +42,24 @@ define("V_CACHE", false);
 // This is in seconds. Should set to something like 1400.  Currently set low to help with testing.
 define("F_EXPIRECACHETIME", 1);
 
+
 /* Cookie Settings */
 define("F_COOKIENAME", "FeedStock");
 
+
 /* Password Settings */
 define("F_PSALT", "ChangeThisToSomething");
+
 
 /* Admin Settings */
 define("F_ADMINBASE", V_HTTPBASE . "admin/");
 define("F_ADMINHTACCESS", false);
 
+
 /* Other Configs.  You probably don't need to change these */
 define("V_BASELOC", dirname(__FILE__));
 setlocale(LC_ALL, 'en_US.UTF8');
+
 
 // Error reporting, we want it on for testing
 ini_set('display_errors',1); 

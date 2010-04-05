@@ -169,7 +169,9 @@ class templateEngineAdmin
 		
 		if($type == "post")
 		{
-			$tmpArr = $this->db->getPostList($limit, $offset);
+			//$tmpArr = $this->db->getPostList($limit, $offset);
+			// this one is from the normal database class.  It get's us things like author
+			$tmpArr = $this->db->getPosts($offset, true);
 		}
 		else
 		{

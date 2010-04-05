@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-
-<html>
-	<head>
-	
-	</head>
-	
-	<body>
+<?php require_once("header.php"); ?>
 		<div id="links">
 			<a href="./">Index</a>
 			<a href="./index.php/posts">Posts</a>
@@ -21,6 +14,5 @@
 			Use the links above to do stuff.
 			I'll make this prettier and actually do some stuff in the future.
 		</div>
-	</body>
-</html>
+<?php require_once("footer.php"); ?>
 

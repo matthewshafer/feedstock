@@ -24,6 +24,7 @@ class templateEngine
 		// we need to check if at least an index.php exists for the theme
 		if(!$this->themeFileIsValid("index.php"))
 		{
+			// really need to fix this. It'll probably happen when I refactor the template engine
 			die("no valid theme file found. You have no index.php");
 		}
 	}

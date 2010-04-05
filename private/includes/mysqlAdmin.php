@@ -88,102 +88,140 @@ class databaseAdmin extends database
 		return $result;
 	}
 	
-	public function processTags($id, $tagArray)
+	public function deletePost($id)
 	{
-		$tmpArr = array();
-		
-		foreach($tagArray as $key)
-		{
-			// changed Name to URIName.  Test it
-			$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='1' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
-			
-			$result = mysql_query($query, parent::$this->dbConn);
-			
-			$arr = mysql_fetch_assoc($result);
-			
-			//echo "<br>";
-			//print_r($arr);
-			
-			
-			if(is_null($arr["PrimaryKey"]))
-			{
-				// add to db
-				$query2 = sprintf(
-				"INSERT INTO %scatstags (Name, URIName, Type) VALUES('%s', '%s', '%d')",
-				parent::$this->tablePrefix, 
-				mysql_real_escape_string($key["Title"], parent::$this->dbConn), 
-				mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn), 
-				1);
-				
-				$result4 = mysql_query($query2, parent::$this->dbConn);
-				
-				$query3 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' AND Type='1' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
-				$result2 = mysql_query($query3, parent::$this->dbConn);
-				$ttttttmp = mysql_fetch_assoc($result2);
-				
-				array_push($tmpArr, $ttttttmp["PrimaryKey"]);
-				
-			}
-			else
-			{
-				array_push($tmpArr, $arr["PrimaryKey"]);
-			}
-		}
-		
-		print_r($tmpArr);
-		
-		
-		for($i = 0; $i < count($tmpArr); $i++)
-		{
-			$query = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn), $tmpArr[$i]);
-			$result = mysql_query($query, parent::$this->dbConn);
-		}
+		$query = sprintf("DELETE FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		return mysql_query($query, parent::$this->dbConn);
 	}
 	
-	public function processPostCategories($id, $catArr)
-	{
-		if($catArr != null or !empty($catArr))
-		{
-			foreach($catArr as $key)
-			{
-				$query = sprintf(
-				"INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", 
-				parent::$this->tablePrefix, 
-				mysql_real_escape_string($id, parent::$this->dbConn), 
-				mysql_real_escape_string($key, parent::$this->dbConn));
-				
-				$result = mysql_query($query, parent::$this->dbConn);
-			}
-		}
-	}
 	
-	public function unlinkPostCatsAndTags($id)
+	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $id = null)
 	{
-		// clearing out the current tags the post has since we are re-creating them.
-		echo $id;
-		$query = sprintf("DELETE FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
-		$result = mysql_query($query, parent::$this->dbConn);
-	}
-	
-	public function addCategory($name, $niceTitle)
-	{
-		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='0' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($niceTitle, parent::$this->dbConn));
-		//echo $query;
-		$result = mysql_query($query, parent::$this->dbConn);
-		$arr = mysql_fetch_assoc($result);
+		$query = null;
+		$result = false;
 		
-		if(is_null($arr["PrimaryKey"]))
+		if($id == null)
 		{
-			$query2 = sprintf(
-			"INSERT INTO %scatstags (Name, URIName, Type) VALUES('%s', '%s', '%d')", 
+			if($corral == null)
+			{
+				$corral = -1;
+			}
+			
+			$query = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", 
 			parent::$this->tablePrefix, 
-			mysql_real_escape_string($name, parent::$this->dbConn), 
+			mysql_real_escape_string($title, parent::$this->dbConn), 
 			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
-			0);
-			echo $query2;
-			$result2 = mysql_query($query2, parent::$this->dbConn);
+			mysql_real_escape_string($uri, parent::$this->dbConn), 
+			mysql_real_escape_string($data, parent::$this->dbConn), 
+			mysql_real_escape_string($author, parent::$this->dbConn), 
+			mysql_real_escape_string($date, parent::$this->dbConn), 
+			mysql_real_escape_string($draft, parent::$this->dbConn), 
+			mysql_real_escape_string($corral, parent::$this->dbConn)
+			);
 		}
+		else
+		{
+			if($corral == null)
+			{
+				$corral = -1;
+			}
+			// updating a post
+			$query = sprintf("UPDATE %spages SET Title='%s', NiceTitle='%s', URI='%s', PageData='%s', Author='%s', Draft='%s', Corral='%s' WHERE PrimaryKey='%s'",
+			parent::$this->tablePrefix,
+			mysql_real_escape_string($title, parent::$this->dbConn), 
+			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
+			mysql_real_escape_string($uri, parent::$this->dbConn), 
+			mysql_real_escape_string($data, parent::$this->dbConn), 
+			mysql_real_escape_string($author, parent::$this->dbConn), 
+			mysql_real_escape_string($draft, parent::$this->dbConn), 
+			mysql_real_escape_string($corral, parent::$this->dbConn), 
+			mysql_real_escape_string($id, parent::$this->dbConn));
+			//echo $query;
+		}
+		
+		if($query != null)
+		{
+			$result = mysql_query($query, parent::$this->dbConn);
+		}
+		
+		return $result;
 	}
+	
+	public function removePage($id)
+	{
+		$query = sprintf("DELETE FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		return mysql_query($query, parent::$this->dbConn);
+	}
+	
+	
+	public function addUser($username, $displayName, $passHash, $salt, $permissions = 99, $canAdministrateUsers = 0)
+	{
+		$query = sprintf(
+		"INSERT INTO %susers (loginName, displayName, PasswordHash, Salt, Permissions, CanAdminUsers) VALUES('%s', '%s', '%s', '%s', '%s', '%s')", 
+		parent::$this->tablePrefix, 
+		mysql_real_escape_string($username, parent::$this->dbConn), 
+		mysql_real_escape_string($displayName, parent::$this->dbConn), 
+		mysql_real_escape_string($passHash, parent::$this->dbConn), 
+		mysql_real_escape_string($salt, parent::$this->dbConn), 
+		mysql_real_escape_string($permissions, parent::$this->dbConn), 
+		mysql_real_escape_string($canAdministrateUsers, parent::$this->dbConn)
+		);
+		
+		
+		return mysql_query($query, parent::$this->dbConn);
+	}
+	
+	
+	public function removeUser($userRemoveID, $currUserID)
+	{
+		// need to make sure the user being removed allowed to do this
+		// so pretty much make sure we are not removing ourselves, see if we can administrate users, and lastly make sure the user has a lower rank than us
+		$query = sprintf("SELECT * FROM %susers WHERE id='%s'", parent::$this->tablePrefix, mysql_real_escape_string($currUserID, parent::$this->dbConn));
+		
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		$temp = mysql_fetch_assoc($result);
+		
+		$query2 = sprintf("SELECT * FROM %susers WHERE id='%s'", parent::$this->tablePrefix, mysql_real_escape_string($userRemoveID, parent::$this->dbConn));
+		
+		$result2 = mysql_query($query2, parent::$this->dbConn);
+		
+		$temp2 = mysql_fetch_assoc($result2);
+		
+		$return = false;
+		
+		if(isset($temp["Permissions"], $temp["CanAdminUsers"], $temp2["Permissions"]))
+		{
+			if($temp["Permissions"] > $temp2["Permissions"] and $temp["CanAdminUsers"])
+			{
+				// I could probably grab the data from $temp2 as to the user being removed and use that over $userRemoveID
+				$query3 = sprintf("DELETE FROM %susers WHERE id='%s'", parent::$this->tablePrefix, mysql_real_escape_string($userRemoveID, parent::$this->dbConn));
+				
+				$result3 = mysql_query($query3, parent::$this->dbConn);
+				
+				$return = true;
+			}
+		}
+		
+		return $return;
+	}
+	
+	public function getUserByUserName($username)
+	{
+		$query = sprintf("SELECT * FROM %susers WHERE loginName='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($username, parent::$this->dbConn));
+		
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		$return = array();
+		
+		//while($temp = mysql_fetch_assoc($result))
+		//{
+			//array_push($return, $temp);
+		//}
+		
+		return mysql_fetch_assoc($result);
+	}
+	
 	
 	public function getPostIDNiceCheckedTitle($nice)
 	{
@@ -191,12 +229,6 @@ class databaseAdmin extends database
 		$arr = mysql_fetch_assoc(mysql_query($query, parent::$this->dbConn));
 		
 		return $arr["PrimaryKey"];
-	}
-	
-	public function deletePost($id)
-	{
-		$query = sprintf("DELETE FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
-		return mysql_query($query, parent::$this->dbConn);
 	}
 	
 	public function checkDuplicateURI($type, $uri, $id = null)
@@ -313,76 +345,6 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
-	public function getUserByUserName($username)
-	{
-		$query = sprintf("SELECT * FROM %susers WHERE loginName='%s' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($username, parent::$this->dbConn));
-		
-		$result = mysql_query($query, parent::$this->dbConn);
-		
-		$return = array();
-		
-		//while($temp = mysql_fetch_assoc($result))
-		//{
-			//array_push($return, $temp);
-		//}
-		
-		return mysql_fetch_assoc($result);
-	}
-	
-	public function addUser($username, $displayName, $passHash, $salt, $permissions = 99, $canAdministrateUsers = 0)
-	{
-		$query = sprintf(
-		"INSERT INTO %susers (loginName, displayName, PasswordHash, Salt, Permissions, CanAdminUsers) VALUES('%s', '%s', '%s', '%s', '%s', '%s')", 
-		parent::$this->tablePrefix, 
-		mysql_real_escape_string($username, parent::$this->dbConn), 
-		mysql_real_escape_string($displayName, parent::$this->dbConn), 
-		mysql_real_escape_string($passHash, parent::$this->dbConn), 
-		mysql_real_escape_string($salt, parent::$this->dbConn), 
-		mysql_real_escape_string($permissions, parent::$this->dbConn), 
-		mysql_real_escape_string($canAdministrateUsers, parent::$this->dbConn)
-		);
-		
-		
-		return mysql_query($query, parent::$this->dbConn);
-	}
-	
-	
-	public function removeUser($userRemoveID, $currUserID)
-	{
-		// need to make sure the user being removed allowed to do this
-		// so pretty much make sure we are not removing ourselves, see if we can administrate users, and lastly make sure the user has a lower rank than us
-		$query = sprintf("SELECT * FROM %susers WHERE id='%s'", parent::$this->tablePrefix, mysql_real_escape_string($currUserID, parent::$this->dbConn));
-		
-		$result = mysql_query($query, parent::$this->dbConn);
-		
-		$temp = mysql_fetch_assoc($result);
-		
-		$query2 = sprintf("SELECT * FROM %susers WHERE id='%s'", parent::$this->tablePrefix, mysql_real_escape_string($userRemoveID, parent::$this->dbConn));
-		
-		$result2 = mysql_query($query2, parent::$this->dbConn);
-		
-		$temp2 = mysql_fetch_assoc($result2);
-		
-		$return = false;
-		
-		if(isset($temp["Permissions"], $temp["CanAdminUsers"], $temp2["Permissions"]))
-		{
-			if($temp["Permissions"] > $temp2["Permissions"] and $temp["CanAdminUsers"])
-			{
-				// I could probably grab the data from $temp2 as to the user being removed and use that over $userRemoveID
-				$query3 = sprintf("DELETE FROM %susers WHERE id='%s'", parent::$this->tablePrefix, mysql_real_escape_string($userRemoveID, parent::$this->dbConn));
-				
-				$result3 = mysql_query($query3, parent::$this->dbConn);
-				
-				$return = true;
-			}
-		}
-		
-		return $return;
-	}
-	
-	// all these next guys need to get the comment/tag/corral data also and that needs to be pushed into the assoc array.
-	// I'll get this done over the weekend since its almost 2am and im pretty sleepy.
 	
 	/**
 	 * getPostDataByID function.
@@ -474,62 +436,29 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
-	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $id = null)
-	{
-		$query = null;
-		$result = false;
-		
-		if($id == null)
-		{
-			if($corral == null)
-			{
-				$corral = -1;
-			}
-			
-			$query = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", 
-			parent::$this->tablePrefix, 
-			mysql_real_escape_string($title, parent::$this->dbConn), 
-			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
-			mysql_real_escape_string($uri, parent::$this->dbConn), 
-			mysql_real_escape_string($data, parent::$this->dbConn), 
-			mysql_real_escape_string($author, parent::$this->dbConn), 
-			mysql_real_escape_string($date, parent::$this->dbConn), 
-			mysql_real_escape_string($draft, parent::$this->dbConn), 
-			mysql_real_escape_string($corral, parent::$this->dbConn)
-			);
-		}
-		else
-		{
-			if($corral == null)
-			{
-				$corral = -1;
-			}
-			// updating a post
-			$query = sprintf("UPDATE %spages SET Title='%s', NiceTitle='%s', URI='%s', PageData='%s', Author='%s', Draft='%s', Corral='%s' WHERE PrimaryKey='%s'",
-			parent::$this->tablePrefix,
-			mysql_real_escape_string($title, parent::$this->dbConn), 
-			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
-			mysql_real_escape_string($uri, parent::$this->dbConn), 
-			mysql_real_escape_string($data, parent::$this->dbConn), 
-			mysql_real_escape_string($author, parent::$this->dbConn), 
-			mysql_real_escape_string($draft, parent::$this->dbConn), 
-			mysql_real_escape_string($corral, parent::$this->dbConn), 
-			mysql_real_escape_string($id, parent::$this->dbConn));
-			//echo $query;
-		}
-		
-		if($query != null)
-		{
-			$result = mysql_query($query, parent::$this->dbConn);
-		}
-		
-		return $result;
-	}
 	
-	public function removePage($id)
+	// all these next guys need to get the comment/tag/corral data also and that needs to be pushed into the assoc array.
+	// I'll get this done over the weekend since its almost 2am and im pretty sleepy.
+	
+	
+	public function addCategory($name, $niceTitle)
 	{
-		$query = sprintf("DELETE FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
-		return mysql_query($query, parent::$this->dbConn);
+		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='0' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($niceTitle, parent::$this->dbConn));
+		//echo $query;
+		$result = mysql_query($query, parent::$this->dbConn);
+		$arr = mysql_fetch_assoc($result);
+		
+		if(is_null($arr["PrimaryKey"]))
+		{
+			$query2 = sprintf(
+			"INSERT INTO %scatstags (Name, URIName, Type) VALUES('%s', '%s', '%d')", 
+			parent::$this->tablePrefix, 
+			mysql_real_escape_string($name, parent::$this->dbConn), 
+			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
+			0);
+			echo $query2;
+			$result2 = mysql_query($query2, parent::$this->dbConn);
+		}
 	}
 	
 	public function getSinglePostCategories($id)
@@ -574,6 +503,86 @@ class databaseAdmin extends database
 		}
 		
 		return $tmpArr;
+	}
+	
+	public function processPostCategories($id, $catArr)
+	{
+		if($catArr != null or !empty($catArr))
+		{
+			foreach($catArr as $key)
+			{
+				$query = sprintf(
+				"INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", 
+				parent::$this->tablePrefix, 
+				mysql_real_escape_string($id, parent::$this->dbConn), 
+				mysql_real_escape_string($key, parent::$this->dbConn));
+				
+				$result = mysql_query($query, parent::$this->dbConn);
+			}
+		}
+	}
+	
+	public function unlinkPostCatsAndTags($id)
+	{
+		// clearing out the current tags the post has since we are re-creating them.
+		//echo $id;
+		$query = sprintf("DELETE FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		$result = mysql_query($query, parent::$this->dbConn);
+	}
+	
+	
+	public function processTags($id, $tagArray)
+	{
+		$tmpArr = array();
+		
+		foreach($tagArray as $key)
+		{
+			// changed Name to URIName.  Test it
+			$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='1' LIMIT 1", parent::$this->tablePrefix, mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
+			
+			$result = mysql_query($query, parent::$this->dbConn);
+			
+			$arr = mysql_fetch_assoc($result);
+			
+			//echo "<br>";
+			//print_r($arr);
+			
+			if(is_null($arr["PrimaryKey"]))
+			{
+				// add to db
+				$query2 = sprintf(
+				"INSERT INTO %scatstags (Name, URIName, Type) VALUES('%s', '%s', '%d')",
+				parent::$this->tablePrefix, 
+				mysql_real_escape_string($key["Title"], parent::$this->dbConn), 
+				mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn), 
+				1);
+				
+				$result4 = mysql_query($query2, parent::$this->dbConn);
+				
+				$query3 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' AND Type='1' LIMIT 1", 
+				parent::$this->tablePrefix, 
+				mysql_real_escape_string($key["NiceTitle"], parent::$this->dbConn));
+				
+				$result2 = mysql_query($query3, parent::$this->dbConn);
+				$ttttttmp = mysql_fetch_assoc($result2);
+				
+				array_push($tmpArr, $ttttttmp["PrimaryKey"]);
+				
+			}
+			else
+			{
+				array_push($tmpArr, $arr["PrimaryKey"]);
+			}
+		}
+		
+		print_r($tmpArr);
+		
+		
+		for($i = 0; $i < count($tmpArr); $i++)
+		{
+			$query = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn), $tmpArr[$i]);
+			$result = mysql_query($query, parent::$this->dbConn);
+		}
 	}
 
 

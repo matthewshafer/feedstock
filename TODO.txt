@@ -1,4 +1,4 @@
-Things to do in no preticular order
+Things to do in no perticular order
 
 Cacher
 	finish file checking
@@ -6,8 +6,7 @@ Cacher
 	check if writeable
 	
 Database
-	everything
-	check for drafts
+	Just some MISC stuff is left
 	
 Visions
 	--
