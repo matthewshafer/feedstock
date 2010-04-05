@@ -66,13 +66,13 @@ class databaseAdmin extends database
 		{
 			// update the post with this ID
 			$query = sprintf(
-			"UPDATE %sposts SET Title='%s', URI='%s', PostData='%s', Author='%s', Date='%s', Draft='%s' WHERE id='%s'", 
+			"UPDATE %sposts SET Title='%s', NiceTitle='%s', URI='%s', PostData='%s', Author='%s', Draft='%s' WHERE PrimaryKey='%s'", 
 			parent::$this->tablePrefix,
 			mysql_real_escape_string($title, parent::$this->dbConn), 
+			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
 			mysql_real_escape_string($uri, parent::$this->dbConn), 
 			mysql_real_escape_string($data, parent::$this->dbConn), 
 			mysql_real_escape_string($author, parent::$this->dbConn), 
-			mysql_real_escape_string($date, parent::$this->dbConn), 
 			mysql_real_escape_string($draft, parent::$this->dbConn), 
 			mysql_real_escape_string($id, parent::$this->dbConn)
 			);
@@ -217,15 +217,18 @@ class databaseAdmin extends database
 		{
 			$result = mysql_query($query, parent::$this->dbConn);
 			
-			$result2 = mysql_fetch_assoc($result);
+			$tmpArr = mysql_fetch_assoc($result);
 			
-			if(is_null($result2["PrimaryKey"]))
+			//print_r($tmpArr);
+			
+			if(is_null($tmpArr["PrimaryKey"]))
 			{
 				$return = true;
 			}
-			else if($id != null and $result["PrimaryKey"] == $id)
+			else if($id != null and $tmpArr["PrimaryKey"] == $id)
 			{
 				$return = true;
+				//echo "hit";
 			}
 		}
 		
@@ -250,13 +253,13 @@ class databaseAdmin extends database
 		{
 			$result = mysql_query($query, parent::$this->dbConn);
 			
-			$result2 = mysql_fetch_assoc($result);
+			$tmpArr = mysql_fetch_assoc($result);
 			
-			if(!isset($result2["PrimaryKey"]))
+			if(is_null($tmpArr["PrimaryKey"]))
 			{
 				$return = true;
 			}
-			else if($id != null and $result["PrimaryKey"] == $id)
+			else if($id != null and $tmpArr["PrimaryKey"] == $id)
 			{
 				$return = true;
 			}
@@ -390,7 +393,11 @@ class databaseAdmin extends database
 	 */
 	public function getPostDataByID($id)
 	{
+		$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
 		
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		return mysql_fetch_assoc($result);
 	}
 	
 	/**
@@ -402,7 +409,11 @@ class databaseAdmin extends database
 	 */
 	public function getPageDataByID($id)
 	{
+		$query = sprintf("SELECT * FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
 		
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		return mysql_fetch_assoc($result);
 	}
 	
 	/**
@@ -489,7 +500,22 @@ class databaseAdmin extends database
 		}
 		else
 		{
+			if($corral == null)
+			{
+				$corral = -1;
+			}
 			// updating a post
+			$query = sprintf("UPDATE %spages SET Title='%s', NiceTitle='%s', URI='%s', PageData='%s', Author='%s', Draft='%s', Corral='%s' WHERE PrimaryKey='%s'",
+			parent::$this->tablePrefix,
+			mysql_real_escape_string($title, parent::$this->dbConn), 
+			mysql_real_escape_string($niceTitle, parent::$this->dbConn), 
+			mysql_real_escape_string($uri, parent::$this->dbConn), 
+			mysql_real_escape_string($data, parent::$this->dbConn), 
+			mysql_real_escape_string($author, parent::$this->dbConn), 
+			mysql_real_escape_string($draft, parent::$this->dbConn), 
+			mysql_real_escape_string($corral, parent::$this->dbConn), 
+			mysql_real_escape_string($id, parent::$this->dbConn));
+			//echo $query;
 		}
 		
 		if($query != null)
@@ -504,6 +530,50 @@ class databaseAdmin extends database
 	{
 		$query = sprintf("DELETE FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
 		return mysql_query($query, parent::$this->dbConn);
+	}
+	
+	public function getSinglePostCategories($id)
+	{
+		$tmpArr = array();
+		$query = sprintf("SELECT * FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		while($tmp = mysql_fetch_assoc($result))
+		{
+			array_push($tmpArr, $tmp);
+		}
+		
+		return $tmpArr;
+	}
+	
+	public function getSinglePostTags($id)
+	{
+		$tmpArr = array();
+		$query = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn));
+		$result = mysql_query($query, parent::$this->dbConn);
+		
+		while($tmp = mysql_fetch_assoc($result))
+		{
+			array_push($tmpArr, $tmp["CatTagID"]);
+		}
+		
+		//print_r($tmpArr);
+		$queryStr = implode(", ", $tmpArr);
+		$tmpArr = array();
+		
+		if($queryStr != null)
+		{
+			$query = sprintf("SELECT Name FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", parent::$this->tablePrefix, mysql_real_escape_string($queryStr, parent::$this->dbConn));
+			//echo $query;
+			$result = mysql_query($query, parent::$this->dbConn);
+			
+			while($tmp = mysql_fetch_assoc($result))
+			{
+				array_push($tmpArr, $tmp["Name"]);
+			}
+		}
+		
+		return $tmpArr;
 	}
 
 

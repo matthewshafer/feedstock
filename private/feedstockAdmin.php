@@ -144,12 +144,26 @@ class feedstockAdmin
 			//print_r($this->postManager->getPostByName("postCategories"));
 			if($this->postManager->getPostByName("id") != -1)
 			{
+				$id = $this->postManager->getPostByName("id");
 				// update
 				
+				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $id);
+				$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), $id);
 				
-				//$this->dbAdmin->addPost($this->postManager->getPostByName("postTitle"), $this->postManager->getPostByName("postorpagedata"), $niceTitle, $uri, $author, $date, $category, $tags, $draft, $id);
+				$this->dbAdmin->addPost(
+				$this->postManager->getPostByName("postTitle"), 
+				$this->postManager->getPostByName("postorpagedata"), 
+				$niceCheckedTitle, 
+				$goodUri, 
+				$this->cookieMonster->getUserID(), 
+				null, 
+				$this->postManager->getPostByName("draft"), 
+				$id);
+				
 				// only need to unlink updates
-				//$this->dbAdmin->unlinkPostCatsAndTags($id);
+				$this->dbAdmin->unlinkPostCatsAndTags($id);
+				$this->dbAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
+				$this->dbAdmin->processTags($id, $this->tagsToArray());
 			}
 			else
 			{
@@ -224,6 +238,31 @@ class feedstockAdmin
 			if($this->postManager->getPostByName("id") != -1)
 			{
 				//update
+				$id = $this->postManager->getPostByName("id");
+				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("page", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")), $id);
+				
+				if($this->postManager->getPostByName("pageUri") == "")
+				{
+					$nonCheckedUri = sprintf("/%s", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")));
+				}
+				else
+				{	
+					$nonCheckedUri = $this->uriFriendlyCustomEntered($this->postManager->getPostByName("pageUri"));
+				}
+				$goodUri = $this->checkAndFixNiceUriCollision("page", $nonCheckedUri, $id);
+				
+				$this->dbAdmin->addPage(
+				$this->postManager->getPostByName("pageTitle"), 
+				$this->postManager->getPostByName("postorpagedata"), 
+				$niceCheckedTitle, 
+				$goodUri, 
+				$this->cookieMonster->getUserID(), 
+				null, 
+				$this->postManager->getPostByName("draft"),
+				null, 
+				$id
+				);
+				
 			}
 			else
 			{
@@ -236,7 +275,8 @@ class feedstockAdmin
 				}
 				else
 				{
-					$nonCheckedUri = $this->uriFriendlyTitle($this->postManager->getPostByName("pageUri"));
+					$nonCheckedUri = $this->uriFriendlyCustomEntered($this->postManager->getPostByName("pageUri"));
+					echo $nonCheckedUri;
 				}
 				$goodUri = $this->checkAndFixNiceUriCollision("page", $nonCheckedUri);
 				
@@ -300,7 +340,7 @@ class feedstockAdmin
 		$moreThanOne = $this->dbAdmin->checkDuplicateTitle($type, $niceTitle, $id);
 		
 		
-		while($moreThanOne == false)
+		while(!$moreThanOne)
 		{
 			$tmp = $niceTitle . "-" . ($i + 1);
 			//echo $tmp;
@@ -355,6 +395,29 @@ class feedstockAdmin
 			$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
 			$clean = strtolower(trim($clean, '-'));
 			$clean = preg_replace("/[\/_|+ -]+/", '-', $clean);
+			
+			$return = $clean;
+		}
+		else
+		{
+			// error, we should do something
+		}
+		
+		return $return;
+	}
+	
+		private function uriFriendlyCustomEntered($title)
+	{
+		$return = null;
+		if($title != null)
+		{
+			//echo $title;
+			// slightly modified from http://cubiq.org/the-perfect-php-clean-url-generator/12
+			$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $title);
+			$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+			$clean = strtolower(trim($clean, '-'));
+			// this is changed so we dont strip out / like test/what
+			$clean = preg_replace("/\s+/", '-', $clean);
 			
 			$return = $clean;
 		}

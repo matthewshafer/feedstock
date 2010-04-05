@@ -111,7 +111,7 @@ class templateEngineAdmin
 				{
 					$this->theData = $this->db->getPostDataByID(intval($this->router->getUriPosition(2)));
 				}
-				$this->theCategoryData = $this->getCategoriesList();
+				$this->theCategoryData = $this->getCategoriesList(intval($this->router->getUriPosition(2)));
 				break;
 			case "page":
 				$return = "/createPage.php";
@@ -189,9 +189,37 @@ class templateEngineAdmin
 		return $tmpArr;
 	}
 	
-	private function getCategoriesList()
+	private function getCategoriesList($id = null)
 	{
-		return $this->db->listCategoriesOrTags(0);
+		$tmpArr = $this->db->listCategoriesOrTags(0);
+		$tmpArr3 = array();
+		
+		if($id != null)
+		{
+			$tmpArr2 = $this->db->getSinglePostCategories($id);
+			
+			foreach($tmpArr as $key)
+			{
+				$found = false;
+				
+				foreach($tmpArr2 as $key2)
+				{
+					if($key2["CatTagID"] == $key["PrimaryKey"])
+					{
+						$found = true;
+					}
+				}
+				
+				$key["Checked"] = ($found == true ? 1 : 0);
+				
+				array_push($tmpArr3, $key);
+			}
+			
+			//print_r($tmpArr3);
+			$tmpArr = $tmpArr3;
+		}
+		
+		return $tmpArr;
 	}
 	
 	public function getTheData()
@@ -206,12 +234,28 @@ class templateEngineAdmin
 	
 	public function postTitleID()
 	{
-		return "title";
+		if(isset($this->theData["Title"]))
+		{
+			$return = $this->theData["Title"];
+		}
+		else
+		{
+			$return = null;
+		}
+		return $return;
 	}
 	
 	public function postBodyID()
 	{
-		return "body";
+		if(isset($this->theData["PostData"]))
+		{
+			$return = $this->theData["PostData"];
+		}
+		else
+		{
+			$return = null;
+		}
+		return $return;
 	}
 	
 	public function postCategoriesID()
@@ -221,27 +265,81 @@ class templateEngineAdmin
 	
 	public function postTagsID()
 	{
-		return "tag1, tag2, tag3";
+		if($this->router->getUriPosition(2) != null)
+		{
+			$arr = $this->db->getSinglePostTags(intval($this->router->getUriPosition(2)));
+			$return = implode(", ", $arr);
+		}
+		else
+		{
+			$return = "";
+		}
+		return $return;
 	}
 	
 	public function postID()
 	{
-		return -1;
+		if(isset($this->theData["PrimaryKey"]))
+		{
+			$return = $this->theData["PrimaryKey"];
+		}
+		else
+		{
+			$return = -1;
+		}
+		return $return;
 	}
 	
 	public function pageTitleID()
 	{
-		return "title";
+		if(isset($this->theData["Title"]))
+		{
+			$return = $this->theData["Title"];
+		}
+		else
+		{
+			$return = null;
+		}
+		return $return;
+	}
+	
+	public function pageURI()
+	{
+		if(isset($this->theData["URI"]))
+		{
+			$return = $this->theData["URI"];
+		}
+		else
+		{
+			$return = null;
+		}
+		return $return;
 	}
 	
 	public function pageBodyID()
 	{
-		return "body";
+		if(isset($this->theData["PageData"]))
+		{
+			$return = $this->theData["PageData"];
+		}
+		else
+		{
+			$return = null;
+		}
+		return $return;
 	}
 	
 	public function pageID()
 	{
-		return -1;
+		if(isset($this->theData["PrimaryKey"]))
+		{
+			$return = $this->theData["PrimaryKey"];
+		}
+		else
+		{
+			$return = -1;
+		}
+		return $return;
 	}
 	
 	public function categoryTitleID()
@@ -252,6 +350,20 @@ class templateEngineAdmin
 	public function categoryID()
 	{
 		return -1;
+	}
+	
+	public function isDraft()
+	{
+		if(isset($this->theData["Draft"]))
+		{
+			$return = $this->theData["Draft"];
+		}
+		else
+		{
+			$return = 1;
+		}
+		
+		return $return;
 	}
 }
 ?>

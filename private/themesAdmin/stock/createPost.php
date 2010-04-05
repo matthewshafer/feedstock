@@ -18,15 +18,22 @@
 				
 				<?php foreach($this->templateEngine->getCategoryData() as $key)
 				{
-				echo '<input name="postCategories[]" type="checkbox" value="' . $key["PrimaryKey"] . '">' . $key["Name"] . '<br>' . "\n\t\t\t\t";
+					if(isset($key["Checked"]) and $key["Checked"] == 1)
+					{
+						echo '<input name="postCategories[]" type="checkbox" value="' . $key["PrimaryKey"] . '" checked>' . $key["Name"] . '<br>' . "\n\t\t\t\t";
+					}
+					else
+					{
+						echo '<input name="postCategories[]" type="checkbox" value="' . $key["PrimaryKey"] . '">' . $key["Name"] . '<br>' . "\n\t\t\t\t";
+					}
 				} 
 				echo "\n";
 				?>
 				Tags: (separate with a ,)<br>
 				<input name="postTags" type="text" value="<?php echo $this->templateEngine->postTagsID(); ?>"><br>
 				Draft: <br>
-				yes<input name="draft" type="radio" value="1" checked>
-				no<input name="draft" type="radio" value="0">
+				yes<input name="draft" type="radio" value="1" <?php echo $this->templateEngine->isDraft() == 1 ? "Checked" : ""; ?>>
+				no<input name="draft" type="radio" value="0" <?php echo $this->templateEngine->isDraft() == 0 ? "Checked" : ""; ?>>
 				<input name="type" type="hidden" value="postAdd">
 				<input name="id" type="hidden" value="<?php echo $this->templateEngine->postID(); ?>">
 				<br>

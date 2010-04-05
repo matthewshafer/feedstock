@@ -247,43 +247,44 @@ class database
 		}
 		
 		//echo "QueryStr: " . $queryStr;
-		
-		if($type == "tag")
+		if($queryStr != null)
 		{
-			$query = sprintf("SELECT * FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
-			$this->queries++;
-		}
-		else
-		{
-			$query = sprintf("SELECT * FROM %scatstags WHERE Type='0' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
-			//echo $query;
-			$this->queries++;
-		}
-		
-		$result = mysql_query($query, $this->dbConn);
-		
-		while($tmp = mysql_fetch_assoc($result))
-		{
-			$tmpArr3[$tmp["PrimaryKey"]] = $tmp;
-		}
-		
-		//print_r($tmpArr3);
-		//print_r($tmpArr);
-		
-		while($tmp = each($tmpArr))
-		{
-			$srsTemp = array();
-			while($tmp2 = each($tmp["value"]))
+			if($type == "tag")
 			{
-				if(isset($tmpArr3[$tmp2["value"]]))
-				{
-					$srsTemp[$tmp2["key"]] = $tmpArr3[$tmp2["value"]];
-				}
+				$query = sprintf("SELECT * FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+				$this->queries++;
 			}
-			
-			$tmpArr[$tmp["key"]] = $srsTemp;
-		}
+			else
+			{
+				$query = sprintf("SELECT * FROM %scatstags WHERE Type='0' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+				//echo $query;
+				$this->queries++;
+			}
 		
+			$result = mysql_query($query, $this->dbConn);
+			
+			while($tmp = mysql_fetch_assoc($result))
+			{
+				$tmpArr3[$tmp["PrimaryKey"]] = $tmp;
+			}
+		
+			//print_r($tmpArr3);
+			//print_r($tmpArr);
+			
+			while($tmp = each($tmpArr))
+			{
+				$srsTemp = array();
+				while($tmp2 = each($tmp["value"]))
+				{
+					if(isset($tmpArr3[$tmp2["value"]]))
+					{
+						$srsTemp[$tmp2["key"]] = $tmpArr3[$tmp2["value"]];
+					}
+				}
+			
+				$tmpArr[$tmp["key"]] = $srsTemp;
+			}
+		}
 		//print_r($tmpArr);
 		return $tmpArr;
 	}
