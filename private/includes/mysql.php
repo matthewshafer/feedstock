@@ -152,6 +152,9 @@ class database
 	
 	public function getSinglePost($URI, $draft = false)
 	{
+		$authorArr = array();
+		
+		
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
@@ -169,6 +172,29 @@ class database
 		
 		while($temp = mysql_fetch_assoc($result))
 		{
+			if(isset($authorArr[$temp["Author"]]))
+			{
+				$temp["Author"] = $authorArr[$temp["Author"]];
+			}
+			else
+			{
+				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
+				$this->queries++;
+				$result2 = mysql_query($query, $this->dbConn);
+				$tmpArr = mysql_fetch_assoc($result2);
+				
+				if(isset($tmpArr["DisplayName"]))
+				{
+					$authorArr[$temp["Author"]] = $tmpArr["DisplayName"];
+					$temp["Author"] = $authorArr[$temp["Author"]];
+				}
+			}
+			
+			if(isset($temp["PostData"]))
+			{
+				$temp["PostData"] = stripslashes($temp["PostData"]);
+			}
+			
 			array_push($return, $temp);
 		}
 		

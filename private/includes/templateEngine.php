@@ -77,46 +77,33 @@ class templateEngine
 		$return = V_BASELOC . "/private/themes/" . V_THEME;
 		$file = null;
 		
-		if(strtolower($this->router->pageType()) == "" || strtolower($this->router->pageType()) == "page")
+		if(strtolower($this->router->pageType()) == "")
+		{	
+			$file = "/index.php";
+		}
+		else if(strtolower($this->router->pageType()) == "page")
 		{
 			$offset = $this->router->getPageOffset() * 10;
 			$this->pageData = $this->database->getPosts($offset);
-			//print_r($this->database->getPostCategory(2));
-			// this is just here to debug a function
-			/*
-			$temp1234 = $this->database->getPostCategory(2);
-			foreach($temp1234 as $key)
-			{
-				//print_r($key);
-				echo $this->generateSubCategoryURI($key);
-			}
-			*/
-			
-			// need to move this so it gets called all the time
-			//$this->getCategoriesForPageData();
-			
-			$file = "/index.php";
+			$file = "/page.php";
 		}
 		else
 		{
-			$temp = explode("/", V_POSTFORMAT);
-			//echo $this->router->uriLength() . "<br>";
-			//echo count($temp). "<br>";
+			
 			if($this->checkUriPost())
 			{
-				//echo "blah";
 				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
 				$this->arrayPosition = 0;
 				if($this->pageData != null)
 				{
 					// uses the single page if there is none in the db
-					if($this->pageData[0]["themeFile"] == null)
+					if($this->pageData[$this->arrayPosition]["themeFile"] == null)
 					{
 						$file = "/single.php";
 					}
 					else
 					{
-						$file = "/" . $this->pageData[0]["themeFile"];
+						$file = "/" . $this->pageData[$this->arrayPosition]["themeFile"];
 					}
 				}
 				else
@@ -233,7 +220,7 @@ class templateEngine
 		return $return;
 	}
 	
-	// dont use %CATEGORY% yet it doesnt work! its just drycoded
+	// dont use %CATEGORY% yet it doesnt work!
 	private function checkUriPost()
 	{
 		$temp = explode("/", V_POSTFORMAT);
@@ -469,26 +456,6 @@ class templateEngine
 	public function getPostCatsFormatted()
 	{
 		$return = null;
-		/*
-		$array = explode(", ", $this->pageData[$this->arrayPosition]["Category"]);
-		foreach($array as $key)
-		{
-			if($key != null)
-			{
-				if(substr($key, (strlen($key)-1)) == ",")
-					$key = substr($key, 0, -1);
-				$return .= '<a href="' . V_URL . V_HTTPBASE;
-				if(!V_HTACCESS)
-				{
-					$return .= "index.php/";
-				}
-				$return .= 'category/' . $key . '">' . $key . '</a>, ';
-			}
-		}
-		$return = substr($return, 0, -2);
-		*/
-		//echo count($this->pageCategory[$this->arrayPosition]);
-		//print_r($this->pageCategory[$this->arrayPosition]);
 		if(isset($this->pageCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
 			foreach($this->pageCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
@@ -502,16 +469,11 @@ class templateEngine
 			
 				$tmp .= 'category/' .  $this->generateSubCategoryURI($key);
 			
-				$return .= sprintf('<a href="%s">%s</a>', $tmp, $key["Name"]);
+				$return .= sprintf('<a href="%s">%s</a>, ', $tmp, $key["Name"]);
 			}
-		
-			// need to test this out after pretty much rewriting the previous lines
-			//$return = substr($return, 0, -2);
+			
+			$return = substr($return, 0, -2);
 		}
-		
-		
-		
-		
 		return $return;
 	}
 	
@@ -634,6 +596,11 @@ class templateEngine
 			
 			$this->pageCategory = $this->database->getPostCategoryOrTag($tmpArr, "category");
 		}
+	}
+	
+	public function getPostsIndex()
+	{
+		$this->pageData = $this->database->getPosts(0);
 	}
 	
 	/**

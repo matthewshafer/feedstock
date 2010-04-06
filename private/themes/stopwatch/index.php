@@ -1,4 +1,5 @@
 <?php
+$this->templateEngine->getPostsIndex();
 $this->templateEngine->generateTags();
 $this->templateEngine->generateCategories();
 
