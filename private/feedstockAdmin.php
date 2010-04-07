@@ -202,7 +202,9 @@ class feedstockAdmin
 		
 		$tempArr2 = array();
 		
-		for($i = 0; $i < count($tempArr); $i++)
+		$tmpCt = count($tempArr);
+		
+		for($i = 0; $i < $tmpCt; $i++)
 		{
 			$tmp = array("Title" => $tempArr[$i], "NiceTitle" => $this->uriFriendlyTitle(trim($tempArr[$i])));
 			

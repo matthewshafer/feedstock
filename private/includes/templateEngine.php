@@ -15,6 +15,7 @@ class templateEngine
 	private $pageTag = null;
 	private $arrayPosition = -1;
 	private $errorText = null;
+	private $themeValidError = false;
 	
 	public function __construct($database, $router)
 	{
@@ -22,7 +23,7 @@ class templateEngine
 		$this->router = $router;
 		
 		// we need to check if at least an index.php exists for the theme
-		if(!$this->themeFileIsValid("index.php"))
+		if(!$this->themeFileIsValid("404.php"))
 		{
 			// really need to fix this. It'll probably happen when I refactor the template engine
 			die("no valid theme file found. You have no index.php");
@@ -93,18 +94,12 @@ class templateEngine
 			if($this->checkUriPost())
 			{
 				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
-				$this->arrayPosition = 0;
+				
+				
 				if($this->pageData != null)
 				{
-					// uses the single page if there is none in the db
-					if($this->pageData[$this->arrayPosition]["themeFile"] == null)
-					{
-						$file = "/single.php";
-					}
-					else
-					{
-						$file = "/" . $this->pageData[$this->arrayPosition]["themeFile"];
-					}
+					$this->arrayPosition = 0;
+					$file = $this->arrayCustomFile("single");
 				}
 				else
 				{
@@ -188,16 +183,8 @@ class templateEngine
 					// need some error checking for null pagedata
 					if($this->pageData != null)
 					{
-						// by default it uses page.php  that is if none is in the db for it to use
-						if($this->pageData[0]["themeFile"] == null)
-						{
-							$file = "/page.php";
-						}
-						else
-						{
-							// need to make sure this theme file is legit
-							$file = "/" . $this->pageData[0]["themeFile"];
-						}
+						$this->arrayPosition = 0;
+						$file = $this->arrayCustomFile("page");
 					}
 					else
 					{
@@ -212,11 +199,32 @@ class templateEngine
 		{
 			// we have some error which we need to figure out what to do.  for now we will just die
 			//die("Invalid theme file");
-			$file = "/404.php";
+			if($this->themeFileIsValid("404.php"))
+			{
+				$file = "/404.php";
+			}
+			else
+			{
+				$this->themeValidError = "Missing major components required for themes";
+			}
 		}
 		// we can provbably streamline this
 		$return .= $file;
 		//$this->getCategoriesForPageData();
+		return $return;
+	}
+	
+	private function arrayCustomFile($defaultFile)
+	{
+		if($this->pageData[$this->arrayPosition]["themeFile"] == null)
+		{
+			$return = sprintf("/%s.php", $defaultFile);
+		}
+		else
+		{
+			$return = sprintf("/%s.php", $this->pageData[$this->arrayPosition]["themeFile"]);
+		}
+		
 		return $return;
 	}
 	
@@ -241,7 +249,7 @@ class templateEngine
 						}
 						break;
 					case "%DAY%":
-						if(intval($this->router->getUriPosition($i + 1)) > 31 || intval($this->router->getUriPosition($i + 1)) < 11)
+						if(intval($this->router->getUriPosition($i + 1)) > 31 || intval($this->router->getUriPosition($i + 1)) < 1)
 						{
 							$isBad = true;
 						}
@@ -509,7 +517,7 @@ class templateEngine
 		}
 		else
 		{
-			if($return[strlen($return) - 1] == "/" and $URI[0] == "/")
+			if($return[strlen($return) - 1] == "/" && $URI[0] == "/")
 			{
 				$return = substr($return, 0, strlen($return) - 1);
 			}
@@ -568,7 +576,7 @@ class templateEngine
 	
 	public function generateTags()
 	{
-		if($this->pageData != null and $this->pageTag == null)
+		if($this->pageData != null && $this->pageTag == null)
 		{
 			$tmpArr = array();
 			
@@ -585,7 +593,7 @@ class templateEngine
 	
 	public function generateCategories()
 	{
-		if($this->pageData != null and $this->pageCategory == null)
+		if($this->pageData != null && $this->pageCategory == null)
 		{
 			$tmpArr = array();
 			
@@ -630,6 +638,25 @@ class templateEngine
 	public function getError()
 	{
 		return $this->errorText;
+	}
+	
+	public function themeError()
+	{
+		if($this->themeValidError == null)
+		{
+			$return = false;
+		}
+		else
+		{
+			$return = false;
+		}
+		
+		return $return;
+	}
+	
+	public function themeErrorText()
+	{
+		return $this->themeValidError;
 	}
 }
 ?>

@@ -45,7 +45,7 @@ class router
 	{
 		// figure out what happens when using htaccess
 		// if its null we are going to assume its /
-		if($this->base != "/" and $this->base != null)
+		if($this->base != "/" && $this->base != null)
 		{
 			$temp = explode($this->base, $this->uri);
 			$this->uri = $temp[1];

@@ -41,7 +41,7 @@ class feedstock
 		if($this->router->requestMethod() == "GET")
 		{
 		
-			if(V_CACHE and is_writable(V_BASELOC . "/private/cache"))
+			if(V_CACHE && is_writable(V_BASELOC . "/private/cache"))
 			{
 				// Should create the cacher first so that we can check if a file exists before we even create a database
 				// for example if the database goes down we can still serve up pages, until they "expire" which would give us

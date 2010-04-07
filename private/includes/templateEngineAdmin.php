@@ -367,5 +367,11 @@ class templateEngineAdmin
 		
 		return $return;
 	}
+	
+	// for now we just say we never have an error
+	public function themeError()
+	{
+		return false;
+	}
 }
 ?>

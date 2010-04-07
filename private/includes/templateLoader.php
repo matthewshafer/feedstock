@@ -35,7 +35,14 @@ class templateLoader
 	{
 		$this->themeLoc = $this->templateEngine->getThemeLoc();
 		ob_start();
-		include $this->themeLoc;
+		if(!$this->templateEngine->themeError())
+		{
+			include $this->themeLoc;
+		}
+		else
+		{
+			echo $this->templateEngine->themeErrorText();
+		}
 		return ob_get_clean();
 	}
 

@@ -192,7 +192,7 @@ class databaseAdmin extends database
 		
 		if(isset($temp["Permissions"], $temp["CanAdminUsers"], $temp2["Permissions"]))
 		{
-			if($temp["Permissions"] > $temp2["Permissions"] and $temp["CanAdminUsers"])
+			if($temp["Permissions"] > $temp2["Permissions"] && $temp["CanAdminUsers"])
 			{
 				// I could probably grab the data from $temp2 as to the user being removed and use that over $userRemoveID
 				$query3 = sprintf("DELETE FROM %susers WHERE id='%s'", parent::$this->tablePrefix, mysql_real_escape_string($userRemoveID, parent::$this->dbConn));
@@ -257,7 +257,7 @@ class databaseAdmin extends database
 			{
 				$return = true;
 			}
-			else if($id != null and $tmpArr["PrimaryKey"] == $id)
+			else if($id != null && $tmpArr["PrimaryKey"] == $id)
 			{
 				$return = true;
 				//echo "hit";
@@ -291,7 +291,7 @@ class databaseAdmin extends database
 			{
 				$return = true;
 			}
-			else if($id != null and $tmpArr["PrimaryKey"] == $id)
+			else if($id != null && $tmpArr["PrimaryKey"] == $id)
 			{
 				$return = true;
 			}
