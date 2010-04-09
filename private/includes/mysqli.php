@@ -5,6 +5,7 @@ class database
 	protected $dbConn = null;
 	protected $tablePrefix = null;
 	protected $connError = null;
+	protected $checkedCategoryOrTag = null;
 	public $debugQueries = array();
 	public $queries = 0;
 	
@@ -82,41 +83,52 @@ class database
 	
 	private function generateAuthors($postArr, $authorArr)
 	{
-		$queryStr = implode(", ", $authorArr);
-		unset($authorArr);
-		$authorArr = array();
-		
-		if($queryStr != null)
+		if($postArr != null && $authorArr != null)
 		{
-			$query = sprintf("SELECT id, DisplayName FROM %susers WHERE id IN (%s) LIMIT 1", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
+			$queryStr = implode(", ", $authorArr);
+			unset($authorArr);
+			$authorArr = array();
 			
-			if($result = $this->dbConn->query($query))
+			if($queryStr != null)
 			{
-				while($row = $result->fetch_assoc())
-				{
-					$authorArr[$row["id"]] = $row["DisplayName"];
-				}
+				$query = sprintf("SELECT id, DisplayName FROM %susers WHERE id IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
 				
-				$result->close();
-			}
-		}
+				if(F_MYSQLSTOREQUERIES)
+				{
+					array_push($this->debugQueries, $query);
+				}
 		
-		$tmpCt = count($postArr);
-		
-		for($i = 0; $i < $tmpCt; $i++)
-		{
-			$id = $postArr[$i]["Author"];
+				$this->queries++;
 			
-			if(isset($authorArr[$id]))
-			{
-				$postArr[$i]["Author"] = $authorArr[$id];
+				
+				if($result = $this->dbConn->query($query))
+				{
+					while($row = $result->fetch_assoc())
+					{
+						$authorArr[$row["id"]] = $row["DisplayName"];
+					}
+					
+					$result->close();
+				}
 			}
-			else
+			
+			$tmpCt = count($postArr);
+			
+			for($i = 0; $i < $tmpCt; $i++)
 			{
-				$postArr[$i]["Author"] = "Unknown";
+				$id = $postArr[$i]["Author"];
+			
+				if(isset($authorArr[$id]))
+				{
+					$postArr[$i]["Author"] = $authorArr[$id];
+				}
+				else
+				{
+					$postArr[$i]["Author"] = "Unknown";
+				}
 			}
+			
 		}
-		
 		unset($authorArr);
 		
 		return $postArr;
@@ -320,7 +332,68 @@ class database
 	
 	public function getPostsInCategoryOrTag($URIName, $type, $draft = false)
 	{
+		$return = array();
 		
+		$query = sprintf("SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'", $this->tablePrefix, $this->dbConn->real_escape_string($this->checkedCategoryOrTag["PrimaryKey"]));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query);
+		}
+			
+		$this->queries++;
+		
+		$tmpArr = array();
+		
+		if($result = $this->dbConn->query($query))
+		{
+			while($row = $result->fetch_assoc())
+			{
+				array_push($tmpArr, $row["PostID"]);
+			}
+			
+			$result->close();
+			
+			$queryStr = implode(", ", $tmpArr);
+			
+			if($queryStr != null)
+			{
+				if(!$draft)
+				{
+					$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
+				}
+				else
+				{
+					$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
+				}
+				
+				if(F_MYSQLSTOREQUERIES)
+				{
+					array_push($this->debugQueries, $query);
+				}
+		
+				$this->queries++;
+			
+				if($result = $this->dbConn->query($query))
+				{
+					$tmpAuthor = array();
+					while($row = $result->fetch_assoc())
+					{
+						if(!isset($tmpAuthor[$row["Author"]]))
+						{
+							$tmpAuthor[$row["Author"]] = $row["Author"];
+						}
+						
+						array_push($return, $row);
+					}
+					$result->close();
+					
+					$return = $this->generateAuthors($return, $tmpAuthor);
+					unset($tmpAuthor);
+				}
+			}
+		}
+		return $return;
 	}
 	
 	public function getCategoryOrTag($ID, $type)
@@ -330,7 +403,30 @@ class database
 	
 	public function checkCategoryTagName($name, $type)
 	{
-	
+		$return = false;
+		
+		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, $this->dbConn->real_escape_string($name), $this->dbConn->real_escape_string($type));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query);
+		}
+			
+		$this->queries++;
+		
+		if($result = $this->dbConn->query($query))
+		{
+			if($row = $result->fetch_assoc())
+			{
+				$return = true;
+				
+				$this->checkedCategoryOrTag = $row;
+			}
+			
+			$result->close();
+		}
+		
+		return $return;
 	}
 	
 	public function listCategoriesOrTags($type)
