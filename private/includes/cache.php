@@ -85,7 +85,10 @@ class cache
 	 */
 	private function deleteCachedFile()
 	{
-		unlink($this->fileloc);
+		if(file_exists($this->fileloc))
+		{
+			unlink($this->fileloc);
+		}
 	}
 	
 	/**

@@ -81,7 +81,7 @@ class feedstock
 						echo $key . "<br>";
 					}
 					
-					echo '<br><br>' . $this->db->queryError();
+					//echo '<br><br>' . $this->db->queryError();
 				}
 			}
 		}
@@ -100,29 +100,33 @@ class feedstock
 		
 		if($this->db->haveConnError() == null)
 		{		
-		if($this->router->pageType() == "feed")
-		{
-			require_once("includes/feed.php");
-			$feed = new feed($this->db, $this->router);
-			$data = $feed->render();
-		}
-		else if($this->router->pageType() == "file")
-		{
-			require_once("includes/fileServe.php");
-			$fileServe = new fileServe($this->db, $this->router);
-			$data = $fileServe->render();
+			if($this->router->pageType() == "feed")
+			{
+				require_once("includes/feed.php");
+				$feed = new feed($this->db, $this->router);
+				$data = $feed->render();
+			}
+			else if($this->router->pageType() == "file")
+			{
+				require_once("includes/fileServe.php");
+				$fileServe = new fileServe($this->db, $this->router);
+				$data = $fileServe->render();
+			}
+			else
+			{
+				require_once("includes/templateEngine.php");
+				$this->templateEngine = new templateEngine($this->db, $this->router);
+				require_once("includes/templateLoader.php");
+				$this->templateLoader = new templateLoader($this->templateEngine);
+				$data = $this->templateLoader->render();
+			}
+			
+			$this->db->closeConnection();
 		}
 		else
 		{
-			require_once("includes/templateEngine.php");
-			$this->templateEngine = new templateEngine($this->db, $this->router);
-			require_once("includes/templateLoader.php");
-			$this->templateLoader = new templateLoader($this->templateEngine);
-			$data = $this->templateLoader->render();
+			$data = $this->db->haveConnError();
 		}
-		}
-		else
-		$data = $this->db->haveConnError();
 		return $data;
 	}
 }

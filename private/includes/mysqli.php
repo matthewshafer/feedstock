@@ -13,10 +13,22 @@ class database
 	{
 		$this->dbConn = new mysqli($serverAddress, $username, $password, $dbname);
 		
+		/*
 		// Note that php 5.2.9 or 5.3.0 is needed for this to work or else it won't tell us when there is a failure
 		if($this->dbConn->connect_error)
 		{
 			$this->connError = 'Connect Error (' . $this->dbConn->connect_errorno . ') ' . $this->dbConn->connect_error;
+		}
+		else
+		{
+			$this->tablePrefix = $this->dbConn->real_escape_string($tablePrefix);
+		}
+		
+		*/
+		
+		if(mysqli_connect_error())
+		{
+			$this->connError = 'Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error();
 		}
 		else
 		{
@@ -29,10 +41,12 @@ class database
 		return $this->connError;
 	}
 	
+	/*
 	public function queryError()
 	{
 		return $this->dbConn->error;
 	}
+	*/
 	
 	public function closeConnection()
 	{
@@ -431,7 +445,7 @@ class database
 	
 	public function listCategoriesOrTags($type)
 	{
-	
+		return array();
 	}
 
 }
