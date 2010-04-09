@@ -577,8 +577,9 @@ class databaseAdmin extends database
 		
 		print_r($tmpArr);
 		
+		$tmpCt = count($tmpArr);
 		
-		for($i = 0; $i < count($tmpArr); $i++)
+		for($i = 0; $i < $tmpCt; $i++)
 		{
 			$query = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES('%s', '%s')", parent::$this->tablePrefix, mysql_real_escape_string($id, parent::$this->dbConn), $tmpArr[$i]);
 			$result = mysql_query($query, parent::$this->dbConn);

@@ -28,7 +28,7 @@ define("V_FILEDOWNLOADSPEED", 200);
 
 /* Database Information */
 // database type
-define("V_DATABASE", "mysql");
+define("V_DATABASE", "mysqli");
 // database connection info
 $username = "root";
 $password = "root";
@@ -65,5 +65,7 @@ setlocale(LC_ALL, 'en_US.UTF8');
 ini_set('display_errors',1); 
 error_reporting(E_ALL);
 
+// Mysql debugging stuff
+define("F_MYSQLSTOREQUERIES", true);
 
 ?>

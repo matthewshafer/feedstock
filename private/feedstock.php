@@ -71,6 +71,18 @@ class feedstock
 			{
 				echo $this->heavyLift();
 				//echo "<br><br>Queries: " . $this->db->queries;
+				
+				if(F_MYSQLSTOREQUERIES)
+				{
+					echo "<br><br><br>";
+				//print_r($this->db->debugQueries);
+					foreach($this->db->debugQueries as $key)
+					{
+						echo $key . "<br>";
+					}
+					
+					echo '<br><br>' . $this->db->queryError();
+				}
 			}
 		}
 	}

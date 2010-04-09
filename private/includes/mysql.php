@@ -11,6 +11,7 @@ class database
 	protected $dBaseValid = null;
 	protected $tablePrefix = null;
 	protected $connError = null;
+	public $debugQueries = array();
 	public $queries = 0;
 	
 	/**
@@ -78,6 +79,12 @@ class database
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+			
+			if(F_MYSQLSTOREQUERIES)
+			{
+				array_push($this->debugQueries, $query);
+			}
+			
 			$this->queries++;
 		}
 		else
@@ -101,6 +108,11 @@ class database
 			else
 			{
 				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
+				if(F_MYSQLSTOREQUERIES)
+				{
+					array_push($this->debugQueries, $query);
+				}
+				
 				$this->queries++;
 				$result2 = mysql_query($query, $this->dbConn);
 				$tmpArr = mysql_fetch_assoc($result2);
@@ -108,6 +120,11 @@ class database
 				if(isset($tmpArr["DisplayName"]))
 				{
 					$authorArr[$temp["Author"]] = $tmpArr["DisplayName"];
+					$temp["Author"] = $authorArr[$temp["Author"]];
+				}
+				else
+				{
+					$authorArr[$temp["Author"]] = "Unknown";
 					$temp["Author"] = $authorArr[$temp["Author"]];
 				}
 			}
@@ -129,6 +146,11 @@ class database
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			if(F_MYSQLSTOREQUERIES)
+			{
+				array_push($this->debugQueries, $query);
+			}
+			
 			$this->queries++;
 		}
 		else
@@ -158,6 +180,10 @@ class database
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			if(F_MYSQLSTOREQUERIES)
+			{
+				array_push($this->debugQueries, $query);
+			}
 			$this->queries++;
 		}
 		else
@@ -179,6 +205,11 @@ class database
 			else
 			{
 				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
+				if(F_MYSQLSTOREQUERIES)
+				{
+					array_push($this->debugQueries, $query);
+				}
+			
 				$this->queries++;
 				$result2 = mysql_query($query, $this->dbConn);
 				$tmpArr = mysql_fetch_assoc($result2);
@@ -186,6 +217,11 @@ class database
 				if(isset($tmpArr["DisplayName"]))
 				{
 					$authorArr[$temp["Author"]] = $tmpArr["DisplayName"];
+					$temp["Author"] = $authorArr[$temp["Author"]];
+				}
+				else
+				{
+					$authorArr[$temp["Author"]] = "Unknown";
 					$temp["Author"] = $authorArr[$temp["Author"]];
 				}
 			}
@@ -205,6 +241,12 @@ class database
 	{
 		$return = false;
 		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, mysql_real_escape_string($name, $this->dbConn), mysql_real_escape_string($type, $this->dbConn));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query);
+		}
+			
 		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		
@@ -220,6 +262,12 @@ class database
 	{
 		//$query = "SELECT * FROM " . $this->tablePrefix . "tags LIMIT" . $number;
 		$query = sprintf("SELECT * FROM %scatstags WHERE Type='%s'", $this->tablePrefix, mysql_real_escape_string($type, $this->dbConn));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query);
+		}
+			
 		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		
@@ -248,6 +296,12 @@ class database
 			foreach($IdArray as $key)
 			{
 				$query = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID='%s'", $this->tablePrefix, mysql_real_escape_string($key, $this->dbConn));
+				
+				if(F_MYSQLSTOREQUERIES)
+				{
+					array_push($this->debugQueries, $query);
+				}
+			
 				$this->queries++;
 				$result = mysql_query($query, $this->dbConn);
 			
@@ -278,11 +332,22 @@ class database
 			if($type == "tag")
 			{
 				$query = sprintf("SELECT * FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+				
+				if(F_MYSQLSTOREQUERIES)
+				{
+					array_push($this->debugQueries, $query);
+				}
+			
 				$this->queries++;
 			}
 			else
 			{
 				$query = sprintf("SELECT * FROM %scatstags WHERE Type='0' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+				
+				if(F_MYSQLSTOREQUERIES)
+				{
+					array_push($this->debugQueries, $query);
+				}
 				//echo $query;
 				$this->queries++;
 			}
@@ -319,6 +384,12 @@ class database
 	public function getPostsInCategoryOrTag($URIName, $type, $draft = false)
 	{
 		$query = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, mysql_real_escape_string($URIName, $this->dbConn), mysql_real_escape_string($type, $this->dbConn));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query);
+		}
+			
 		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		
@@ -331,25 +402,47 @@ class database
 		//print_r($temp);
 		
 		$query2 = sprintf("SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'", $this->tablePrefix, mysql_real_escape_string($temp["PrimaryKey"], $this->dbConn));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query2);
+		}
+			
 		$this->queries++;
 		$result2 = mysql_query($query2, $this->dbConn);
 		
+		$tmpArr = array();
+		
 		while($temp = mysql_fetch_assoc($result2))
 		{
-			if(!$draft)
-			{
-				$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($temp["PostID"], $this->dbConn));
-				$this->queries++;
-			}
-			else
-			{
-				$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($temp["PostID"], $this->dbConn));
-				$this->queries++;
-			}
-			$result3 = mysql_query($query3, $this->dbConn);
-			
-			array_push($return, mysql_fetch_assoc($result3));
+			array_push($tmpArr, $temp["PostID"]);
 		}
+		
+		$queryStr = implode(", ", $tmpArr);
+			
+		if(!$draft)
+		{
+			$query3 = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+		}
+		else
+		{
+			$query3 = sprintf("SELECT * FROM %sposts WHERE PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
+		}
+		
+		$result3 = mysql_query($query3, $this->dbConn);
+		
+		while($temp = mysql_fetch_assoc($result3))
+		{
+			array_push($return, $temp);
+		}
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query3);
+		}
+		
+			$this->queries++;
+		
 		
 		return $return;
 		
@@ -358,6 +451,11 @@ class database
 	public function getCategoryOrTag($ID, $type)
 	{
 		$query = sprintf("SELECT * FROM %scatstags WHERE TYPE='%s' AND PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($type, $this->dbConn), mysql_real_escape_string($ID, $this->dbConn));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query);
+		}
 		$this->queries++;
 		//echo $query;
 		$result = mysql_query($query, $this->dbConn);
@@ -375,6 +473,13 @@ class database
 	public function corralPage($ID)
 	{
 		$query = sprintf("SELECT * FROM %spages WHERE Corral='%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($ID, $this->dbConn));
+		
+		if(F_MYSQLSTOREQUERIES)
+		{
+			array_push($this->debugQueries, $query);
+		}
+			
+			
 		$this->queries++;
 		$result = mysql_query($query, $this->dbConn);
 		

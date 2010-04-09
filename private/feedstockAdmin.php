@@ -451,7 +451,9 @@ class feedstockAdmin
 			$date = time();
 		}
 		
-		for($i = 0; $i < count($temp); $i++)
+		$tmpCt = count($temp);
+		
+		for($i = 0; $i < $tmpCt; $i++)
 		{
 			switch((string)$temp[$i])
 			{
