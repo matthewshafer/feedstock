@@ -52,6 +52,7 @@ class cache
 		
 		if(file_exists($this->fileloc))
 		{
+			$this->tmp = $this->getCachedDataPrivate();
 			//going to want to get file access date
 			$filetime = filemtime($this->fileloc);
 			// going to check to see if the file was last modified longer than the expire time
@@ -59,13 +60,19 @@ class cache
 			{
 				// I could always not delete the file, i could overwrite the data in the file with new data
 				// that might yield higher performance from the filesystem
-				$this->tmp = $this->getCachedData();
 				$this->deleteCachedFile();
 				$return = false;
 			}
 			else
 			{
-				$return = true;
+				if($this->tmp == null)
+				{
+					$return = false;
+				}
+				else
+				{
+					$return = true;
+				}
 			}
 		}
 		else
@@ -87,7 +94,7 @@ class cache
 	{
 		if(file_exists($this->fileloc))
 		{
-			@unlink($this->fileloc);
+			unlink($this->fileloc);
 		}
 	}
 	
@@ -132,20 +139,26 @@ class cache
 	 */
 	public function getCachedData()
 	{
-		// checking for this saves us a file read.  Hey it's an I/O we are saving here.
-		if($this->tmp != null)
-		{
-			$fileData = $this->tmp;
-		}
-		else
-		{
-			$file = fopen($this->fileloc, 'r') or die("Somehow the cached file doesn't exist now");
+		return $this->tmp;
+	}
+	
+	private function getCachedDataPrivate()
+	{
+			$file = @fopen($this->fileloc, 'r') or die("Somehow the cached file doesn't exist now");
 			flock($file, LOCK_SH);
-			$fileData = fread($file, filesize($this->fileloc));
+			$size = filesize($this->fileloc);
+			if($size != 0)
+			{
+				$fileData = fread($file, filesize($this->fileloc));
+			}
+			else
+			{
+				$fileData = null;
+			}
 			flock($file, LOCK_UN);
 			fclose($file);
-		}
-		return $fileData;
+			
+			return $fileData;
 	}
 	
 	/**

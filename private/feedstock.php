@@ -63,7 +63,7 @@ class feedstock
 					{
 						$this->cacher->writeCachedFile($themeData);
 					}
-					echo $this->cacher->getCachedData();
+					echo $themeData;
 				}
 			
 			}

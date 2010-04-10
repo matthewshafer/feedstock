@@ -64,7 +64,7 @@ class cache
 	{
 		if($data != null)
 		{
-			xcache_set($this->prefixUri, $data, F_EXPIRECACHETIME);
+				xcache_set($this->prefixUri, $data, F_EXPIRECACHETIME);
 		}
 	}
 	
