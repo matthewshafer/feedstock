@@ -28,7 +28,7 @@ class database
 		
 		if(mysqli_connect_error())
 		{
-			$this->connError = 'Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error();
+			$this->connError = 'Unable to connect to the Database Server';
 		}
 		else
 		{
