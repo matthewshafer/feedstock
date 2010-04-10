@@ -1,0 +1,20 @@
+I came up with the idea for this sometime in december 09.
+
+I wanted to make something that I could run my personal sites off of but not have to deal with themes on every page. I also figured that it would be nice if I were able to blog from the same software and not have to worry about having to come up with nice urls.  I wanted this to be fast and simple as I only need a few specific features to get things done.  Since I am used to writing stuff in OO that's what I did here.  It allowed me to have a database layer that has the ability to handle multiple databases.  The mysqli part is still a work in progress but the underlying code is written much better than the mysql code.  Processing data is pretty fast and things can be turned off to make page loading faster, like generating tags and categories for posts.
+
+List of cool things:
+
+1. Static file caching - Speed increase is pretty fast.  I figured most of the time people are just requesting the same page, so if a theme doesn't do its own php processing each run then the speed increase is pretty nice.  Smart enough to know when the database is down and continue to use cached files.  Still needs some work done.
+
+2. Feed - RSS 2.0 and ATOM feeds.  Some work still needs to be done here but overall it's nice.
+
+3. File Serving - Serving up files at specific speeds.  So you can limit how fast each file sends.  Could possibly allow limiting per IP address.  (not sure how it works on proxying webservers, like the way my live server is set up)
+
+
+Things you'll notice:
+
+1. I haven't really spent time working on themes.
+
+2. Some stuff doesn't work.
+
+3.  It's not done and I don't even use it in a production environment yet.
