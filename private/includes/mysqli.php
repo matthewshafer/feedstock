@@ -6,6 +6,7 @@ class database
 	protected $tablePrefix = null;
 	protected $connError = null;
 	protected $checkedCategoryOrTag = null;
+	protected $haveNext = false;
 	public $debugQueries = array();
 	public $queries = 0;
 	
@@ -59,7 +60,7 @@ class database
 		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($offset));
+			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 11 OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($offset));
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
@@ -70,7 +71,7 @@ class database
 		}
 		else
 		{
-			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($offset));
+			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT 11 OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($offset));
 			$this->queries++;
 		}
 		
@@ -88,7 +89,14 @@ class database
 					$tmpAuthors[$row["Author"]] = $row["Author"];
 				}
 			}
-			$result->close();			
+			$result->close();
+			
+			if(count($tmpArr) == 11)
+			{
+				$this->haveNext = true;
+				array_pop($tmpArr);
+			}
+			
 			$return = $this->generateAuthors($tmpArr, $tmpAuthors);
 		}
 		
@@ -446,6 +454,11 @@ class database
 	public function listCategoriesOrTags($type)
 	{
 		return array();
+	}
+	
+	public function haveNextPage()
+	{
+		return $this->haveNext;
 	}
 
 }

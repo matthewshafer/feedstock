@@ -104,14 +104,20 @@ class cache
 		if($data != null)
 		{
 			$file = fopen($this->fileloc, 'w') or die("Can not write cached file");
-			if($data == "Unable to connect to the Database Server" or $data == "Unable to connect to the database" and $this->tmp != null)
-			{
-				fwrite($file, $this->tmp);
-			}
-			else
-			{
-				fwrite($file, $data);
-				$this->tmp = $data;
+			
+			if(flock($file, LOCK_EX))
+			{	
+				if($data == "Unable to connect to the Database Server" or $data == "Unable to connect to the database" and $this->tmp != null)
+				{
+					fwrite($file, $this->tmp);
+				}
+				else
+				{
+					fwrite($file, $data);
+					$this->tmp = $data;
+				}
+				
+				flock($file, LOCK_UN);
 			}
 			fclose($file);
 		}
@@ -134,7 +140,9 @@ class cache
 		else
 		{
 			$file = fopen($this->fileloc, 'r') or die("Somehow the cached file doesn't exist now");
+			flock($file, LOCK_SH);
 			$fileData = fread($file, filesize($this->fileloc));
+			flock($file, LOCK_UN);
 			fclose($file);
 		}
 		return $fileData;

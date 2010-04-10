@@ -78,7 +78,7 @@ class database
 		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 11 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
@@ -89,7 +89,7 @@ class database
 		}
 		else
 		{
-			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT 10 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
+			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT 11 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
 			$this->queries++;
 		}
 		
@@ -136,6 +136,12 @@ class database
 			
 			array_push($return, $temp);
 		}
+		
+			if(count($return) == 11)
+			{
+				$this->haveNext = true;
+				array_pop($return);
+			}
 		
 		//print_r($return);
 		return $return;

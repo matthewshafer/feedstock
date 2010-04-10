@@ -46,7 +46,7 @@ class feedstock
 				// Should create the cacher first so that we can check if a file exists before we even create a database
 				// for example if the database goes down we can still serve up pages, until they "expire" which would give us
 				// a little bit of time to get the DB back up and running
-				require_once("includes/cache.php");
+				require_once("includes/" . F_CACHENAME . ".php");
 				$this->cacher = new cache($this->router->fullURI());
 			
 				if($this->cacher->checkExists())
