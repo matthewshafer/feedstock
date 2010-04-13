@@ -4,6 +4,7 @@ require_once(V_DATABASE . ".php");
 /**
  * @file
  * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief the database class for the admin section.  It houses a bunch of functions which is why we keep it seperate from the frontend database.
  * @extends database
  */
 class databaseAdmin extends database

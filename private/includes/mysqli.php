@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief using mysqli which is a part of php5.  Uses things like multi_query.
+ * 
+ */
 class database
 {
 	protected $dbConn = null;

@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief Serves up files from the files folder.  It is really basic and hasn't been tested
+ * 
+ */
 class fileServe
 {
 	protected $database;

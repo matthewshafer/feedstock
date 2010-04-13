@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief generates either an rss2.0 or atom feed
+ * 
+ */
 class feed
 {
 	private $db = null;

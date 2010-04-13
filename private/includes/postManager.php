@@ -1,7 +1,9 @@
 <?php
 /**
- * postManager class.
- * @brief handles post requests.  Sanitizes data based on what we want from the post
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief handles all the post stuff.  We can make it sanitize stuff if needed.
+ * 
  */
 class postManager
 {

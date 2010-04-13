@@ -1,10 +1,10 @@
 <?php
 /**
-* @file
-* @author Matthew Shafer <matt@niftystopwatch.com>
-* 
-* @brief Handles simple routing of pages
-*/
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief Handles simple routing of pages
+ *
+ */
 class router
 {
 	protected $uri = null;

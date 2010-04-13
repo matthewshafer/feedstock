@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief caches using only xcache.  So no static files.  The downside is if the DB dies and xcache cleares the cache nothing is there to cache.
+ * 
+ */
 class cache
 {
 	private $uri = null;

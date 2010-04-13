@@ -1,10 +1,10 @@
 <?php
 /**
-* @file
-* @author Matthew Shafer <matt@niftystopwatch.com>
-* 
-* @brief Handles writing responses to the disk for fast retrival
-*/
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief Handles writing responses to the disk for fast retrival
+ *
+ */
 class cache
 {
 	private $cacheloc = null;

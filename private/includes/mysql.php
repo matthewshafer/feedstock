@@ -1,10 +1,10 @@
 <?php
 /**
-* @file
-* @author Matthew Shafer <matt@niftystopwatch.com>
-* @brief standard mysql class
-* 
-*/
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief standard mysql class
+ * 
+ */
 class database
 {
 	protected $dbConn = null;

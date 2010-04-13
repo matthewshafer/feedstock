@@ -1,10 +1,10 @@
 <?php
 /**
-* @file
-* @author Matthew Shafer <matt@niftystopwatch.com>
-* 
-* @brief Handles creating/removing/checking of cookies
-*/
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com> 
+ * @brief Handles creating/removing/checking of cookies
+ *
+ */
 class cookieMonster
 {
 	protected $db = null;

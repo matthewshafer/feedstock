@@ -1,10 +1,10 @@
 <?php
 /**
-* @file
-* @author Matthew Shafer <matt@niftystopwatch.com>
-* @brief Makes everything we need to generate the front facing pages. You can think of it as the brain's of the operation.
-* 
-*/
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief Makes everything we need to generate the front facing pages. You can think of it as the brain's of the operation.
+ * 
+ */
 class feedstock
 {
 	private $username = null;
