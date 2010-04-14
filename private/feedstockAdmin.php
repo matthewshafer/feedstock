@@ -211,7 +211,7 @@ class feedstockAdmin
 			array_push($tempArr2, $tmp);
 		}
 		
-		print_r($tempArr2);
+		//print_r($tempArr2);
 		//print_r($tempArr);
 		
 		return $tempArr2;

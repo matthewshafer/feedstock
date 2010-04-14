@@ -458,7 +458,21 @@ class database
 	
 	public function listCategoriesOrTags($type)
 	{
-		return array();
+		$return = array();
+		// can be rewritten possibly to use prepared statements
+		$query = sprintf("SELECT * FROM %scatstags WHERE Type='%s'", $this->tablePrefix, $this->dbConn->real_escape_string($type));
+		
+		if($result = $this->dbConn->query($query))
+		{
+			while($row = $result->fetch_assoc())
+			{
+				array_push($return, $row);
+			}
+			
+			$result->close();
+		}
+		
+		return $return;
 	}
 	
 	public function haveNextPage()
