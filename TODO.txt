@@ -6,7 +6,7 @@ Cacher
 	check if writeable
 	
 Database
-	Just some MISC stuff is left
+	mysqli remove users.  need to rewrite how users are stored.
 	
 Visions
 	--
