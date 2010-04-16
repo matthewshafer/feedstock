@@ -12,6 +12,7 @@ class databaseAdmin extends database
 	/**
 	 * __construct function.
 	 * 
+	 * @brief Creates the database connection
 	 * @access public
 	 * @param mixed $username
 	 * @param mixed $password
@@ -28,6 +29,7 @@ class databaseAdmin extends database
 	/**
 	 * addPost function.
 	 * 
+	 * @brief Add's a post to the database
 	 * @access public
 	 * @param mixed $title
 	 * @param mixed $data
@@ -38,7 +40,7 @@ class databaseAdmin extends database
 	 * @param mixed $tags
 	 * @param mixed $draft
 	 * @param mixed $id. (default: null)
-	 * @return void 
+	 * @return True if able to insert or update. False if Not able to insert or update.
 	 */
 	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $draft, $id = null)
 	{
@@ -76,6 +78,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * deletePost function.
+	 * 
+	 * @brief Removes a post from the database
+	 * @access public
+	 * @param mixed $id
+	 * @return True if able to delete. False if not able to delete.
+	 */
 	public function deletePost($id)
 	{
 		$return = false;
@@ -94,6 +104,22 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * addPage function.
+	 * 
+	 * @brief Add's a page to the database
+	 * @access public
+	 * @param mixed $title
+	 * @param mixed $data
+	 * @param mixed $niceTitle
+	 * @param mixed $uri
+	 * @param mixed $author
+	 * @param mixed $date
+	 * @param mixed $draft
+	 * @param mixed $corral. (default: null)
+	 * @param mixed $id. (default: null)
+	 * @return True if able to Insert ot Update. False if not able ti Insert or Update
+	 */
 	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $id = null)
 	{
 		$return = false;
@@ -138,6 +164,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * removePage function.
+	 * 
+	 * @brief Removes a page from the database
+	 * @access public
+	 * @param mixed $id
+	 * @return True if able to delete, false if not.
+	 */
 	public function removePage($id)
 	{
 		$return = false;
@@ -156,6 +190,19 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * addUser function.
+	 * 
+	 * @brief Add's a user to the database
+	 * @access public
+	 * @param mixed $username
+	 * @param mixed $displayName
+	 * @param mixed $passHash
+	 * @param mixed $salt
+	 * @param int $permissions. (default: 99)
+	 * @param int $canAdministrateUsers. (default: 0)
+	 * @return True if able to insert, False if not.
+	 */
 	public function addUser($username, $displayName, $passHash, $salt, $permissions = 99, $canAdministrateUsers = 0)
 	{
 		$return = false;
@@ -180,6 +227,14 @@ class databaseAdmin extends database
 		//$formattedQuery = sprintf("",);
 	}
 	
+	/**
+	 * getUserByUserName function.
+	 * 
+	 * @brief Gets a user's information based on their username
+	 * @access public
+	 * @param mixed $username
+	 * @return Array of user Information.  If not found then null.
+	 */
 	public function getUserByUserName($username)
 	{
 		$return = null;
@@ -195,6 +250,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * getPostIDNiceCheckedTitle function.
+	 * 
+	 * @brief Returns the postID that the title passed in has
+	 * @access public
+	 * @param mixed $nice
+	 * @return Post's key (integer).  If not found then null.
+	 */
 	public function getPostIDNiceCheckedTitle($nice)
 	{
 		$return = null;
@@ -215,6 +278,16 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * checkDuplicateURI function.
+	 * 
+	 * @brief checks to see if a URI already exists in the database
+	 * @access public
+	 * @param mixed $type
+	 * @param mixed $uri
+	 * @param mixed $id. (default: null)
+	 * @return True if the URI doesn't exist. False if it exists.
+	 */
 	public function checkDuplicateURI($type, $uri, $id = null)
 	{
 		$formattedQuery = null;
@@ -254,6 +327,16 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * checkDuplicateTitle function.
+	 * 
+	 * @brief Checks to see if a title already exists in the database
+	 * @access public
+	 * @param mixed $type
+	 * @param mixed $niceTitle
+	 * @param mixed $id. (default: null)
+	 * @return True if the title doesn't exist. False if it exists.
+	 */
 	public function checkDuplicateTitle($type, $niceTitle, $id = null)
 	{
 		$formattedQuery = null;
@@ -291,6 +374,15 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * updateCookieVal function.
+	 * 
+	 * @brief Updates the user's cookievalue in the database
+	 * @access public
+	 * @param mixed $userID
+	 * @param string $val. (default: "")
+	 * @return void
+	 */
 	public function updateCookieVal($userID, $val = "")
 	{
 		$formattedQuery = sprintf("UPDATE %susers SET CookieVal=? WHERE id=?", parent::$this->tablePrefix);
@@ -300,6 +392,14 @@ class databaseAdmin extends database
 		$query->close();
 	}
 	
+	/**
+	 * findCookie function.
+	 * 
+	 * @brief finds the userID based on the cookievalue passed in
+	 * @access public
+	 * @param mixed $val
+	 * @return The ID (integer) of the user. Null if doesn't exist.
+	 */
 	public function findCookie($val)
 	{
 		$return = null;
@@ -320,6 +420,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * getPostDataByID function.
+	 * 
+	 * @brief Returns the post data based on the ID passed in.
+	 * @access public
+	 * @param mixed $id
+	 * @return Array with post information
+	 */
 	public function getPostDataByID($id)
 	{
 		$return = array();
@@ -334,6 +442,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * getPageDataByID function.
+	 * 
+	 * @brief Returns the page data based in the ID passed in.
+	 * @access public
+	 * @param mixed $id
+	 * @return Array with page information
+	 */
 	public function getPageDataByID($id)
 	{
 		$return = array();
@@ -359,6 +475,15 @@ class databaseAdmin extends database
 	
 	}
 	
+	/**
+	 * addCategory function.
+	 * 
+	 * @brief Add's a category to the database
+	 * @access public
+	 * @param mixed $name
+	 * @param mixed $niceTitle
+	 * @return True if category was added.  False if not added.
+	 */
 	public function addCategory($name, $niceTitle)
 	{
 		$return = false;
@@ -391,6 +516,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * getSinglePostCategories function.
+	 * 
+	 * @brief Returns the category ID's based on the postID passed in.
+	 * @access public
+	 * @param mixed $id
+	 * @return Array with post categories
+	 */
 	public function getSinglePostCategories($id)
 	{
 		$return = array();
@@ -409,6 +542,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * getSinglePostTags function.
+	 * 
+	 * @brief Returns the post tags by the postID passed in.
+	 * @access public
+	 * @param mixed $id
+	 * @return Array with post tags
+	 */
 	public function getSinglePostTags($id)
 	{
 		$return = array();
@@ -442,6 +583,15 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * processPostCategories function.
+	 * 
+	 * @brief Insert the categories for the post into the database.
+	 * @access public
+	 * @param mixed $id
+	 * @param mixed $catArr
+	 * @return True if able to insert categories for post. False if not able to.
+	 */
 	public function processPostCategories($id, $catArr)
 	{
 		$return = false;
@@ -466,6 +616,14 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * unlinkPostCatsAndTags function.
+	 * 
+	 * @brief deletes the categories and tags for the post from the database
+	 * @access public
+	 * @param mixed $id
+	 * @return True if we were able to Delete.  False if we were unable to Delete or there was nothing to delete.
+	 */
 	public function unlinkPostCatsAndTags($id)
 	{
 		$return = false;
@@ -486,6 +644,15 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
+	/**
+	 * processTags function.
+	 * 
+	 * @brief Inserts the tags into the database if they don't exist
+	 * @access public
+	 * @param mixed $id
+	 * @param mixed $tagArray
+	 * @return True if tags were processed or if there was nothing to process.  False if there was an error.
+	 */
 	public function processTags($id, $tagArray)
 	{
 		$return = false;
