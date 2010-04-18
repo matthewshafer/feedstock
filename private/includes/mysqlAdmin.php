@@ -105,7 +105,7 @@ class databaseAdmin extends database
 		{
 			if($corral == null)
 			{
-				$corral = -1;
+				$corral = "";
 			}
 			
 			$query = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", 
@@ -124,7 +124,7 @@ class databaseAdmin extends database
 		{
 			if($corral == null)
 			{
-				$corral = -1;
+				$corral = "";
 			}
 			// updating a post
 			$query = sprintf("UPDATE %spages SET Title='%s', NiceTitle='%s', URI='%s', PageData='%s', Author='%s', Draft='%s', Corral='%s' WHERE PrimaryKey='%s'",

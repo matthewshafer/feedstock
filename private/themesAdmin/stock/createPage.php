@@ -15,6 +15,9 @@
 				Post Body: <br>
 				<textarea name="postorpagedata"><?php echo $this->templateEngine->pageBodyID(); ?></textarea>
 				<br>
+				Corral:<br>
+				<input name="pageCorral" type="text" value="<?php echo $this->templateEngine->pageCorral(); ?>"><br>
+				<br>
 				Draft: <br>
 				yes<input name="draft" type="radio" value="1" <?php echo $this->templateEngine->isDraft() == 1 ? "Checked" : ""; ?>>
 				no<input name="draft" type="radio" value="0" <?php echo $this->templateEngine->isDraft() == 0 ? "Checked" : ""; ?>>

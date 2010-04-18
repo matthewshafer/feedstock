@@ -124,16 +124,18 @@ class databaseAdmin extends database
 	{
 		$return = false;
 		
+		// this way we put null into the database so we can do WHERE Corral IS NOT NULL in the sql later
+		if($corral == "")
+		{
+			$corral = null;
+		}
+		
 		if($id == null)
 		{
-			if($corral == null)
-			{
-				$corral = -1;
-			}
 			
 			$formattedQuery = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", parent::$this->tablePrefix);
 			$query = parent::$this->dbConn->prepare($formattedQuery);
-			$qurey->bind_param('ssssisii', $title, $niceTitle, $uri, $data, $author, $date, $draft, $corral);
+			$qurey->bind_param('ssssisis', $title, $niceTitle, $uri, $data, $author, $date, $draft, $corral);
 			$query->execute();
 			
 			if($query->affected_rows > 0)
@@ -143,15 +145,10 @@ class databaseAdmin extends database
 			$query->close();
 		}
 		else
-		{
-			if($corral == null)
-			{
-				$corral = -1;
-			}
-			
+		{	
 			$formattedQuery = sprintf("UPDATE %spages SET Title=?, NiceTitle=?, URI=?, PageData=?, Author=?, Draft=?, Corral=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
 			$query = parent::$this->dbConn->prepare($formattedQuery);
-			$query->bind_param('ssssiii', $title, $niceTitle, $uri, $data, $author, $draft, $corral);
+			$query->bind_param('ssssiisi', $title, $niceTitle, $uri, $data, $author, $draft, $corral, $id);
 			$query->execute();
 			
 			if($query->affected_rows > 0)
@@ -472,7 +469,20 @@ class databaseAdmin extends database
 	
 	public function getPageList($limit, $offset)
 	{
-	
+		$return = array();
+		
+		$query = sprintf("SELECT * FROM %spages ORDER BY PrimaryKey desc LIMIT %d OFFSET %d", parent::$this->tablePrefix, parent::$this->dbConn->real_escape_string($limit), parent::$this->dbConn->real_escape_string($offset));
+		
+		if($result = parent::$this->dbConn->query($query))
+		{
+			while($row = $result->fetch_assoc())
+			{
+				array_push($return, $row);
+			}
+			$result->close();
+		}
+		
+		return $return;
 	}
 	
 	/**
@@ -726,6 +736,61 @@ class databaseAdmin extends database
 		{
 			$return = true;
 		}
+		
+		return $return;
+	}
+	
+	/**
+	 * getCorralList function.
+	 * 
+	 * @brief Grabs a list of all of the Distinct corrals.
+	 * @access public
+	 * @return Array containing the names of corral's or an empty array if there are none
+	 */
+	public function getCorralList()
+	{
+		$return = array();
+		$query = sprintf("SELECT DISTINCT Corral FROM %spages WHERE Corral IS NOT NULL", parent::$this->tablePrefix);
+		
+		if($result = parent::$this->dbConn->query($query))
+		{
+			while($row = $result->fetch_assoc())
+			{
+				array_push($return, $row);
+			}
+			$result->close();
+		}
+		
+		return $return;
+	}
+	
+	/**
+	 * getPagesInCorral function.
+	 * 
+	 * @brief Grabs a list of all of the pages inside of a corral.
+	 * @access public
+	 * @param mixed $name
+	 * @return Array containing the names and primary key's of pages in a specific corral or an empty array if there are none
+	 */
+	public function getPagesInCorral($name)
+	{
+		$return = array();
+		$formattedQuery = sprintf("SELECT PrimaryKey, Title FROM %spages WHERE Corral=?", parent::$this->tablePrefix);
+		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query->bind_param('s', $name);
+		$query->execute();
+		$query->bind_result($pk, $title);
+		
+		$count = 0;
+		
+		while($query->fetch())
+		{
+			$return[$count] = array();
+			$return[$count]["PrimaryKey"] = $pk;
+			$return[$count]["Corral"] = $title;
+			$count++;
+		}
+		$query->close();
 		
 		return $return;
 	}

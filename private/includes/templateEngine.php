@@ -17,6 +17,15 @@ class templateEngine
 	private $errorText = null;
 	private $themeValidError = false;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @brief you need at least a 404.php for the theme to be valid
+	 * @access public
+	 * @param mixed $database
+	 * @param mixed $router
+	 * @return void
+	 */
 	public function __construct($database, $router)
 	{
 		$this->database = $database;
@@ -26,7 +35,7 @@ class templateEngine
 		if(!$this->themeFileIsValid("404.php"))
 		{
 			// really need to fix this. It'll probably happen when I refactor the template engine
-			die("no valid theme file found. You have no index.php");
+			die("no valid theme file found. You have no 404.php");
 		}
 	}
 	
@@ -492,16 +501,24 @@ class templateEngine
 		$result = $this->db->getCategory();
 	}
 	
-	public function pageCorralName($id)
+	public function getCorral($name)
 	{
-		$id = intval($id);
-		
-		$pages = $this->db->corralPage($id);
+		static $position = 0;
+		static $length = 0;
+		static $data = null;
 		$return = null;
 		
-		foreach($pages as $key)
+		if($data == null)
 		{
-			$return .= sprintf('<a href="%s">%s</a>', generateUrlFromUri($key["URI"]), $key["Title"]);
+			$data = $this->database->getCorralByName($name);
+			$length = count($data);
+		}
+		
+		if($position < $length)
+		{
+			$return = array();
+			$return["Title"] = $data[$position]["Title"];
+			$return["URI"] = $data[$position]["URI"];
 		}
 		
 		return $return;
@@ -612,6 +629,44 @@ class templateEngine
 	{
 		$this->pageData = $this->database->getPosts(0);
 	}
+	
+	public function getCorralArrayByName($name)
+	{
+		$tmpArr = $this->database->getCorralByName($name);
+		
+		$count = count($tmpArr);
+		
+		for($i=0; $i < $count; $i++)
+		{
+			$tmpURL = sprintf("%s%s", V_URL, V_HTTPBASE);
+			if(!V_HTACCESS)
+			{
+				$tmpURL .= "index.php";
+			}
+			$tmpURL .= sprintf("%s", $tmpArr[$i]["URI"]);
+			$tmpArr[$i]["URL"] = $tmpURL;
+		}
+		
+		return $tmpArr;
+	}
+	
+	public function getFormattedCorralByName($name)
+	{
+		$tmpStr = null;
+		$tmpArr = $this->getCorralArrayByName($name);
+		
+		//print_r($tmpArr);
+		
+		$count = count($tmpArr);
+		
+		for($i = 0; $i < $count; $i++)
+		{
+			$tmpStr .= sprintf('<li><a href="%s">%s</a>', $tmpArr[$i]["URL"], $tmpArr[$i]["Title"]);
+		}
+		
+		return $tmpStr;
+	}
+	
 	
 	/**
 	 * haveError function.

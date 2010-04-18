@@ -32,5 +32,7 @@ while($this->templateEngine->postNext())
 	
 }
 
+echo $this->templateEngine->getFormattedCorralByName("test1234");
+
 require_once("footer.php");
 ?>

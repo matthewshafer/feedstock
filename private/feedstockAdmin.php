@@ -237,6 +237,20 @@ class feedstockAdmin
 		
 		if($this->postManager->checkPostWithArray($pagesNeeded))
 		{
+			if($this->postManager->checkPostVal("pageCorral"))
+			{
+				$corral = $this->postManager->getPostByName("pageCorral");
+				$corral = str_replace(array("\n", "\r", "\t", " ", "\O", "\xOB"), '', $corral);
+				$corral = strtolower($corral);
+			}
+			else
+			{
+				$corral = "";
+			}
+			
+			
+			
+			
 			if($this->postManager->getPostByName("id") != -1)
 			{
 				//update
@@ -261,7 +275,7 @@ class feedstockAdmin
 				$this->cookieMonster->getUserID(), 
 				null, 
 				$this->postManager->getPostByName("draft"),
-				null, 
+				$corral, 
 				$id
 				);
 				
@@ -289,7 +303,8 @@ class feedstockAdmin
 				$goodUri, 
 				$this->cookieMonster->getUserID(), 
 				date("Y-m-d H:i:s", time()), 
-				$this->postManager->getPostByName("draft")
+				$this->postManager->getPostByName("draft"),
+				$corral
 				);
 			}
 		}
@@ -361,6 +376,16 @@ class feedstockAdmin
 		return $niceTitle;
 	}
 	
+	/**
+	 * checkAndFixNiceUriCollision function.
+	 * 
+	 * @brief fixes URI collisions. So if we have /test and we try to make another one it makes /test-2
+	 * @access private
+	 * @param mixed $type
+	 * @param mixed $niceUri
+	 * @param mixed $id. (default: null)
+	 * @return String containing the no-collision URI
+	 */
 	private function checkAndFixNiceUriCollision($type, $niceUri, $id = null)
 	{
 		$i = 1;
@@ -385,7 +410,14 @@ class feedstockAdmin
 		return $niceUri;
 	}
 	
-	
+	/**
+	 * uriFriendlyTitle function.
+	 * 
+	 * @brief Makes a URI friendly title
+	 * @access private
+	 * @param mixed $title
+	 * @return String that is the URI friendly title
+	 */
 	private function uriFriendlyTitle($title)
 	{
 		$return = null;
@@ -408,7 +440,15 @@ class feedstockAdmin
 		return $return;
 	}
 	
-		private function uriFriendlyCustomEntered($title)
+	/**
+	 * uriFriendlyCustomEntered function.
+	 * 
+	 * @brief makes a nice URI from a custom entered URI
+	 * @access private
+	 * @param mixed $title
+	 * @return String that is the nice URI
+	 */
+	private function uriFriendlyCustomEntered($title)
 	{
 		$return = null;
 		if($title != null)
@@ -483,6 +523,16 @@ class feedstockAdmin
 		return $tmpStr;
 	}
 	
+	/**
+	 * makePasswordHash function.
+	 * 
+	 * @brief Generates the password hash based on the password the user entered and the salt from the database
+	 * @brief Grabs the salt from the config and mixes things up.  Uses Whirlpool hash function so it requires mcrypt
+	 * @access private
+	 * @param mixed $p
+	 * @param mixed $s
+	 * @return String that is the hash of the password
+	 */
 	private function makePasswordHash($p, $s)
 	{	
 		// create some var's we need for later

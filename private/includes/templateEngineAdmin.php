@@ -94,6 +94,13 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * itsNotMeItsYou function.
+	 * 
+	 * @brief Figures out which template file needs to be loaded
+	 * @access private
+	 * @return String with the name of the template file to load
+	 */
 	private function itsNotMeItsYou()
 	{
 		$return = null;
@@ -136,6 +143,9 @@ class templateEngineAdmin
 				$return = "/categories.php";
 				$this->theCategoryData = $this->getCategoriesList();
 				break;
+			case "corral":
+				$return = "/corral.php";
+				$this->theData = $this->getCorrals();
 		}
 		
 		if($return == null)
@@ -147,6 +157,39 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * getCorrals function.
+	 * 
+	 * @brief Grabs all the corrals currently used.
+	 * @access private
+	 * @return Array with corrals, empty if none
+	 */
+	private function getCorrals()
+	{
+		$return = array();
+		$specificCorral = $this->router->getUriPosition(2);
+		
+		if($specificCorral == null)
+		{
+			$return = $this->db->getCorralList();
+		}
+		else
+		{
+			// going to get a specific corral
+			$return = $this->db->getPagesInCorral($specificCorral);
+		}
+		
+		return $return;
+	}
+	
+	/**
+	 * getPostOrPageList function.
+	 * 
+	 * @brief Get's the data needed for listing either posts or pages
+	 * @access private
+	 * @param mixed $type
+	 * @return Array with posts or pages, null if none
+	 */
 	private function getPostOrPageList($type)
 	{
 		$offset = intval($this->router->getUriPosition(2));
@@ -191,6 +234,14 @@ class templateEngineAdmin
 		return $tmpArr;
 	}
 	
+	/**
+	 * getCategoriesList function.
+	 * 
+	 * @brief Get's a list of all the added categories
+	 * @access private
+	 * @param mixed $id. (default: null)
+	 * @return Array with the current categories, null if none
+	 */
 	private function getCategoriesList($id = null)
 	{
 		$tmpArr = $this->db->listCategoriesOrTags(0);
@@ -224,16 +275,37 @@ class templateEngineAdmin
 		return $tmpArr;
 	}
 	
+	/**
+	 * getTheData function.
+	 * 
+	 * @brief Returns theData array.  The data depends on what page has been loaded
+	 * @access public
+	 * @return Array of data
+	 */
 	public function getTheData()
 	{
 		return $this->theData;
 	}
 	
+	/**
+	 * getCategoryData function.
+	 * 
+	 * @brief Returns theCategoryData array, if called when it has not been generated you get null
+	 * @access public
+	 * @return Array with category data
+	 */
 	public function getCategoryData()
 	{
 		return $this->theCategoryData;
 	}
 	
+	/**
+	 * postTitleID function.
+	 * 
+	 * @brief Simply returns the post title
+	 * @access public
+	 * @return String with the title of the post.  If it doesn't exist then null
+	 */
 	public function postTitleID()
 	{
 		if(isset($this->theData["Title"]))
@@ -247,6 +319,13 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * postBodyID function.
+	 * 
+	 * @brief Simply returns the post's body
+	 * @access public
+	 * @return String with the body of the post
+	 */
 	public function postBodyID()
 	{
 		if(isset($this->theData["PostData"]))
@@ -260,11 +339,20 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	
+	
 	public function postCategoriesID()
 	{
 		return "cat1, cat2, cat3";
 	}
 	
+	/**
+	 * postTagsID function.
+	 * 
+	 * @brief Builds a correctly formatted tag string so tags can be added or removed by the user
+	 * @access public
+	 * @return String with the Tags else blank
+	 */
 	public function postTagsID()
 	{
 		if($this->router->getUriPosition(2) != null)
@@ -279,6 +367,13 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * postID function.
+	 * 
+	 * @brief Returns the ID of the post otherwise it returns -1 which stands for a new post
+	 * @access public
+	 * @return Integer that is the postID
+	 */
 	public function postID()
 	{
 		if(isset($this->theData["PrimaryKey"]))
@@ -292,6 +387,13 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * pageTitleID function.
+	 * 
+	 * @brief Returns the title of the page
+	 * @access public
+	 * @return String with the title of the page, else null
+	 */
 	public function pageTitleID()
 	{
 		if(isset($this->theData["Title"]))
@@ -305,6 +407,13 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * pageURI function.
+	 * 
+	 * @brief Returns the URI for the page
+	 * @access public
+	 * @return String with the URI, else null
+	 */
 	public function pageURI()
 	{
 		if(isset($this->theData["URI"]))
@@ -318,6 +427,13 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * pageBodyID function.
+	 * 
+	 * @brief Returns the body of the page
+	 * @access public
+	 * @return String with the body information, else null
+	 */
 	public function pageBodyID()
 	{
 		if(isset($this->theData["PageData"]))
@@ -331,6 +447,13 @@ class templateEngineAdmin
 		return $return;
 	}
 	
+	/**
+	 * pageID function.
+	 * 
+	 * @brief Simply returns the ID of the page, if the page is new then it returns -1
+	 * @access public
+	 * @return Integer of the ID of the page
+	 */
 	public function pageID()
 	{
 		if(isset($this->theData["PrimaryKey"]))
@@ -354,6 +477,13 @@ class templateEngineAdmin
 		return -1;
 	}
 	
+	/**
+	 * isDraft function.
+	 * 
+	 * @brief Returns if the page/post is a draft or not, defaults to being a draft if not set
+	 * @access public
+	 * @return Integer, 1=true, 0=false
+	 */
 	public function isDraft()
 	{
 		if(isset($this->theData["Draft"]))
@@ -372,6 +502,18 @@ class templateEngineAdmin
 	public function themeError()
 	{
 		return false;
+	}
+	
+	/**
+	 * pageCorral function.
+	 * 
+	 * @brief Returns the corral that the page has
+	 * @access public
+	 * @return String with the Page's Corral name
+	 */
+	public function pageCorral()
+	{
+		return $this->theData["Corral"];
 	}
 }
 ?>

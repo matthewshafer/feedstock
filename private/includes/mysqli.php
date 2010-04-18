@@ -479,6 +479,30 @@ class database
 	{
 		return $this->haveNext;
 	}
+	
+	public function getCorralByName($name)
+	{
+		$return = array();
+		$formattedQuery = sprintf("SELECT Title, URI FROM %spages WHERE Corral=?", $this->tablePrefix);
+		$query = $this->dbConn->prepare($formattedQuery);
+		$query->bind_param('s', $name);
+		$query->execute();
+		$query->bind_result($title, $uri);
+		
+		$count = 0;
+		
+		//im thinking we create our own associative array, its pretty easy to do
+		while($query->fetch())
+		{
+			$return[$count] = array();
+			$return[$count]["Title"] = $title;
+			$return[$count]["URI"] = $uri;
+			$count++;
+		}
+		$query->close();
+		
+		return $return;
+	}
 
 }
 ?>

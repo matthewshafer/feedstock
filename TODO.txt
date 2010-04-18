@@ -28,3 +28,6 @@ templateEngine
 	
 fileServe
 	check how it reacts when htaccess is setup.  specifically %2F
+	
+templateEngineAdmin
+	Removing categories
