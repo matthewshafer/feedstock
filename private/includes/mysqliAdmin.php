@@ -218,10 +218,50 @@ class databaseAdmin extends database
 		return $return;
 	}
 	
-	// going to rewrite how users work within the next few days
+	/**
+	 * removeUser function.
+	 * 
+	 * @brief Removes a user from the database if the user deleting them has a higher user level and is allowed to administrate users.
+	 * @access public
+	 * @param mixed $userRemoveID
+	 * @param mixed $currUserID
+	 * @return Boolean, True if the delete worked, false if it failed some how.
+	 */
 	public function removeUser($userRemoveID, $currUserID)
 	{
-		//$formattedQuery = sprintf("",);
+		$return = false;
+		$formattedQuery = sprintf("SELECT Permissions, CanAdminUsers FROM %susers WHERE id=?", parent::$this->tablePrefix);
+		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query->bind_param('i', $id);
+		$id = $currUserID;
+		$query->execute();
+		$query->bind_result($permissions, $canAdmin);
+		$query->fetch();
+		$currPerm = $permissions;
+		$currAdmin = $canAdmin;
+		$query->free_result();
+		$id = $userRemoveID;
+		$query->execute();
+		// not sure if this is needed again
+		$query->bind_result($permissions, $canAdmin);
+		$query->fetch();
+		
+		if($currPerm < $permissions && $currAdmin === 1)
+		{
+			$formattedQuery2 = sprintf("DELETE FROM %susers WHERE id=?", parent::$this->tablePrefix);
+			$query2 = parent::$this->dbConn->prepare($formattedQuery2);
+			$query2->bind_param('i', $userRemoveID);
+			$query->execute();
+			
+			if($query2->affected_rows > 0)
+			{
+				$return = true;
+			}
+			$query2->close();
+		}
+		$query->close();
+		
+		return $return;
 	}
 	
 	/**
