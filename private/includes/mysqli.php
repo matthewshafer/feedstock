@@ -5,7 +5,7 @@
  * @brief using mysqli which is a part of php5.  Uses things like multi_query.
  * 
  */
-class database
+class mysqliDatabase
 {
 	protected $dbConn = null;
 	protected $tablePrefix = null;
@@ -15,6 +15,17 @@ class database
 	public $debugQueries = array();
 	public $queries = 0;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $username
+	 * @param mixed $password
+	 * @param mixed $serverAddress
+	 * @param mixed $dbname
+	 * @param mixed $tablePrefix
+	 * @return void
+	 */
 	public function __construct($username, $password, $serverAddress, $dbname, $tablePrefix)
 	{
 		$this->dbConn = new mysqli($serverAddress, $username, $password, $dbname);
@@ -42,6 +53,12 @@ class database
 		}
 	}
 	
+	/**
+	 * haveConnError function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function haveConnError()
 	{
 		return $this->connError;
@@ -54,11 +71,25 @@ class database
 	}
 	*/
 	
+	/**
+	 * closeConnection function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function closeConnection()
 	{
 		$this->dbConn->close();
 	}
 	
+	/**
+	 * getPosts function.
+	 * 
+	 * @access public
+	 * @param mixed $offset
+	 * @param bool $draft. (default: false)
+	 * @return void
+	 */
 	public function getPosts($offset, $draft = false)
 	{
 		$return = array();
@@ -108,6 +139,14 @@ class database
 		return $return;
 	}
 	
+	/**
+	 * generateAuthors function.
+	 * 
+	 * @access private
+	 * @param mixed $postArr
+	 * @param mixed $authorArr
+	 * @return void
+	 */
 	private function generateAuthors($postArr, $authorArr)
 	{
 		if($postArr != null && $authorArr != null)
@@ -161,6 +200,14 @@ class database
 		return $postArr;
 	}
 	
+	/**
+	 * getPage function.
+	 * 
+	 * @access public
+	 * @param mixed $URI
+	 * @param bool $draft. (default: false)
+	 * @return void
+	 */
 	public function getPage($URI, $draft = false)
 	{
 		$return = array();
@@ -191,6 +238,14 @@ class database
 		return $return;
 	}
 	
+	/**
+	 * getSinglePost function.
+	 * 
+	 * @access public
+	 * @param mixed $URI
+	 * @param bool $draft. (default: false)
+	 * @return void
+	 */
 	public function getSinglePost($URI, $draft = false)
 	{
 		$tmpArr = array();
@@ -234,6 +289,14 @@ class database
 		return $return;
 	}
 	
+	/**
+	 * getPostCategoryOrTag function.
+	 * 
+	 * @access public
+	 * @param mixed $IdArray
+	 * @param mixed $type
+	 * @return void
+	 */
 	public function getPostCategoryOrTag($IdArray, $type)
 	{
 		$tmpCt = null;
@@ -357,6 +420,15 @@ class database
 		return $return;
 	}
 	
+	/**
+	 * getPostsInCategoryOrTag function.
+	 * 
+	 * @access public
+	 * @param mixed $URIName
+	 * @param mixed $type
+	 * @param bool $draft. (default: false)
+	 * @return void
+	 */
 	public function getPostsInCategoryOrTag($URIName, $type, $draft = false)
 	{
 		$return = array();
@@ -428,6 +500,14 @@ class database
 		
 	}
 	
+	/**
+	 * checkCategoryTagName function.
+	 * 
+	 * @access public
+	 * @param mixed $name
+	 * @param mixed $type
+	 * @return void
+	 */
 	public function checkCategoryTagName($name, $type)
 	{
 		$return = false;
@@ -456,6 +536,13 @@ class database
 		return $return;
 	}
 	
+	/**
+	 * listCategoriesOrTags function.
+	 * 
+	 * @access public
+	 * @param mixed $type
+	 * @return void
+	 */
 	public function listCategoriesOrTags($type)
 	{
 		$return = array();
@@ -475,11 +562,24 @@ class database
 		return $return;
 	}
 	
+	/**
+	 * haveNextPage function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function haveNextPage()
 	{
 		return $this->haveNext;
 	}
 	
+	/**
+	 * getCorralByName function.
+	 * 
+	 * @access public
+	 * @param mixed $name
+	 * @return void
+	 */
 	public function getCorralByName($name)
 	{
 		$return = array();

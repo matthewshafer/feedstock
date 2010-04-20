@@ -5,7 +5,7 @@
  * @brief Handles writing responses to the disk for fast retrival
  *
  */
-class cache
+class filecache
 {
 	private $cacheloc = null;
 	private $uri = null;

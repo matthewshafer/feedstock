@@ -7,7 +7,7 @@ require_once(V_DATABASE . ".php");
  * @brief the database class for the admin section.  It houses a bunch of functions which is why we keep it seperate from the frontend database.
  * @extends database
  */
-class databaseAdmin extends database
+class mysqliDatabaseAdmin extends mysqliDatabase
 {
 	/**
 	 * __construct function.

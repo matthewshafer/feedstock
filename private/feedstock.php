@@ -41,13 +41,14 @@ class feedstock
 		if($this->router->requestMethod() == "GET")
 		{
 		
-			if(V_CACHE && is_writable(V_BASELOC . "/private/cache"))
+			if(V_CACHE && $this->cacheWriteableLoc())
 			{
 				// Should create the cacher first so that we can check if a file exists before we even create a database
 				// for example if the database goes down we can still serve up pages, until they "expire" which would give us
 				// a little bit of time to get the DB back up and running
-				require_once("includes/" . F_CACHENAME . ".php");
-				$this->cacher = new cache($this->router->fullURI());
+				//require_once("includes/" . F_CACHENAME . ".php");
+				//$this->cacher = new cache($this->router->fullURI());
+				$this->cacheMaker();
 			
 				if($this->cacher->checkExists())
 				{
@@ -95,8 +96,9 @@ class feedstock
 	 */
 	private function heavyLift()
 	{
-		require_once("includes/" . V_DATABASE . ".php");
-		$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+		//require_once("includes/" . V_DATABASE . ".php");
+		//$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+		$this->db = $this->databaseMaker();
 		
 		if($this->db->haveConnError() == null)
 		{		
@@ -128,6 +130,69 @@ class feedstock
 			$data = $this->db->haveConnError();
 		}
 		return $data;
+	}
+	
+	/**
+	 * databaseMaker function.
+	 * 
+	 * @brief Makes it easy to add new databases to Feedstock
+	 * @access private
+	 * @return Database Object or null;
+	 */
+	private function databaseMaker()
+	{
+		require_once("includes/" . V_DATABASE . ".php");
+		$return = null;
+		
+		switch(V_DATABASE)
+		{
+			case "mysqli":
+				$return = new mysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+			break;
+			case "mysql":
+				$return = new mysqlDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+			break;
+		}
+		
+		return $return;
+	}
+	
+	private function cacheMaker()
+	{
+		require_once("includes/" . F_CACHENAME . ".php");
+		
+		switch(F_CACHENAME)
+		{
+			case "filecache":
+				$this->cacher = new filecache($this->router->fullURI());
+			break;
+			case "xcache":
+				$this->cacher = new xcache($this->router->fullURI());
+			break;
+		}
+	}
+	
+	private function cacheWriteableLoc()
+	{
+		$return = false;
+		
+		switch(F_CACHENAME)
+		{
+			case "filecache":
+				if(is_writable(V_BASELOC . "/private/cache"))
+				{
+					$return = true;
+				}
+			break;
+			case "xcache":
+				if(function_exists('xcache_get'))
+				{
+					$return = true;
+				}
+			break;
+		}
+		
+		return $return;
 	}
 }
 

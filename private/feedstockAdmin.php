@@ -41,9 +41,11 @@ class feedstockAdmin
 		
 		$this->postManager = new postManager();
 		
-		require_once("includes/" . V_DATABASE . "Admin.php");
+		//require_once("includes/" . V_DATABASE . "Admin.php");
 		
-		$this->dbAdmin = new databaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+		//$this->dbAdmin = new databaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+		
+		$this->dbAdmin = $this->databaseMaker();
 		
 		require_once("includes/cookieMonster.php");
 		
@@ -579,6 +581,24 @@ class feedstockAdmin
 		
 		return $hash;
 	}
-
+	
+	
+	private function databaseMaker()
+	{
+		require_once("includes/" . V_DATABASE . "Admin.php");
+		$return = null;
+		
+		switch(V_DATABASE)
+		{
+			case "mysqli":
+				$return = new mysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+			break;
+			case "mysql":
+				$return = new mysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+			break;
+		}
+		
+		return $return;
+	}
 }
 ?>

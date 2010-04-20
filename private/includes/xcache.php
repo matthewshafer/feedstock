@@ -5,13 +5,19 @@
  * @brief caches using only xcache.  So no static files.  The downside is if the DB dies and xcache cleares the cache nothing is there to cache.
  * 
  */
-class cache
+class xcache
 {
 	private $uri = null;
 	private $urimd5 = null;
 	private $prefixUri = null;
 	
-	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $uri
+	 * @return void
+	 */
 	public function __construct($uri)
 	{
 		// setting up the variables
@@ -29,6 +35,13 @@ class cache
 	}
 	
 	
+	/**
+	 * checkExists function.
+	 * 
+	 * @brief Checks if the cached file exists.
+	 * @access public
+	 * @return Boolean, True if exists False if it doesn't exist
+	 */
 	public function checkExists()
 	{	
 		$return = null;
