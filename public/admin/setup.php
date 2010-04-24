@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors',1); 
+error_reporting(E_ALL);
 // for now just point this to the root
 $loc = "../../";
 
@@ -7,7 +9,15 @@ if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["dis
 	require_once($loc . "config.php");
 	require_once($loc . "private/includes/" . V_DATABASE . "Admin.php");
 	
-	$db = new databaseAdmin($username, $password, $address, $database, $tableprefix);
+	if(V_DATABASE == "mysql")
+	{
+		$db = new mysqlDatabaseAdmin($username, $password, $address, $database, $tableprefix);
+	}
+	else if(V_DATABASE == "mysqli")
+	{
+		$db = new mysqliDatabaseAdmin($username, $password, $address, $database, $tableprefix);
+	}
+	//$db = new databaseAdmin($username, $password, $address, $database, $tableprefix);
 	$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()_+=-|}{[];:,./<>?\'\\';
 
 	$runFor = 255;

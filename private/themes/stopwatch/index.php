@@ -16,7 +16,7 @@ while($this->templateEngine->postNext())
 	echo "<br>";
 	echo "Author: " . $this->templateEngine->getPostAuthor();
 	echo "<br>";
-	echo "Body: " . $this->templateEngine->getPostBody();
+	echo "Body: " . $this->templateEngine->getPostBodyHTML();
 	echo "<br>";
 	echo "Tags: " . $this->templateEngine->getPostTags();
 	echo "<br>";

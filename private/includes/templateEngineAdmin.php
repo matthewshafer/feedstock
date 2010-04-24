@@ -513,7 +513,13 @@ class templateEngineAdmin
 	 */
 	public function pageCorral()
 	{
-		return $this->theData["Corral"];
+		$return = null;
+		
+		if(isset($this->theData["Corral"]))
+		{
+			$return = $this->theData["Corral"];
+		}
+		return $return;
 	}
 }
 ?>

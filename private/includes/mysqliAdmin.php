@@ -135,7 +135,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 			
 			$formattedQuery = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", parent::$this->tablePrefix);
 			$query = parent::$this->dbConn->prepare($formattedQuery);
-			$qurey->bind_param('ssssisis', $title, $niceTitle, $uri, $data, $author, $date, $draft, $corral);
+			$query->bind_param('ssssisis', $title, $niceTitle, $uri, $data, $author, $date, $draft, $corral);
 			$query->execute();
 			
 			if($query->affected_rows > 0)
