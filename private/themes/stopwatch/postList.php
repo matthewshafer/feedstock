@@ -1,4 +1,5 @@
 <?php
+
 $this->templateEngine->getPostsIndex();
 $this->templateEngine->generateTags();
 $this->templateEngine->generateCategories();
@@ -32,9 +33,10 @@ while($this->templateEngine->postNext())
 	
 }
 
+echo $this->templateEngine->havePreviousPostPageHTML();
+echo " | ";
 echo $this->templateEngine->haveNextPostPageHTML();
-echo "<br><br><br>";
-echo $this->templateEngine->getFormattedCorralByName("test1234");
 
 require_once("footer.php");
+
 ?>

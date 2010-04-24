@@ -95,7 +95,7 @@ class templateEngine
 		{
 			$offset = $this->router->getPageOffset() * 10;
 			$this->pageData = $this->database->getPosts($offset);
-			$file = "/page.php";
+			$file = "/postList.php";
 		}
 		else
 		{
@@ -446,7 +446,7 @@ class templateEngine
 	{
 		$return = null;
 		
-		if(isset(($this->pageData[$this->arrayPosition]["PostData"]))
+		if(isset($this->pageData[$this->arrayPosition]["PostData"]))
 		{
 			$return = stripslashes($this->pageData[$this->arrayPosition]["PostData"]);
 		}
@@ -668,7 +668,7 @@ class templateEngine
 	{
 		$return = null;
 		
-		if(isset(($this->pageData[$this->arrayPosition]["PageData"]))
+		if(isset($this->pageData[$this->arrayPosition]["PageData"]))
 		{
 			$return = stripslashes($this->pageData[$this->arrayPosition]["PageData"]);
 		}
@@ -911,6 +911,107 @@ class templateEngine
 		}
 		
 		return $tmpStr;
+	}
+	
+	/**
+	 * haveNextPostPage function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function haveNextPostPage()
+	{
+		return $this->database->haveNextPage();
+	}
+	
+	/**
+	 * havePreviousPostPage function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function havePreviousPostPage()
+	{
+		$return = false;
+		
+		if(strtolower($this->router->pageType()) == "page" && $this->router->getPageOffset() > 0 && count($this->pageData) > 0)
+		{
+			$return = true;
+		}
+		
+		return $return;
+	}
+	
+	/**
+	 * haveNextPostPageHTML function.
+	 * 
+	 * @access public
+	 * @param string $title. (default: "Next Page ->")
+	 * @return void
+	 */
+	public function haveNextPostPageHTML($title = "Next Page ->")
+	{
+		$return = null;
+		
+		if($this->haveNextPostPage())
+		{
+			$offset = (int)$this->router->getPageOffset() + 2;
+			
+			if(!V_HTACCESS)
+			{
+				$tmpStr = sprintf("%s%s%s%d", V_URL, V_HTTPBASE, "index.php/page/", $offset);
+			}
+			else
+			{
+				$tmpStr = V_HTTPBASE;
+				$len = strlen($tmpStr);
+				if($len > 0 && $tmpStr[$len-1] == "/")
+				{
+					$tmpStr = substr($tmp, 0, -1);
+				}
+				
+				$tmpStr = sprintf("%s%s%d", $tmpStr, "page/", $offset);
+			}
+			$return = sprintf('<a href="%s">%s</a>', $tmpStr, $title);
+		}
+		
+		return $return;
+	}
+	
+	/**
+	 * havePreviousPostPageHTML function.
+	 * 
+	 * @access public
+	 * @param string $title. (default: "<- Previous Page")
+	 * @return void
+	 */
+	public function havePreviousPostPageHTML($title = "<- Previous Page")
+	{
+		$return = null;
+		
+		if($this->havePreviousPostPage())
+		{
+			$offset = (int)$this->router->getPageOffset();
+			
+			if(!V_HTACCESS)
+			{
+				$tmpStr = sprintf("%s%s%s%d", V_URL, V_HTTPBASE, "index.php/page/", $offset);
+			}
+			else
+			{
+				$tmpStr = V_HTTPBASE;
+				$len = strlen($tmpStr);
+				if($len > 0 && $tmpStr[$len-1] == "/")
+				{
+					$tmpStr = substr($tmp, 0, -1);
+				}
+				
+				$tmpStr = sprintf("%s%s%d", $tmpStr, "page/", $offset);
+			}
+			$return = sprintf('<a href="%s">%s</a>', $tmpStr, $title);
+		}
+		
+		return $return;
 	}
 	
 	
