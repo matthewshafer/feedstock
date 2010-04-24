@@ -845,6 +845,8 @@ class templateEngine
 			}
 			
 			$this->postCategory = $this->database->getPostCategoryOrTag($tmpArr, "category");
+			
+			print_r($this->postCategory);
 		}
 	}
 	
@@ -916,8 +918,9 @@ class templateEngine
 	/**
 	 * haveNextPostPage function.
 	 * 
+	 * @brief Lets us know if we have a next page we can go to
 	 * @access public
-	 * @return void
+	 * @return Boolean, True if we have a next page, false if we don't
 	 */
 	public function haveNextPostPage()
 	{
@@ -927,8 +930,9 @@ class templateEngine
 	/**
 	 * havePreviousPostPage function.
 	 * 
+	 * @brief Lets us know if we have a page previous to the one we are currently at
 	 * @access public
-	 * @return void
+	 * @return Boolean, True if we have a previous, false if we don't
 	 */
 	public function havePreviousPostPage()
 	{
@@ -945,9 +949,10 @@ class templateEngine
 	/**
 	 * haveNextPostPageHTML function.
 	 * 
+	 * @brief Makes us a nice next link if we have a next page.  Can specify your own next text.
 	 * @access public
 	 * @param string $title. (default: "Next Page ->")
-	 * @return void
+	 * @return String containing the link, null if we don't have a next page
 	 */
 	public function haveNextPostPageHTML($title = "Next Page ->")
 	{
@@ -981,9 +986,10 @@ class templateEngine
 	/**
 	 * havePreviousPostPageHTML function.
 	 * 
+	 * @brief Makes us a nice previous link if we have a previous page.  Can specify your own previous text
 	 * @access public
 	 * @param string $title. (default: "<- Previous Page")
-	 * @return void
+	 * @return String containing the link, null if we don't have a previous page
 	 */
 	public function havePreviousPostPageHTML($title = "<- Previous Page")
 	{
