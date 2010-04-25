@@ -118,7 +118,7 @@ class templateEngineAdmin
 				{
 					$this->theData = $this->db->getPostDataByID(intval($this->router->getUriPosition(2)));
 				}
-				$this->theCategoryData = $this->getCategoriesList(intval($this->router->getUriPosition(2)));
+				//$this->theCategoryData = $this->getCategoriesList(intval($this->router->getUriPosition(2)));
 				break;
 			case "page":
 				$return = "/createPage.php";
@@ -149,13 +149,18 @@ class templateEngineAdmin
 				break;
 			case "tags":
 				break;
-			case "snippits":
-				$return = "/snippit.php";
+			case "snippets":
+				$return = "/snippet.php";
 				//need to get the data but i need to make a function first
+				$this->theData = $this->db->getSnippetList();
 				break;
-			case "snippit":
-				$return = "/createSnippit.php";
+			case "snippet":
+				$return = "/createSnippet.php";
 				// also need to get data
+				if($this->router->getUriPosition(2) != null)
+				{
+					$this->theData = $this->db->getSnippetByID($this->router->getUriPosition(2));
+				}
 				break;
 		}
 		
@@ -541,6 +546,42 @@ class templateEngineAdmin
 	public function havePreviousPage()
 	{
 	
+	}
+	
+	public function snippetTitleID()
+	{
+		$return = null;
+		
+		if(isset($this->theData["Name"]))
+		{
+			$return = $this->theData["Name"];
+		}
+		
+		return $return;
+	}
+	
+	public function snippetBodyID()
+	{
+		$return = null;
+		
+		if(isset($this->theData["SnippetData"]))
+		{
+			$return = $this->theData["SnippetData"];
+		}
+		
+		return $return;
+	}
+	
+	public function snippetID()
+	{
+		$return = -1;
+		
+		if(isset($this->theData["PrimaryKey"]))
+		{
+			$return = $this->theData["PrimaryKey"];
+		}
+		
+		return $return;
 	}
 }
 ?>

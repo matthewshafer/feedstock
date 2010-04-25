@@ -389,7 +389,8 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		}
 		else if($type == "snippet")
 		{
-			$formattedQuery = sprintf("SELECT PrimaryKey FROM %ssnippet WHERE Title=? LIMIT 1", parent::$this->tablePrefix);
+			$formattedQuery = sprintf("SELECT PrimaryKey FROM %ssnippet WHERE Name=? LIMIT 1", parent::$this->tablePrefix);
+			//echo $formattedQuery;
 		}
 		
 		if($formattedQuery != null)
@@ -907,6 +908,27 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 				array_push($return, $row);
 			}
 			$result->close();
+		}
+		
+		return $return;
+	}
+	
+	public function getSnippetByID($id)
+	{
+		$return = array();
+		
+		if($id != null)
+		{
+			$formattedQuery = sprintf("SELECT * FROM %ssnippet WHERE PrimaryKey='%s'", parent::$this->tablePrefix, $id);
+			
+			if($result = parent::$this->dbConn->query($formattedQuery))
+			{
+				if($row = $result->fetch_assoc())
+				{
+					$return = $row;
+				}
+				$result->close();
+			}
 		}
 		
 		return $return;

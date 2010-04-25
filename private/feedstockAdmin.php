@@ -132,8 +132,9 @@ class feedstockAdmin
 			case "tagRemove":
 				echo "tag Remove";
 				break;
-			case "snippetAdd"
+			case "snippetAdd":
 				echo "snipped Add";
+				$this->addSnippet();
 				break;
 			case "snippetRemove":
 				echo "snippet Remove";
@@ -354,6 +355,28 @@ class feedstockAdmin
 	private function removeCategory()
 	{
 		
+	}
+	
+	private function addSnippet()
+	{
+		$snippetNeeded = array("snippetTitle", "id", "postorpagedata");
+		
+		if($this->postManager->checkPostWithArray($snippetNeeded))
+		{
+			if($this->postManager->getPostByName("id") != -1)
+			{
+				$niceTitle = $this->uriFriendlyTitle($this->postManager->getPostByName("snippetTitle"));
+				$niceTitle = $this->checkAndFixNiceTitleCollision("snippet", $niceTitle, $this->postManager->getPostByName("id"));
+				$this->dbAdmin->addSnippet($niceTitle, $this->postManager->getPostByName("postorpagedata"), $this->postManager->getPostByName("id"));
+			}
+			else
+			{
+				echo "here";
+				$niceTitle = $this->uriFriendlyTitle($this->postManager->getPostByName("snippetTitle"));
+				$niceTitle = $this->checkAndFixNiceTitleCollision("snippet", $niceTitle);
+				$this->dbAdmin->addSnippet($niceTitle, $this->postManager->getPostByName("postorpagedata"));
+			}
+		}
 	}
 	
 	private function checkAndFixNiceTitleCollision($type, $niceTitle, $id = null)
