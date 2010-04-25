@@ -132,6 +132,12 @@ class feedstockAdmin
 			case "tagRemove":
 				echo "tag Remove";
 				break;
+			case "snippetAdd"
+				echo "snipped Add";
+				break;
+			case "snippetRemove":
+				echo "snippet Remove";
+				break;
 		}
 	}
 	

@@ -31,12 +31,14 @@ class templateEngine
 		$this->database = $database;
 		$this->router = $router;
 		
-		// we need to check if at least an index.php exists for the theme
+		// I don't think we need this any more since we print an error if themes dont exist so im going to comment it out.  if we need it i'll un comment it.
+		/*
 		if(!$this->themeFileIsValid("404.php"))
 		{
 			// really need to fix this. It'll probably happen when I refactor the template engine
 			die("no valid theme file found. You have no 404.php");
 		}
+		*/
 	}
 	
 	/**
@@ -146,7 +148,14 @@ class templateEngine
 					if($this->pageData != null)
 					{
 						// just here for default
-						$file = "/category.php";
+						if($this->router->uriLength() > 1)
+						{
+							$file = "/postList.php";
+						}
+						else
+						{
+							$file = "/category.php";
+						}
 					}
 					else
 					{
@@ -172,7 +181,17 @@ class templateEngine
 					if($this->pageData != null)
 					{
 						// just here for default
-						$file = "/tag.php";
+						
+						if($this->router->uriLength() > 1)
+						{
+							$file = "/postList.php";
+						}
+						else
+						{
+							$file = "/tag.php";
+						}
+						
+						//$file = "/tag.php";
 					}
 					else
 					{
@@ -188,7 +207,7 @@ class templateEngine
 				else
 				{
 					//echo $this->router->getPageOffset() . "<br>";
-					echo "boobs";
+					//echo "boobs";
 					$this->pageData = $this->database->getPage($this->router->fullURI());
 					//print_r($this->pageData);
 					// need some error checking for null pagedata
@@ -219,6 +238,17 @@ class templateEngine
 				$this->themeValidError = "Missing major components required for themes";
 			}
 		}
+		// need to check for the theme file being valid here
+		else
+		{
+			//echo substr($file, 1, strlen($file));
+			if(!$this->themeFileIsValid(substr($file, 1, strlen($file))))
+			{
+				$this->themeValidError = "Theme file does not exist";
+			}
+		}
+		
+		
 		// we can provbably streamline this
 		$return .= $file;
 		//$this->getCategoriesForPageData();
@@ -456,7 +486,7 @@ class templateEngine
 	/**
 	 * getPostBodyHTML function.
 	 * 
-	 * @brief Formatts the body so html runs and \n are converted to <br>
+	 * @brief Formatts the body so html runs and \n are converted to < br > "minus the spaces in there ofcourse"
 	 * @access public
 	 * @return String with the post body executing html on the client side, null if post doesn't exist
 	 */
@@ -846,7 +876,7 @@ class templateEngine
 			
 			$this->postCategory = $this->database->getPostCategoryOrTag($tmpArr, "category");
 			
-			print_r($this->postCategory);
+			//print_r($this->postCategory);
 		}
 	}
 	

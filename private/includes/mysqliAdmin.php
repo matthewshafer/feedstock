@@ -387,6 +387,10 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		{
 			$formattedQuery = sprintf("SELECT PrimaryKey FROM %spages WHERE NiceTitle=? LIMIT 1", parent::$this->tablePrefix);
 		}
+		else if($type == "snippet")
+		{
+			$formattedQuery = sprintf("SELECT PrimaryKey FROM %ssnippet WHERE Title=? LIMIT 1", parent::$this->tablePrefix);
+		}
 		
 		if($formattedQuery != null)
 		{
@@ -831,6 +835,79 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 			$count++;
 		}
 		$query->close();
+		
+		return $return;
+	}
+	
+	public function addSnippet($name, $data, $id = null)
+	{
+		$return = false;
+		
+		if($id == null)
+		{
+			$formattedQuery = sprintf("INSERT INTO %ssnippet (Name, SnippetData) VALUES(?, ?)", parent::$this->tablePrefix);
+			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query->bind_param('ss', $name, $data);
+			$query->execute();
+			
+			if($query->affected_rows > 0)
+			{
+				$return = true;
+			}
+			$query->close();
+		}
+		else
+		{
+			$formattedQuery = sprintf("UPDATE %ssnippet SET Name=?, SnippetData=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
+			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query->bind_param('ssi', $name, $data, $id);
+			$query->execute();
+			
+			if($query->affected_rows > 0)
+			{
+				$return = true;
+			}
+			$query->close();
+		}
+		
+		return $return;
+	}
+	
+	public function removeSnippet($id)
+	{
+		$return = false;
+		
+		if($id != null)
+		{
+			$formattedQuery = sprintf("DELETE %ssnippet WHERE PrimaryKey=?", parent::$this->tablePrefix);
+			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query->bind_param('i', $id);
+			$query->execute();
+			
+			if($query->affected_rows > 0)
+			{
+				$return = true;
+			}
+			$query->close();
+		}
+		
+		return $return;
+	}
+	
+	public function getSnippetList()
+	{
+		$return = array();
+		
+		$formattedQuery = sprintf("SELECT * FROM %ssnippet ORDER BY PrimaryKey DESC", parent::$this->tablePrefix);
+		
+		if($result = parent::$this->dbConn->query($formattedQuery))
+		{
+			while($row = $result->fetch_assoc())
+			{
+				array_push($return, $row);
+			}
+			$result->close();
+		}
 		
 		return $return;
 	}

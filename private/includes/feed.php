@@ -63,7 +63,7 @@ class feed
 				echo "\t\t\t\t" . '<link>' . substr($base, 0, strlen($base) - 1) . $key["URI"] . '</link>' . "\n";
 				echo "\t\t\t\t" . '<guid>' . substr($base, 0, strlen($base) - 1) . $key["URI"] . '</guid>' . "\n";
 				echo "\t\t\t\t" . '<pubDate>' . date("r", strtotime($key["Date"])) . '</pubDate>' . "\n";
-				echo "\t\t\t\t" . '<description><![CDATA[ ' . $key["PostData"] . ']]></description>' . "\n";
+				echo "\t\t\t\t" . '<description><![CDATA[ ' . nl2br(html_entity_decode(stripslashes($key["PostData"]))) . ']]></description>' . "\n";
 				echo "\t\t\t" . '</item>' . "\n";
 			}
 				

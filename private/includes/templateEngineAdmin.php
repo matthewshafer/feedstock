@@ -146,6 +146,17 @@ class templateEngineAdmin
 			case "corral":
 				$return = "/corral.php";
 				$this->theData = $this->getCorrals();
+				break;
+			case "tags":
+				break;
+			case "snippits":
+				$return = "/snippit.php";
+				//need to get the data but i need to make a function first
+				break;
+			case "snippit":
+				$return = "/createSnippit.php";
+				// also need to get data
+				break;
 		}
 		
 		if($return == null)
@@ -520,6 +531,16 @@ class templateEngineAdmin
 			$return = $this->theData["Corral"];
 		}
 		return $return;
+	}
+	
+	public function haveNextPage()
+	{
+	
+	}
+	
+	public function havePreviousPage()
+	{
+	
 	}
 }
 ?>
