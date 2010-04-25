@@ -1050,6 +1050,51 @@ class templateEngine
 		return $return;
 	}
 	
+	/**
+	 * getSnippetByName function.
+	 * 
+	 * @access public
+	 * @param mixed $name
+	 * @return void
+	 */
+	public function getSnippetByName($name)
+	{
+		$return = null;
+		
+		$tmpArr = $this->database->getSnippetByName($name);
+		
+		if(isset($tmpArr["SnippetData"]))
+		{
+			$return = stripslashes($tmpArr["SnippetData"]);
+		}
+		
+		return $return;
+	}
+	
+	/**
+	 * getSnippetByNameHTML function.
+	 * 
+	 * @access public
+	 * @param mixed $name
+	 * @return void
+	 */
+	public function getSnippetByNameHTML($name)
+	{
+		$return = null;
+		
+		$tmpArr = $this->database->getSnippetByName($name);
+		
+		if(isset($tmpArr["SnippetData"]))
+		{
+			$return = $tmpArr["SnippetData"];
+			$return = stripslashes($return);
+			$return = html_entity_decode($return);
+			$return = nl2br($return);
+		}
+		
+		return $return;
+	}
+	
 	
 	/**
 	 * haveError function.

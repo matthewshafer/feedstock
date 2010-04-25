@@ -603,6 +603,30 @@ class mysqliDatabase
 		
 		return $return;
 	}
+	
+	/**
+	 * getSnippetByName function.
+	 * 
+	 * @access public
+	 * @param mixed $name
+	 * @return void
+	 */
+	public function getSnippetByName($name)
+	{
+		$return = array();
+		$formattedQuery = sprintf("SELECT SnippetData FROM %ssnippet WHERE Name=? LIMIT 1", $this->tablePrefix);
+		$query = $this->dbConn->prepare($formattedQuery);
+		$query->bind_param('s', $name);
+		$query->execute();
+		$query->bind_result($data);
+		
+		if($query->fetch())
+		{
+			$return["SnippetData"] = $data;
+		}
+		
+		return $return;
+	}
 
 }
 ?>
