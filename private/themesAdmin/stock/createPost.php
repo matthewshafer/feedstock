@@ -15,7 +15,6 @@
 				<br>
 				Categories: (This is going to be a formatted list where you check boxes.)<br>
 				<!-- <input name="postCategories" type="text" value="<?php echo $this->templateEngine->postCategoriesID(); ?>"><br> -->
-				
 				<?php foreach($this->templateEngine->getCategoryData() as $key)
 				{
 					if(isset($key["Checked"]) and $key["Checked"] == 1)

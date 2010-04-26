@@ -123,7 +123,7 @@ class templateEngine
 				{
 					//echo "win!";
 					
-					echo $this->router->fullURI();
+					//echo $this->router->fullURI();
 					
 					// we could possibly make this a private function that allows us to grab the data, compare it and then return true or false and set the data to a global variable
  					if($this->database->checkCategoryTagName($this->router->getUriPosition($this->router->uriLength()), 0))

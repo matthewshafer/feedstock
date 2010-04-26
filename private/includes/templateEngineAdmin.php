@@ -118,7 +118,7 @@ class templateEngineAdmin
 				{
 					$this->theData = $this->db->getPostDataByID(intval($this->router->getUriPosition(2)));
 				}
-				//$this->theCategoryData = $this->getCategoriesList(intval($this->router->getUriPosition(2)));
+				$this->theCategoryData = $this->getCategoriesList(intval($this->router->getUriPosition(2)));
 				break;
 			case "page":
 				$return = "/createPage.php";
