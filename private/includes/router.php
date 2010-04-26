@@ -59,6 +59,14 @@ class router
 		
 		$this->uriArray = explode("/", $this->uri);
 		
+		$tmpCt = count($this->uriArray);
+		
+		// removes the end if there is a trailing slash and we made that position empty
+		if(empty($this->uriArray[$tmpCt-1]))
+		{
+			unset($this->uriArray[$tmpCt-1]);
+		}
+		
 		// could simplify the else statement a bit
 		// figure out what actually happens when we use htaccess
 		if($this->htaccess)
