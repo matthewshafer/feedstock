@@ -107,7 +107,7 @@ class templateEngine
 				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
 				
 				
-				if($this->pageData != null)
+				if(isset($this->pageData["PrimaryKey"]))
 				{
 					$this->arrayPosition = 0;
 					$file = $this->arrayCustomFile("single");
@@ -121,7 +121,7 @@ class templateEngine
 			{
 				if($this->router->pageType() == "category")
 				{
-					echo "win!";
+					//echo "win!";
 					
 					echo $this->router->fullURI();
 					
@@ -145,7 +145,7 @@ class templateEngine
 					}		
 					//$this->pageData = $this->database->getSpecificCategory($this->router->getUriPosition(2), $this->router->getPageOffset() * 10);
 					// need some error checking for null pagedata
-					if($this->pageData != null)
+					if(!empty($this->pageData))
 					{
 						// just here for default
 						if($this->router->uriLength() > 1)
@@ -178,7 +178,7 @@ class templateEngine
 						
 					}
 					// need some error checking for null pagedata
-					if($this->pageData != null)
+					if(!empty($this->pageData))
 					{
 						// just here for default
 						
@@ -208,10 +208,10 @@ class templateEngine
 				{
 					//echo $this->router->getPageOffset() . "<br>";
 					//echo "boobs";
-					$this->pageData = $this->database->getPage($this->router->fullURI());
+					$this->pageData = $this->database->getPage($this->router->fullURIRemoveTrailingSlash());
 					//print_r($this->pageData);
 					// need some error checking for null pagedata
-					if($this->pageData != null)
+					if(!empty($this->pageData))
 					{
 						$this->arrayPosition = 0;
 						$file = $this->arrayCustomFile("page");
@@ -219,6 +219,7 @@ class templateEngine
 					else
 					{
 						// do stuff
+						$this->errorText = "Oops, That page was not found!";
 					}
 				}
 			}
@@ -227,6 +228,7 @@ class templateEngine
 		
 		if($file == null)
 		{
+			//echo "null file";
 			// we have some error which we need to figure out what to do.  for now we will just die
 			//die("Invalid theme file");
 			if($this->themeFileIsValid("404.php"))
@@ -248,7 +250,7 @@ class templateEngine
 			}
 		}
 		
-		
+		//echo $file;
 		// we can provbably streamline this
 		$return .= $file;
 		//$this->getCategoriesForPageData();
@@ -913,6 +915,11 @@ class templateEngine
 			{
 				$tmpURL .= "index.php";
 			}
+			
+			if(substr($tmpURL, -1) == "/")
+			{
+				$tmpURL = substr($tmpURL, 0, -1);
+			}
 			$tmpURL .= sprintf("%s", $tmpArr[$i]["URI"]);
 			$tmpArr[$i]["URL"] = $tmpURL;
 		}
@@ -1063,6 +1070,8 @@ class templateEngine
 		
 		$tmpArr = $this->database->getSnippetByName($name);
 		
+		//print_r($tmpArr);
+		
 		if(isset($tmpArr["SnippetData"]))
 		{
 			$return = stripslashes($tmpArr["SnippetData"]);
@@ -1091,6 +1100,13 @@ class templateEngine
 			$return = html_entity_decode($return);
 			$return = nl2br($return);
 		}
+		
+		return $return;
+	}
+	
+	public function themeBaseLoc()
+	{
+		$return = sprintf("%s%s%s%s%s", V_URL, V_HTTPBASE, "themes/", V_THEME, "/");
 		
 		return $return;
 	}

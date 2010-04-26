@@ -1,1 +1,0 @@
-This directory is for css for themes.  You should put your css in ./themeName/

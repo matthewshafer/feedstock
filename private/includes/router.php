@@ -115,6 +115,18 @@ class router
 		return $this->uri;
 	}
 	
+	public function fullURIRemoveTrailingSlash()
+	{
+		$return = $this->uri;
+		
+		if(substr($return, -1) == "/")
+		{
+			$return = substr($return, 0, -1);
+		}
+		
+		return $return;
+	}
+	
 
 	/**
 	 * getUriPosition function.

@@ -230,7 +230,11 @@ class mysqliDatabase
 		
 		if($result = $this->dbConn->query($query))
 		{
-			array_push($return, $result->fetch_assoc());
+			$tmp = $result->fetch_assoc();
+			if(!empty($tmp))
+			{
+				array_push($return, $tmp);
+			}
 			
 			$result->close();
 		}

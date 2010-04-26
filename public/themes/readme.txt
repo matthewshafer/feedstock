@@ -1,0 +1,1 @@
+place a folder with your theme's name here so you can access things like your css/js/images

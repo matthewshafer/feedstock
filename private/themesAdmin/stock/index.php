@@ -8,7 +8,7 @@
 			<a href="./index.php/tags">Tags</a>
 			<a href="./index.php/categories">Categories</a>
 			<a href="./index.php/corral">Corral (doesn't work yet)</a>
-			<a href="./index.php/snippets">Snippets</a>
+			<a href="./index.php/snippets/">Snippets</a>
 			<a href="./index.php/snippet">New Snippet</a>
 		</div>
 		
