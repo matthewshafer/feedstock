@@ -7,7 +7,7 @@
  */
 class filecache
 {
-	private $cacheloc = null;
+	private $cacheLoc = null;
 	private $uri = null;
 	private $urimd5 = null;
 	private $fileloc = null;
@@ -24,7 +24,7 @@ class filecache
 	public function __construct($uri)
 	{
 		// setting up the variables
-		$this->cacheloc = V_BASELOC . "/private/cache/";
+		$this->cacheLoc = V_BASELOC . "/private/cache/";
 		//echo $this->cacheloc;
 		$this->uri = $uri;
 		// magic quotes?
@@ -32,7 +32,8 @@ class filecache
 		if(get_magic_quotes_gpc())
 			$this->uri = stripcslashes($this->uri);
 		$this->urimd5 = md5($this->uri);
-		$this->fileloc = $this->cacheloc . "/" . $this->urimd5;
+		$this->fileloc = $this->cacheLoc . "/" . $this->urimd5;
+
 	}
 	
 	
@@ -174,7 +175,7 @@ class filecache
 		
 		while($file = readdir($dir))
 		{
-			if($file != "." && $file != "..")
+			if($file != "." && $file != ".." && $file != ".svn")
 			{
 				unlink($this->cacheLoc . "/" . $file);
 			}

@@ -10,6 +10,7 @@ class xcache
 	private $uri = null;
 	private $urimd5 = null;
 	private $prefixUri = null;
+	private $prefixArr = null;
 	
 	/**
 	 * __construct function.
@@ -32,6 +33,12 @@ class xcache
 		$this->fileloc = $this->cacheloc . "/" . $this->urimd5;
 		$this->prefix = sprintf("%s_", F_XCACHEPREFIX);
 		$this->prefixUri = sprintf("%s%s", $this->prefix, $this->urimd5);
+		$this->prefixArr = sprintf("%s%s", $this->prefix, "array");
+		
+		if(xcache_isset($this->prefixArr))
+		{
+			print_r(xcache_get($this->prefixArr));
+		}
 	}
 	
 	
@@ -48,10 +55,26 @@ class xcache
 		
 		if(xcache_isset($this->prefixUri))
 		{
+				if(xcache_isset($this->prefixArr))
+				{
+					$tmp = xcache_get($this->prefixArr);
+					xcache_set($this->prefixArr, $tmp, F_EXPIRECACHETIME);
+				}
 				$return = true;
 		}
 		else
 		{
+			if(xcache_isset($this->prefixArr))
+			{
+				$tmp = xcache_get($this->prefixArr);
+				
+				if(isset($tmp[$this->prefixUri]))
+				{
+					unset($tmp[$this->prefixUri]);
+					
+					xcache_set($this->prefixArr, $tmp, F_EXPIRECACHETIME);
+				}
+			}
 			$return = false;
 		}
 		
@@ -80,9 +103,22 @@ class xcache
 	 */
 	public function writeCachedFile($data)
 	{
+		$tmp = array();
+		
 		if($data != null)
 		{
 				xcache_set($this->prefixUri, $data, F_EXPIRECACHETIME);
+				
+				if(xcache_isset($this->prefixArr))
+				{
+					$tmp = xcache_get($this->prefixArr);
+				}
+				
+				if(!isset($tmp[$this->prefixUri]))
+				{
+					$tmp[$this->prefixUri] = $this->prefixUri;
+					xcache_set($this->prefixArr, $tmp, F_EXPIRECACHETIME);
+				}
 		}
 	}
 	
@@ -107,7 +143,17 @@ class xcache
 	 */
 	public function purgeCache()
 	{
-		xcache_unset_by_prefix($this->prefix);
+		if(xcache_isset($this->prefixArr))
+		{
+			$tmp = xcache_get($this->prefixArr);
+			
+			foreach($tmp as $key)
+			{
+				xcache_unset($key);
+			}
+			
+			xcache_unset($this->prefixArr);
+		}		
 	}
 }
 ?>

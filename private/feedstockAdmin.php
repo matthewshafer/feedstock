@@ -17,6 +17,7 @@ class feedstockAdmin
 	private $postManager = null;
 	private $dbAdmin = null;
 	private $cookieMonster = null;
+	private $router = null;
 	
 	/**
 	 * __construct function.
@@ -200,6 +201,8 @@ class feedstockAdmin
 				$this->dbAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
 				$this->dbAdmin->processTags($id, $this->tagsToArray());
 			}
+			
+			$this->purgeCache();
 		}
 	}
 	
@@ -237,6 +240,8 @@ class feedstockAdmin
 			{
 				$this->dbAdmin->deletePost($key);
 			}
+			
+			$this->purgeCache();
 		}
 	}
 	
@@ -316,6 +321,8 @@ class feedstockAdmin
 				$corral
 				);
 			}
+			
+			$this->purgeCache();
 		}
 	}
 	
@@ -330,6 +337,8 @@ class feedstockAdmin
 			{
 				$this->dbAdmin->removePage($key);
 			}
+			
+			$this->purgeCache();
 		}
 	}
 	
@@ -349,6 +358,8 @@ class feedstockAdmin
 				
 				$this->dbAdmin->addCategory($this->postManager->getPostByName("categoryTitle"), $niceTitle);
 			}
+			
+			$this->purgeCache();
 		}
 	}
 	
@@ -628,6 +639,21 @@ class feedstockAdmin
 		}
 		
 		return $return;
+	}
+	
+	private function purgeCache()
+	{
+		if(V_CACHE)
+		{
+			require_once("includes/cacheHandler.php");
+			$cacheHandler = new cacheHandler($this->router);
+			
+			if($cacheHandler->cacheWriteableLoc())
+			{
+				$cache = $cacheHandler->cacheMaker();
+				$cache->purgeCache();
+			}
+		}
 	}
 }
 ?>

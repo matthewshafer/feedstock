@@ -41,14 +41,17 @@ class feedstock
 		if($this->router->requestMethod() == "GET")
 		{
 		
-			if(V_CACHE && $this->cacheWriteableLoc())
+			require_once("includes/cacheHandler.php");
+			$cacheHandler = new cacheHandler($this->router);
+				
+			if(V_CACHE && $cacheHandler->cacheWriteableLoc())
 			{
 				// Should create the cacher first so that we can check if a file exists before we even create a database
 				// for example if the database goes down we can still serve up pages, until they "expire" which would give us
 				// a little bit of time to get the DB back up and running
 				//require_once("includes/" . F_CACHENAME . ".php");
 				//$this->cacher = new cache($this->router->fullURI());
-				$this->cacheMaker();
+				$this->cacher = $cacheHandler->cacheMaker();
 			
 				if($this->cacher->checkExists())
 				{
@@ -59,14 +62,13 @@ class feedstock
 					// need to figure out how to grab this yet if there is an error I need to keep using cached data.
 					$themeData = $this->heavyLift();
 					//echo $themeData;
-					
+				
 					if($this->router->pageType() != "file")
 					{
 						$this->cacher->writeCachedFile($themeData);
 					}
 					echo $themeData;
 				}
-			
 			}
 			else
 			{
@@ -151,44 +153,6 @@ class feedstock
 			break;
 			case "mysql":
 				$return = new mysqlDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
-			break;
-		}
-		
-		return $return;
-	}
-	
-	private function cacheMaker()
-	{
-		require_once("includes/" . F_CACHENAME . ".php");
-		
-		switch(F_CACHENAME)
-		{
-			case "filecache":
-				$this->cacher = new filecache($this->router->fullURI());
-			break;
-			case "xcache":
-				$this->cacher = new xcache($this->router->fullURI());
-			break;
-		}
-	}
-	
-	private function cacheWriteableLoc()
-	{
-		$return = false;
-		
-		switch(F_CACHENAME)
-		{
-			case "filecache":
-				if(is_writable(V_BASELOC . "/private/cache"))
-				{
-					$return = true;
-				}
-			break;
-			case "xcache":
-				if(function_exists('xcache_get'))
-				{
-					$return = true;
-				}
 			break;
 		}
 		
