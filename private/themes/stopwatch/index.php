@@ -35,6 +35,8 @@ while($this->templateEngine->postNext())
 echo $this->templateEngine->haveNextPostPageHTML();
 echo "<br><br><br>";
 echo $this->templateEngine->getFormattedCorralByName("test1234");
+echo "<br><br>";
+echo $this->templateEngine->getSnippetByName("about");
 
 require_once("footer.php");
 ?>

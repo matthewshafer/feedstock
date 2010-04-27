@@ -591,6 +591,7 @@ class mysqliDatabase
 		$query = $this->dbConn->prepare($formattedQuery);
 		$query->bind_param('s', $name);
 		$query->execute();
+		$query->store_result();
 		$query->bind_result($title, $uri);
 		
 		$count = 0;
@@ -622,13 +623,27 @@ class mysqliDatabase
 		$query = $this->dbConn->prepare($formattedQuery);
 		$query->bind_param('s', $name);
 		$query->execute();
+		$query->store_result();
 		$query->bind_result($data);
 		
 		if($query->fetch())
 		{
 			$return["SnippetData"] = $data;
 		}
+		$query->close();
 		
+		/*
+		$query = sprintf("SELECT SnippetData FROM %ssnippet WHERE Name='%s'", $this->tablePrefix, $name);
+		
+		if($result = $this->dbConn->query($query))
+		{
+			if($row = $result->fetch_assoc())
+			{
+				$return = $row;
+			}
+			$result->close();
+		}
+		*/
 		return $return;
 	}
 

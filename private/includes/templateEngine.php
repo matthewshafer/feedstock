@@ -1106,7 +1106,12 @@ class templateEngine
 	
 	public function themeBaseLoc()
 	{
-		$return = sprintf("%s%s%s%s%s", V_URL, V_HTTPBASE, "themes/", V_THEME, "/");
+		static $return = null;
+		
+		if($return == null)
+		{
+			$return = sprintf("%s%s%s%s%s", V_URL, V_HTTPBASE, "themes/", V_THEME, "/");
+		}
 		
 		return $return;
 	}

@@ -235,6 +235,8 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$query->bind_param('i', $id);
 		$id = $currUserID;
 		$query->execute();
+		//added ths store_result need to test
+		$query->store_result();
 		$query->bind_result($permissions, $canAdmin);
 		$query->fetch();
 		$currPerm = $permissions;
@@ -242,6 +244,8 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$query->free_result();
 		$id = $userRemoveID;
 		$query->execute();
+		// added the store_result need to test
+		$query->store_result();
 		// not sure if this is needed again
 		$query->bind_result($permissions, $canAdmin);
 		$query->fetch();
@@ -344,6 +348,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 			$query = parent::$this->dbConn->prepare($formattedQuery);
 			$query->bind_param('s', $uri);
 			$query->execute();
+			$query->store_result();
 			$query->bind_result($result);
 			
 			if($query->fetch())
@@ -398,6 +403,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 			$query = parent::$this->dbConn->prepare($formattedQuery);
 			$query->bind_param('s', $niceTitle);
 			$query->execute();
+			$query->store_result();
 			$query->bind_result($result);
 			
 			if($query->fetch())
@@ -411,6 +417,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 			{
 				$return = true;
 			}
+			$query->close();
 		}
 		
 		return $return;
@@ -450,6 +457,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$query = parent::$this->dbConn->prepare($formattedQuery);
 		$query->bind_param('s', $val);
 		$query->execute();
+		$query->store_result();
 		$query->bind_result($result);
 		
 		if($query->fetch())
@@ -613,6 +621,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$query = parent::$this->dbConn->prepare($formattedQuery);
 		$query->bind_param('i', $id);
 		$query->execute();
+		$query->store_result();
 		$query->bind_result($catTagID);
 		
 		while($query->fetch())
@@ -750,9 +759,11 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 					if($query2->affected_rows > 0)
 					{
 						$query1->execute();
+						$query->store_result();
 						$query1->bind_result($primaryKey);
 						$query1->fetch();
 						array_push($pkArray, $primaryKey);
+						$query1->free_result();
 					}
 				}
 				else
@@ -824,6 +835,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$query = parent::$this->dbConn->prepare($formattedQuery);
 		$query->bind_param('s', $name);
 		$query->execute();
+		$query->store_result();
 		$query->bind_result($pk, $title);
 		
 		$count = 0;
