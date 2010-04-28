@@ -12,7 +12,7 @@ class cacheHandler
 	
 	public function cacheMaker()
 	{
-		require_once(F_CACHENAME . ".php");
+		require_once("caching/" . F_CACHENAME . ".php");
 		$cacher = null;
 		
 		switch(F_CACHENAME)
@@ -21,7 +21,7 @@ class cacheHandler
 				$cacher = new filecache($this->router->fullURI());
 			break;
 			case "xcache":
-				$cacher = new xcache($this->router->fullURI());
+				$cacher = new xcacheStatic($this->router->fullURI());
 			break;
 		}
 		
