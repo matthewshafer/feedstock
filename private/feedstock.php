@@ -17,6 +17,7 @@ class feedstock
 	private $templateLoader = null;
 	private $router = null;
 	private $db = null;
+	private $cacheHandler = null;
 	
 	/**
 	 * __construct function.
@@ -42,16 +43,16 @@ class feedstock
 		{
 		
 			require_once("includes/cacheHandler.php");
-			$cacheHandler = new cacheHandler($this->router);
-				
-			if(V_CACHE && $cacheHandler->cacheWriteableLoc())
+			$this->cacheHandler = new cacheHandler($this->router);
+			
+			if(V_CACHE && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
 			{
 				// Should create the cacher first so that we can check if a file exists before we even create a database
 				// for example if the database goes down we can still serve up pages, until they "expire" which would give us
 				// a little bit of time to get the DB back up and running
 				//require_once("includes/" . F_CACHENAME . ".php");
 				//$this->cacher = new cache($this->router->fullURI());
-				$this->cacher = $cacheHandler->cacheMaker();
+				$this->cacher = $this->cacheHandler->cacheMaker();
 			
 				if($this->cacher->checkExists())
 				{
@@ -149,7 +150,14 @@ class feedstock
 		switch(V_DATABASE)
 		{
 			case "mysqli":
-				$return = new mysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+				if(V_CACHE && $this->cacheHandler->cacheType() == "dynamic")
+				{
+					$return = new mysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix, $this->cacheHandler->cacheMaker());
+				}
+				else
+				{
+					$return = new mysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+				}
 			break;
 			case "mysql":
 				$return = new mysqlDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);

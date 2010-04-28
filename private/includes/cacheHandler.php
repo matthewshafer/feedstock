@@ -20,8 +20,11 @@ class cacheHandler
 			case "filecache":
 				$cacher = new filecache($this->router->fullURI());
 			break;
-			case "xcache":
+			case "xcacheStatic":
 				$cacher = new xcacheStatic($this->router->fullURI());
+			break;
+			case "xcacheDynamic":
+				$cacher = new xcacheDynamic();
 			break;
 		}
 		
@@ -40,7 +43,7 @@ class cacheHandler
 					$return = true;
 				}
 			break;
-			case "xcache":
+			case "xcacheStatic":
 				if(function_exists('xcache_get'))
 				{
 					$return = true;
@@ -50,7 +53,20 @@ class cacheHandler
 		
 		return $return;
 	}
-
+	
+	public function cacheType()
+	{
+		$return = "static";
+		
+		switch(F_CACHENAME)
+		{
+			case "xcacheDynamic":
+				$return = "dynamic";
+			break;
+		}
+		
+		return $return;
+	}
 }
 
 ?>

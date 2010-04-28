@@ -759,7 +759,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 					if($query2->affected_rows > 0)
 					{
 						$query1->execute();
-						$query->store_result();
+						$query1->store_result();
 						$query1->bind_result($primaryKey);
 						$query1->fetch();
 						array_push($pkArray, $primaryKey);

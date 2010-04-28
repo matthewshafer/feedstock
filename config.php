@@ -38,13 +38,13 @@ $tableprefix = "fs_";
 
 
 /* Caching Settings */
-define("V_CACHE", false);
+define("V_CACHE", true);
 // name of the cacher.  filecache does standard files.  xcache uses php xcache for caching
-define("F_CACHENAME", "filecache");
+define("F_CACHENAME", "xcacheDynamic");
 // This is in seconds. Should set to something like 1400.  Currently set low to help with testing.
 define("F_EXPIRECACHETIME", 120);
 // Xcache Setting
-define("F_XCACHEPREFIX", "something");
+define("F_XCACHEPREFIX", "something_");
 
 
 /* Cookie Settings */

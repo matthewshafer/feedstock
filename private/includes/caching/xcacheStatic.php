@@ -155,5 +155,6 @@ class xcacheStatic
 			xcache_unset($this->prefixArr);
 		}		
 	}
+
 }
 ?>
