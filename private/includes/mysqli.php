@@ -124,27 +124,7 @@ class mysqliDatabase
 		
 		if($this->haveCacher && $this->cacher->checkExists($query))
 		{
-			$tmpAuthors = array();
-			$tmpArr = $this->cacher->getCachedData();
-			$count = count($tmpArr);
-			
-			if($count == 11)
-			{
-				$this->haveNext = true;
-				array_pop($tmpArr);
-				$count--;
-			}
-			//print_r($tmpArr);
-			for($i = 0; $i < $count; $i++)
-			{
-				if(!isset($tmpAuthors[$tmpArr[$i]['Author']]))
-				{
-					$tmpAuthors[$tmpArr[$i]['Author']] = $tmpArr[$i]['Author'];
-				}
-			}
-			//print_r($tmpAuthors);
-			$return = $this->generateAuthors($tmpArr, $tmpAuthors);
-			
+				$return = $this->cacher->getCachedData();
 		}
 		else if($result = $this->dbConn->query($query))
 		{
@@ -162,12 +142,6 @@ class mysqliDatabase
 			}
 			$result->close();
 			
-			if($this->haveCacher)
-			{
-				//echo "here";
-				$this->cacher->writeCachedFile($query, $tmpArr);
-			}
-			
 			if(count($tmpArr) == 11)
 			{
 				$this->haveNext = true;
@@ -175,6 +149,12 @@ class mysqliDatabase
 			}
 			//print_r($tmpAuthors);
 			$return = $this->generateAuthors($tmpArr, $tmpAuthors);
+			
+			if($this->haveCacher)
+			{
+				//echo "here";
+				$this->cacher->writeCachedFile($query, $return);
+			}
 		}
 		
 		return $return;
@@ -206,27 +186,17 @@ class mysqliDatabase
 				}
 		
 				$this->queries++;
-			
-				if($this->haveCacher && $this->cacher->checkExists($query))
-				{
-					$authorArr = $this->cacher->getCachedData();
-				}
-				else if($result = $this->dbConn->query($query))
+				if($result = $this->dbConn->query($query))
 				{
 					while($row = $result->fetch_assoc())
 					{
 						$authorArr[$row["id"]] = $row["DisplayName"];
 					}
 					
-					if($this->haveCacher)
-					{
-						$this->cacher->writeCachedFile($query, $authorArr);
-					}
-					
 					$result->close();
 				}
 			}
-			
+
 			$tmpCt = count($postArr);
 			
 			for($i = 0; $i < $tmpCt; $i++)
@@ -241,8 +211,7 @@ class mysqliDatabase
 				{
 					$postArr[$i]["Author"] = "Unknown";
 				}
-			}
-			
+			}	
 		}
 		unset($authorArr);
 		
@@ -402,7 +371,10 @@ class mysqliDatabase
 			if($this->haveCacher && $this->cacher->checkExists($query1) && $this->cacher->checkExists($query2))
 			{
 				//echo "cat or tag";
-				$tmpArr = $this->cacher->getCachedData();
+				if($queryStr == null)
+				{
+					$queryStr = $this->cacher->getCachedData();
+				}
 				$this->cacher->checkExists($query1);
 				$arrayWithPostTax = $this->cacher->getCachedData();
 			}
@@ -438,15 +410,18 @@ class mysqliDatabase
 					}
 				} while($this->dbConn->next_result());
 				
+				$queryStr = implode(", ", $tmpArr);
+				
+				
 				if($this->haveCacher)
 				{	
 					//echo "write me";
-					$this->cacher->writeCachedFile($query2, $tmpArr);
+					$this->cacher->writeCachedFile($query2, $queryStr);
 					$this->cacher->writeCachedFile($query1, $arrayWithPostTax);
 				}
 			}
 			
-			$queryStr = implode(", ", $tmpArr);
+			
 		}
 		
 		if($queryStr != null)
@@ -479,7 +454,7 @@ class mysqliDatabase
 			
 			if($this->haveCacher && $this->cacher->checkExists($query))
 			{
-				$catTagResultArr = $this->cacher->getCachedData();
+				$return = $this->cacher->getCachedData();
 			}
 			else if($result = $this->dbConn->query($query))
 			{
@@ -489,26 +464,27 @@ class mysqliDatabase
 				}
 						
 				$result->close();
+			
+			
+				while($tmp = each($taxArr))
+				{
+					$srsTemp = array();
+					
+					while($tmp2 = each($tmp["value"]))
+					{
+						if(isset($catTagResultArr[$tmp2["value"]]))
+						{
+							$srsTemp[$tmp2["key"]] = $catTagResultArr[$tmp2["value"]];
+						}
+					}
+					
+					$return[$tmp["key"]] = $srsTemp;
+				}
 				
 				if($this->haveCacher)
 				{
-					$this->cacher->writeCachedFile($query, $catTagResultArr);
+					$this->cacher->writeCachedFile($query, $return);
 				}
-			}
-			
-			while($tmp = each($taxArr))
-			{
-				$srsTemp = array();
-				
-				while($tmp2 = each($tmp["value"]))
-				{
-					if(isset($catTagResultArr[$tmp2["value"]]))
-					{
-						$srsTemp[$tmp2["key"]] = $catTagResultArr[$tmp2["value"]];
-					}
-				}
-				
-				$return[$tmp["key"]] = $srsTemp;
 			}
 		}
 		
@@ -527,6 +503,7 @@ class mysqliDatabase
 	public function getPostsInCategoryOrTag($URIName, $type, $draft = false)
 	{
 		$return = array();
+		$queryStr = null;
 		
 		$query = sprintf("SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'", $this->tablePrefix, $this->dbConn->real_escape_string($this->checkedCategoryOrTag["PrimaryKey"]));
 		
@@ -540,9 +517,11 @@ class mysqliDatabase
 		$tmpArr = array();
 		
 		
-		// i need to rewrite this to enable caching
-		// i'll do it within the next few days
-		if($result = $this->dbConn->query($query))
+		if($this->haveCacher && $this->cacher->checkExists($query))
+		{
+			$queryStr = $this->cacher->getCachedData();
+		}
+		else if($result = $this->dbConn->query($query))
 		{
 			while($row = $result->fetch_assoc())
 			{
@@ -552,44 +531,55 @@ class mysqliDatabase
 			$result->close();
 			
 			$queryStr = implode(", ", $tmpArr);
-			
-			if($queryStr != null)
-			{
-				if(!$draft)
-				{
-					$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
-				}
-				else
-				{
-					$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
-				}
-				
-				if(F_MYSQLSTOREQUERIES)
-				{
-					array_push($this->debugQueries, $query);
-				}
+		}
 		
-				$this->queries++;
+		
+		if($queryStr != null)
+		{
+			if(!$draft)
+			{
+				$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
+			}
+			else
+			{
+				$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
+			}
 			
-				if($result = $this->dbConn->query($query))
+			if(F_MYSQLSTOREQUERIES)
+			{
+				array_push($this->debugQueries, $query);
+			}
+	
+			$this->queries++;
+			
+			if($this->haveCacher && $this->cacher->checkExists($query))
+			{
+				$return =$this->cacher->getCachedData();
+			}
+			else if($result = $this->dbConn->query($query))
+			{
+				$tmpAuthor = array();
+				while($row = $result->fetch_assoc())
 				{
-					$tmpAuthor = array();
-					while($row = $result->fetch_assoc())
+					if(!isset($tmpAuthor[$row["Author"]]))
 					{
-						if(!isset($tmpAuthor[$row["Author"]]))
-						{
-							$tmpAuthor[$row["Author"]] = $row["Author"];
-						}
-						
-						array_push($return, $row);
+						$tmpAuthor[$row["Author"]] = $row["Author"];
 					}
-					$result->close();
 					
-					$return = $this->generateAuthors($return, $tmpAuthor);
-					unset($tmpAuthor);
+					array_push($return, $row);
+				}
+				$result->close();
+				
+				$return = $this->generateAuthors($return, $tmpAuthor);
+				unset($tmpAuthor);
+				
+				if($this->haveCacher)
+				{
+					$this->cacher->writeCachedFile($query, $return);
 				}
 			}
 		}
+			
 		return $return;
 	}
 	
@@ -758,7 +748,7 @@ class mysqliDatabase
 		
 		if($this->haveCacher && $this->cacher->checkExists($cacheQuery))
 		{
-			$return = $this->cacher->getData();
+			$return = $this->cacher->getCachedData();
 		}
 		else
 		{

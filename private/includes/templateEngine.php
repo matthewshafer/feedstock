@@ -106,8 +106,9 @@ class templateEngine
 			{
 				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
 				
+				//print_r($this->pageData);
 				
-				if(isset($this->pageData["PrimaryKey"]))
+				if(isset($this->pageData[0]["PrimaryKey"]))
 				{
 					$this->arrayPosition = 0;
 					$file = $this->arrayCustomFile("single");
