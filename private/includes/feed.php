@@ -48,8 +48,20 @@ class feed
 		if($this->feedType == "" || $this->feedType == "rss" && $this->router->uriLength() <= 2)
 		{
 			echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-			echo "\t" . '<rss version="2.0">' . "\n";
+			
+			if(F_PUBSUBHUBBUB)
+			{
+				echo "\t" . '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n";
+			}
+			else
+			{
+				echo "\t" . '<rss version="2.0">' . "\n";
+			}
 			echo "\t\t" . '<channel>' . "\n";
+			if(F_PUBSUBHUBBUB)
+			{
+				echo "\t\t\t" . sprintf("%s%s%s", '<atom:link rel="hub" href="', F_PUBSUBHUBBUBSUBSCRIBE, '"/>') . "\n";
+			}
 			echo "\t\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
 			echo "\t\t\t" . '<link>' . $base . '</link>' . "\n";
 			echo "\t\t\t" . '<description>' . V_DESCRIPTION . '</description>' . "\n";
@@ -75,16 +87,22 @@ class feed
 		{
 			echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
 			echo "\t" . '<feed xmlns="http://www.w3.org/2005/Atom">' . "\n";
-			echo "\t\t" . '<id>' . $base . 'feed/atom</id>' . "\n";
-			echo "\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
-			echo "\t\t" . '<updated>' . date("c", strtotime($this->pageData[0]["Date"])) . '</updated>' . "\n";
-			echo "\t\t" . '<link rel="self" href="' . $base . 'feed/atom/" type="application/atom+xml" />' . "\n";
 			
+			echo "\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
+			echo "\t\t" . '<link href="' . $base . '" />' . "\n";
+			echo "\t\t" . '<link  rel="self" href="' . $base . 'feed/atom/" type="application/atom+xml" />' . "\n";
+			if(F_PUBSUBHUBBUB)
+			{
+				echo "\t\t" . sprintf("%s%s%s", '<link  rel="hub" href="', F_PUBSUBHUBBUBSUBSCRIBE, '" />') . "\n";
+			}
+			echo "\t\t" . '<updated>' . date("c", strtotime($this->pageData[0]["Date"])) . '</updated>' . "\n";
 			echo "\t\t" . '<author>' . "\n";
 			echo "\t\t\t" . '<name>'. F_AUTHOR . '</name>' . "\n";
 			echo "\t\t\t" . '<uri>' . $base . '</uri>' . "\n";
 			echo "\t\t\t" . '<email>' . F_AUTHOREMAIL . '</email>' . "\n";
-			echo "\t\t" . '</author>';
+			echo "\t\t" . '</author>' . "\n";
+			echo "\t\t" . '<id>' . $base . 'feed/atom/</id>' . "\n";
+			
 			
 			foreach($this->pageData as $key)
 			{

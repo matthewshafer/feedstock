@@ -203,6 +203,17 @@ class feedstockAdmin
 			}
 			
 			$this->purgeCache();
+			
+			if(F_PUBSUBHUBBUB)
+			{
+				require_once("includes/feed/pubsubhubbub.php");
+				
+				$hub = new pubsubhubbub(F_PUBSUBHUBBUBPUBLISH);
+				$returned = $hub->publish();
+				echo "PubSub: ";
+				print_r($returned);
+				echo "\n";
+			}
 		}
 	}
 	
