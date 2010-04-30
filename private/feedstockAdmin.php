@@ -210,9 +210,9 @@ class feedstockAdmin
 				
 				$hub = new pubsubhubbub(F_PUBSUBHUBBUBPUBLISH);
 				$returned = $hub->publish();
-				echo "PubSub: ";
-				print_r($returned);
-				echo "\n";
+				//echo "PubSub: ";
+				//print_r($returned);
+				//echo "\n";
 			}
 		}
 	}

@@ -6,6 +6,13 @@ class pubsubhubbub
 	private $errorText = null;
 	private $feedLoc = array();
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $hubUrl
+	 * @return void
+	 */
 	public function __construct($hubUrl)
 	{
 		$this->hubURL = $hubUrl;
@@ -42,7 +49,12 @@ class pubsubhubbub
 		}
 	}
 	
-	
+	/**
+	 * publish function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function publish()
 	{
 		$return = array();
@@ -71,7 +83,7 @@ class pubsubhubbub
 			for($i = 0; $i < $count; $i++)
 			{
 				$info = curl_getinfo($tmpArr[$i]);
-				print_r($info);
+				//print_r($info);
 				
 				if($info['http_code'] == 204)
 				{
@@ -92,6 +104,13 @@ class pubsubhubbub
 		return $return;
 	}
 	
+	/**
+	 * checkValidURL function.
+	 * 
+	 * @access private
+	 * @param mixed $url
+	 * @return void
+	 */
 	private function checkValidURL($url)
 	{
 		$return = false;

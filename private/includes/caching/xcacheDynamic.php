@@ -11,12 +11,25 @@ class xcacheDynamic
 	private $prefix = null;
 	private $prefixArr = null;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function __construct()
 	{
 		$this->prefix = F_XCACHEPREFIX;
 		$this->prefixArr = sprintf("%s%s", $this->prefix, "array");
 	}
 	
+	/**
+	 * checkExists function.
+	 * 
+	 * @access public
+	 * @param mixed $lookup
+	 * @return void
+	 */
 	public function checkExists($lookup)
 	{
 		$return = false;
@@ -36,6 +49,12 @@ class xcacheDynamic
 		return $return;
 	}
 	
+	/**
+	 * getCachedData function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function getCachedData()
 	{
 		$tmp = $this->currentData;
@@ -44,6 +63,14 @@ class xcacheDynamic
 		return $tmp;
 	}
 	
+	/**
+	 * writeCachedFile function.
+	 * 
+	 * @access public
+	 * @param mixed $toHash
+	 * @param mixed $data
+	 * @return void
+	 */
 	public function writeCachedFile($toHash, $data)
 	{
 		$tmp = array();
@@ -66,6 +93,12 @@ class xcacheDynamic
 		//}
 	}
 	
+	/**
+	 * purgeCache function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function purgeCache()
 	{
 		if(xcache_isset($this->prefixArr))

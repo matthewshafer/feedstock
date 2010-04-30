@@ -4,12 +4,24 @@ class cacheHandler
 {
 	private $router = null;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $router
+	 * @return void
+	 */
 	public function __construct($router)
 	{
 		$this->router = $router;
 	}
 	
-	
+	/**
+	 * cacheMaker function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function cacheMaker()
 	{
 		require_once("caching/" . F_CACHENAME . ".php");
@@ -31,6 +43,12 @@ class cacheHandler
 		return $cacher;
 	}
 	
+	/**
+	 * cacheWriteableLoc function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function cacheWriteableLoc()
 	{
 		$return = false;
@@ -54,6 +72,12 @@ class cacheHandler
 		return $return;
 	}
 	
+	/**
+	 * cacheType function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function cacheType()
 	{
 		$return = "static";
