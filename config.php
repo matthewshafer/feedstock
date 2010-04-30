@@ -17,7 +17,7 @@ define("V_POSTFORMAT", "%MONTH%/%DAY%/%YEAR%/%TITLE%");
 /* Feed Settings */
 define("F_AUTHOR", "username");
 define("F_AUTHOREMAIL", "some@email.com");
-define("F_PUBSUBHUBBUB", true);
+define("F_PUBSUBHUBBUB", false);
 define("F_PUBSUBHUBBUBPUBLISH", "http://pubsubhubbub.appspot.com/publish");
 define("F_PUBSUBHUBBUBSUBSCRIBE", "http://pubsubhubbub.appspot.com/");
 

@@ -66,6 +66,11 @@ class cacheHandler
 				{
 					$return = true;
 				}
+			case "xcacheDynamic":
+				if(function_exists('xcache_get'))
+				{
+					$return = true;
+				}
 			break;
 		}
 		

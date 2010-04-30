@@ -199,12 +199,6 @@ class templateEngine
 						// do stuff
 					}
 				}
-				else if($this->router->pageType() == "feed")
-				{
-					//$this->pageData = $this->database->getPosts(0);
-					$return = V_BASELOC . "/private/includes/";
-					$file = "feed.php";
-				}
 				else
 				{
 					//echo $this->router->getPageOffset() . "<br>";
