@@ -34,6 +34,7 @@ class templateLoader
 	public function render()
 	{
 		$this->themeLoc = $this->templateEngine->getThemeLoc();
+		//echo $this->themeLoc;
 		ob_start();
 		if(!$this->templateEngine->themeError())
 		{

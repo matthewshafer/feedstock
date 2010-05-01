@@ -5,47 +5,14 @@
  * @brief generates either an rss2.0 or atom feed
  * 
  */
-class feed
-{
-	private $db = null;
-	private $router = null;
-	private $pageData = null;
-	private $feedType = null;
-	
-	/**
-	 * __construct function.
-	 * 
-	 * @access public
-	 * @param mixed $db
-	 * @param mixed $router
-	 * @return void
-	 */
-	public function __construct($db, $router)
-	{
-		$this->db = $db;
-		$this->router = $router;
-		$this->feedType = $this->router->getUriPosition(2);
-		$this->pageData = $this->db->getPosts(0);
-	}
-	
-	/**
-	 * render function.
-	 * 
-	 * @brief generates the feed to either RSS 2.0 or ATOM. Should be valid for either one
-	 * @access public
-	 * @return Generated feed
-	 */
-	public function render()
-	{
+
 		$base = V_URL . V_HTTPBASE;
 		if(!V_HTACCESS)
 		{
 			$base .= "index.php/";
 		}
-		ob_start();
 		
-		// need a last build date
-		if($this->feedType == "" || $this->feedType == "rss" && $this->router->uriLength() <= 2)
+		if($this->templateEngine->getFeedType() == "rss")
 		{
 			echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			
@@ -65,17 +32,17 @@ class feed
 			echo "\t\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
 			echo "\t\t\t" . '<link>' . $base . '</link>' . "\n";
 			echo "\t\t\t" . '<description>' . V_DESCRIPTION . '</description>' . "\n";
-			echo "\t\t\t" . '<lastBuildDate>' . date("r", strtotime($this->pageData[0]["Date"])) . '</lastBuildDate>' . "\n";
+			echo "\t\t\t" . '<lastBuildDate>' . $this->templateEngine->lastUpdated("r") . '</lastBuildDate>' . "\n";
 			echo "\t\t\t" . '<language>en-us</language>' . "\n";
 				
-			foreach($this->pageData as $key)
+			while($this->templateEngine->postNext())
 			{
 				echo "\t\t\t" . '<item>' . "\n";
-				echo "\t\t\t\t" . '<title>' . $key["Title"] .'</title>' . "\n";
-				echo "\t\t\t\t" . '<link>' . substr($base, 0, strlen($base) - 1) . $key["URI"] . '</link>' . "\n";
-				echo "\t\t\t\t" . '<guid>' . substr($base, 0, strlen($base) - 1) . $key["URI"] . '</guid>' . "\n";
-				echo "\t\t\t\t" . '<pubDate>' . date("r", strtotime($key["Date"])) . '</pubDate>' . "\n";
-				echo "\t\t\t\t" . '<description><![CDATA[ ' . nl2br(html_entity_decode(stripslashes($key["PostData"]))) . ']]></description>' . "\n";
+				echo "\t\t\t\t" . '<title>' . $this->templateEngine->getPostTitle() .'</title>' . "\n";
+				echo "\t\t\t\t" . '<link>' . $this->templateEngine->getPostURL() . '</link>' . "\n";
+				echo "\t\t\t\t" . '<guid>' . $this->templateEngine->getPostURL() . '</guid>' . "\n";
+				echo "\t\t\t\t" . '<pubDate>' . $this->templateEngine->getPostTime("r") . '</pubDate>' . "\n";
+				echo "\t\t\t\t" . '<description><![CDATA[ ' . $this->templateEngine->getPostBodyHTML() . ']]></description>' . "\n";
 				echo "\t\t\t" . '</item>' . "\n";
 			}
 				
@@ -83,7 +50,7 @@ class feed
 			echo "\t" . '</rss>';
 				
 		}
-		else if($this->feedType == "atom" && $this->router->uriLength() <= 2)
+		else if($this->templateEngine->getFeedType() == "atom")
 		{
 			echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
 			echo "\t" . '<feed xmlns="http://www.w3.org/2005/Atom">' . "\n";
@@ -95,7 +62,7 @@ class feed
 			{
 				echo "\t\t" . sprintf("%s%s%s", '<link  rel="hub" href="', F_PUBSUBHUBBUBSUBSCRIBE, '" />') . "\n";
 			}
-			echo "\t\t" . '<updated>' . date("c", strtotime($this->pageData[0]["Date"])) . '</updated>' . "\n";
+			echo "\t\t" . '<updated>' . $this->templateEngine->lastUpdated("c") . '</updated>' . "\n";
 			echo "\t\t" . '<author>' . "\n";
 			echo "\t\t\t" . '<name>'. F_AUTHOR . '</name>' . "\n";
 			echo "\t\t\t" . '<uri>' . $base . '</uri>' . "\n";
@@ -104,26 +71,21 @@ class feed
 			echo "\t\t" . '<id>' . $base . 'feed/atom/</id>' . "\n";
 			
 			
-			foreach($this->pageData as $key)
+			while($this->templateEngine->postNext())
 			{
 				echo "\t\t" . '<entry>' . "\n";
-				echo "\t\t\t" . '<title>' . $key["Title"] .'</title>' . "\n";
-				echo "\t\t\t" . '<id>' . substr($base, 0, strlen($base) - 1) . $key["URI"] . '</id>' . "\n";
-				echo "\t\t\t" . '<published>' . date("c", strtotime($key["Date"])) . '</published>' . "\n";
-				echo "\t\t\t" . '<updated>' . date("c", strtotime($key["Date"])) . '</updated>' . "\n";
-				echo "\t\t\t" . '<link href="' . substr($base, 0, strlen($base) - 1) . $key["URI"] . '"/>' . "\n";
-				echo "\t\t\t" . '<summary>'. $key["PostData"] . '</summary>' . "\n";
-				echo "\t\t\t" . '<content>'. $key["PostData"] . '</content>' . "\n";
+				echo "\t\t\t" . '<title>' . $this->templateEngine->getPostTitle() .'</title>' . "\n";
+				echo "\t\t\t" . '<id>' . $this->templateEngine->getPostURL() . '</id>' . "\n";
+				echo "\t\t\t" . '<published>' . $this->templateEngine->getPostTime("c") . '</published>' . "\n";
+				echo "\t\t\t" . '<updated>' . $this->templateEngine->getPostTime("c") . '</updated>' . "\n";
+				echo "\t\t\t" . '<link href="' . $this->templateEngine->getPostURL() . '"/>' . "\n";
+				echo "\t\t\t" . '<summary>'. $this->templateEngine->getPostBody() . '</summary>' . "\n";
+				echo "\t\t\t" . '<content>'. $this->templateEngine->getPostBody() . '</content>' . "\n";
 				echo "\t\t" . '</entry>' . "\n";
 			}
 			
 			echo '</feed>';
 		}
-		return ob_get_clean();
-	}
-
-
-}
 
 
 ?>

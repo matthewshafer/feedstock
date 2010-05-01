@@ -122,9 +122,11 @@ class mysqliDatabase
 		}
 		
 		
-		if($this->haveCacher && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists(sprintf("%s%d", $query, 1)) && $this->cacher->checkExists($query))
 		{
-				$return = $this->cacher->getCachedData();
+			$return = $this->cacher->getCachedData();
+			$this->cacher->checkExists(sprintf("%s%d", $query, 1));
+			$this->haveNext = $this->cacher->getCachedData();
 		}
 		else if($result = $this->dbConn->query($query))
 		{
@@ -153,6 +155,7 @@ class mysqliDatabase
 			if($this->haveCacher)
 			{
 				//echo "here";
+				$this->cacher->writeCachedFile(sprintf("%s%d", $query, 1), $this->haveNext);
 				$this->cacher->writeCachedFile($query, $return);
 			}
 		}
@@ -500,7 +503,7 @@ class mysqliDatabase
 	 * @param bool $draft. (default: false)
 	 * @return void
 	 */
-	public function getPostsInCategoryOrTag($URIName, $type, $draft = false)
+	public function getPostsInCategoryOrTag($URIName, $type, $offset, $draft = false)
 	{
 		$return = array();
 		$queryStr = null;
@@ -531,6 +534,12 @@ class mysqliDatabase
 			$result->close();
 			
 			$queryStr = implode(", ", $tmpArr);
+			
+			if($this->haveCacher)
+			{
+				echo $query;
+				$this->cacher->writeCachedFile($query, $queryStr);
+			}
 		}
 		
 		
@@ -538,7 +547,7 @@ class mysqliDatabase
 		{
 			if(!$draft)
 			{
-				$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s)", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr));
+				$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s) ORDER BY Date DESC LIMIT 11 OFFSET %d", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr), $offset);
 			}
 			else
 			{
@@ -554,7 +563,8 @@ class mysqliDatabase
 			
 			if($this->haveCacher && $this->cacher->checkExists($query))
 			{
-				$return =$this->cacher->getCachedData();
+				$return = $this->cacher->getCachedData();
+				echo "\nhere\n";
 			}
 			else if($result = $this->dbConn->query($query))
 			{
@@ -579,7 +589,6 @@ class mysqliDatabase
 				}
 			}
 		}
-			
 		return $return;
 	}
 	
@@ -618,7 +627,7 @@ class mysqliDatabase
 				$return = true;
 				$this->checkedCategoryOrTag = $tmp;
 			}
-			$this->checkedCategoryOrTag = $this->cacher->getCachedData();
+			//$this->checkedCategoryOrTag = $this->cacher->getCachedData();
 		}
 		else if($result = $this->dbConn->query($query))
 		{

@@ -182,6 +182,40 @@ class router
 		return count($this->uriArray);
 	}
 	
+	public function searchURI($find)
+	{
+		$return = -1;
+		
+		$count = count($this->uriArray);
+		
+		for($i = 0; $i < $count; $i++)
+		{
+			if($this->uriArray[$i] == $find)
+			{
+				$return = $i;
+				break;
+			}
+		}
+		
+		return $return;
+	}
+	
+	public function evenURIParts()
+	{
+		$count = count($this->uriArray);
+		
+		if($count & 1)
+		{
+			$return = false;
+		}
+		else
+		{
+			$return = true;
+		}
+		
+		return $return;
+	}
+	
 	/**
 	 * getPageOffset function.
 	 * 

@@ -105,13 +105,13 @@ class feedstock
 		
 		if($this->db->haveConnError() == null)
 		{		
-			if($this->router->pageType() == "feed")
-			{
-				require_once("includes/feed.php");
-				$feed = new feed($this->db, $this->router);
-				$data = $feed->render();
-			}
-			else if($this->router->pageType() == "file")
+			//if($this->router->pageType() == "feed")
+			//{
+				//require_once("includes/feed.php");
+				//$feed = new feed($this->db, $this->router);
+				//$data = $feed->render();
+			//}
+			if($this->router->pageType() == "file")
 			{
 				require_once("includes/fileServe.php");
 				$fileServe = new fileServe($this->db, $this->router);

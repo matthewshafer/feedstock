@@ -60,10 +60,17 @@ class templateEngine
 	 * @param mixed $file
 	 * @return void
 	 */
-	private function themeFileIsValid($file)
+	private function themeFileIsValid($file, $loc = null)
 	{
-		$loc = V_BASELOC . "/private/themes/" . V_THEME;
+		//$loc = V_BASELOC . "/private/themes/" . V_THEME;
 		$return = null;
+		
+		if($loc == null)
+		{
+			$loc = sprintf("%s%s%s", V_BASELOC, "/private/themes/", V_THEME);
+		}
+		
+		//echo $loc . "/" . $file;
 		
 		if(file_exists($loc . "/" . $file) && is_readable($loc . "/" . $file))
 		{
@@ -126,6 +133,58 @@ class templateEngine
 					
 					//echo $this->router->fullURI();
 					
+					//echo $this->router->searchURI("category");
+					
+					if($this->router->evenURIParts())
+					{
+						//echo "even";
+					}
+					else
+					{
+						//echo "odd";
+					}
+					
+					$categoryOffset = $this->router->searchURI("category") + 2;
+					$categoryName = $this->router->getUriPosition($categoryOffset);
+					//echo $categoryName;
+					
+					if($this->router->uriLength() == 1)
+					{
+						$this->pageData = $this->database->listCategoriesOrTags(0);
+					}
+					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($categoryName, 0))
+					{
+						//echo "in here";
+						$pageOffset = $this->router->searchURI("page") + 2;
+						
+						if($pageOffset != -1)
+						{
+							$pageID = intval($this->router->getUriPosition($pageOffset));
+							//echo $pageID;
+							if($pageID > 0)
+							{
+								$pageID = ($pageID - 1) * 10;
+							}
+							
+							if($pageID >= 0)
+							{
+								echo $pageID;
+								$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $pageID);
+							}
+							else
+							{
+								$this->errorText = "Can't have a negative page";
+							}
+							
+						}
+						else
+						{
+							echo "im here";
+							$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, 0);
+						}
+					}
+					
+					/*
 					// we could possibly make this a private function that allows us to grab the data, compare it and then return true or false and set the data to a global variable
  					if($this->database->checkCategoryTagName($this->router->getUriPosition($this->router->uriLength()), 0))
  					{
@@ -143,7 +202,8 @@ class templateEngine
 						//echo "false";
 						$this->errorText = "Category Not Found";
 						
-					}		
+					}
+					*/
 					//$this->pageData = $this->database->getSpecificCategory($this->router->getUriPosition(2), $this->router->getPageOffset() * 10);
 					// need some error checking for null pagedata
 					if(!empty($this->pageData))
@@ -199,6 +259,13 @@ class templateEngine
 						// do stuff
 					}
 				}
+				// need to rewrite the feed to use template engine over doing stuff on it's own
+				else if($this->router->pageType() == "feed")
+				{
+					$this->pageData = $this->database->getPosts(0);
+					$return = V_BASELOC . "/private/includes";
+					$file = "/feed.php";
+				}
 				else
 				{
 					//echo $this->router->getPageOffset() . "<br>";
@@ -239,7 +306,7 @@ class templateEngine
 		else
 		{
 			//echo substr($file, 1, strlen($file));
-			if(!$this->themeFileIsValid(substr($file, 1, strlen($file))))
+			if(!$this->themeFileIsValid(substr($file, 1, strlen($file)), $return))
 			{
 				$this->themeValidError = "Theme file does not exist";
 			}
@@ -1106,6 +1173,50 @@ class templateEngine
 		if($return == null)
 		{
 			$return = sprintf("%s%s%s%s%s", V_URL, V_HTTPBASE, "themes/", V_THEME, "/");
+		}
+		
+		return $return;
+	}
+	
+	public function getFeedType()
+	{
+		// default feed type
+		$return = null;
+		$type = $this->router->getUriPosition(2);
+		
+		if($this->router->uriLength() <= 2)
+		{
+			if($type == "" || $type == "rss")
+			{
+				$return = "rss";
+			}
+			else if($type == "atom")
+			{
+				$return = "atom";
+			}
+			else
+			{
+				$this->errorText = "Invalid Feed Type";
+			}
+		}
+		else
+		{
+			$this->errorText = "Invalid Feed Address";
+		}
+		
+		return $return;
+	}
+	
+	public function lastUpdated($format)
+	{
+		$return = null;
+		
+		if(isset($this->pageData[0]["Date"]))
+		{
+			$tmp = $this->arrayPosition;
+			$this->arrayPosition = 0;
+			$return = $this->getPostTime($format);
+			$this->arrayPosition = $tmp;
 		}
 		
 		return $return;
