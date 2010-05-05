@@ -179,7 +179,7 @@ class templateEngine
 						}
 						else
 						{
-							echo "im here";
+							//echo "im here";
 							$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, 0);
 						}
 					}
@@ -226,6 +226,7 @@ class templateEngine
 				}
 				else if($this->router->pageType() == "tag")
 				{
+					/*
 					if($this->database->checkCategoryTagName($this->router->getUriPosition($this->router->uriLength()), 1))
  					{
 						//echo "true";
@@ -238,6 +239,48 @@ class templateEngine
 						$this->errorText = "Tag Not Found";
 						
 					}
+					*/
+					
+					$tagOffset = $this->router->searchURI("tag") + 2;
+					$tagName = $this->router->getUriPosition($tagOffset);
+					//echo $tagName;
+				
+					if($this->router->uriLength() == 1)
+					{
+						$this->pageData = $this->database->listCategoriesOrTags(1);
+					}
+					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($tagName, 1))
+					{
+						//echo "in here";
+						$pageOffset = $this->router->searchURI("page") + 2;
+						
+						if($pageOffset != -1)
+						{
+							$pageID = intval($this->router->getUriPosition($pageOffset));
+							//echo $pageID;
+							if($pageID > 0)
+							{
+								$pageID = ($pageID - 1) * 10;
+							}
+						
+							if($pageID >= 0)
+							{
+								echo $pageID;
+								$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, $pageID);
+							}
+							else
+							{
+								$this->errorText = "Can't have a negative page";
+							}
+						
+						}
+						else
+						{
+							//echo "im here";
+							$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, 0);
+						}
+					}
+					
 					// need some error checking for null pagedata
 					if(!empty($this->pageData))
 					{
@@ -258,6 +301,7 @@ class templateEngine
 					{
 						// do stuff
 					}
+					
 				}
 				// need to rewrite the feed to use template engine over doing stuff on it's own
 				else if($this->router->pageType() == "feed")

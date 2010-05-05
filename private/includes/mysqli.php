@@ -520,9 +520,11 @@ class mysqliDatabase
 		$tmpArr = array();
 		
 		
-		if($this->haveCacher && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists(sprintf("%s%d", $query, 1)) && $this->cacher->checkExists($query))
 		{
 			$queryStr = $this->cacher->getCachedData();
+			$this->cacher->checkExists(sprintf("%s%d", $query, 1));
+			$this->haveNext = $this->cacher->getCachedData();
 		}
 		else if($result = $this->dbConn->query($query))
 		{
@@ -564,7 +566,7 @@ class mysqliDatabase
 			if($this->haveCacher && $this->cacher->checkExists($query))
 			{
 				$return = $this->cacher->getCachedData();
-				echo "\nhere\n";
+				//echo "\nhere\n";
 			}
 			else if($result = $this->dbConn->query($query))
 			{
@@ -581,11 +583,19 @@ class mysqliDatabase
 				$result->close();
 				
 				$return = $this->generateAuthors($return, $tmpAuthor);
+				
+				$tmpCt = count($return);
+				if($tmpCt > 10)
+				{
+					$this->haveNext = true;
+					array_pop($return);
+				}
 				unset($tmpAuthor);
 				
 				if($this->haveCacher)
 				{
 					$this->cacher->writeCachedFile($query, $return);
+					$this->cacher->writeCachedFile(sprintf("%s%d", $query, 1), $this->haveNext);
 				}
 			}
 		}
