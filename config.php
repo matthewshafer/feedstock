@@ -12,6 +12,7 @@ define("V_HTTPBASE", "niftysvn/feedstock/public/");
 
 /* Post Settings */
 define("V_POSTFORMAT", "%MONTH%/%DAY%/%YEAR%/%TITLE%");
+define("F_POSTSPERPAGE", 10);
 
 
 /* Feed Settings */

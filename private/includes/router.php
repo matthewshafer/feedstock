@@ -139,7 +139,7 @@ class router
 	/**
 	 * getUriPosition function.
 	 * 
-	 * @brief returns the value of hte uri at the sepcific position
+	 * @brief returns the value of the uri at the sepcific position
 	 * @access public
 	 * @param mixed $position
 	 * @return If the position exists then it returns that value, else it returns null
@@ -182,6 +182,14 @@ class router
 		return count($this->uriArray);
 	}
 	
+	/**
+	 * searchURI function.
+	 * 
+	 * @brief Allows you to search the URI to find something. if the uri was /test123/hello/sup and you searched for hello you get 2
+	 * @access public
+	 * @param mixed $find
+	 * @return Integer that is the position of the search in the URI, -1 if it doesn't exist
+	 */
 	public function searchURI($find)
 	{
 		$return = -1;
@@ -192,7 +200,7 @@ class router
 		{
 			if($this->uriArray[$i] == $find)
 			{
-				$return = $i;
+				$return = $i + 1;
 				break;
 			}
 		}

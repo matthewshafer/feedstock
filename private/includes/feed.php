@@ -5,12 +5,6 @@
  * @brief generates either an rss2.0 or atom feed
  * 
  */
-
-		$base = V_URL . V_HTTPBASE;
-		if(!V_HTACCESS)
-		{
-			$base .= "index.php/";
-		}
 		
 		if($this->templateEngine->getFeedType() == "rss")
 		{
@@ -30,7 +24,7 @@
 				echo "\t\t\t" . sprintf("%s%s%s", '<atom:link rel="hub" href="', F_PUBSUBHUBBUBSUBSCRIBE, '"/>') . "\n";
 			}
 			echo "\t\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
-			echo "\t\t\t" . '<link>' . $base . '</link>' . "\n";
+			echo "\t\t\t" . '<link>' . $this->templateEngine->siteURL() . '</link>' . "\n";
 			echo "\t\t\t" . '<description>' . V_DESCRIPTION . '</description>' . "\n";
 			echo "\t\t\t" . '<lastBuildDate>' . $this->templateEngine->lastUpdated("r") . '</lastBuildDate>' . "\n";
 			echo "\t\t\t" . '<language>en-us</language>' . "\n";
@@ -56,8 +50,8 @@
 			echo "\t" . '<feed xmlns="http://www.w3.org/2005/Atom">' . "\n";
 			
 			echo "\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
-			echo "\t\t" . '<link href="' . $base . '" />' . "\n";
-			echo "\t\t" . '<link  rel="self" href="' . $base . 'feed/atom/" type="application/atom+xml" />' . "\n";
+			echo "\t\t" . '<link href="' . $this->templateEngine->siteURL() . '" />' . "\n";
+			echo "\t\t" . '<link  rel="self" href="' . $this->templateEngine->siteURL("feed/atom/") . '" type="application/atom+xml" />' . "\n";
 			if(F_PUBSUBHUBBUB)
 			{
 				echo "\t\t" . sprintf("%s%s%s", '<link  rel="hub" href="', F_PUBSUBHUBBUBSUBSCRIBE, '" />') . "\n";
@@ -65,10 +59,10 @@
 			echo "\t\t" . '<updated>' . $this->templateEngine->lastUpdated("c") . '</updated>' . "\n";
 			echo "\t\t" . '<author>' . "\n";
 			echo "\t\t\t" . '<name>'. F_AUTHOR . '</name>' . "\n";
-			echo "\t\t\t" . '<uri>' . $base . '</uri>' . "\n";
+			echo "\t\t\t" . '<uri>' . $this->templateEngine->siteURL() . '</uri>' . "\n";
 			echo "\t\t\t" . '<email>' . F_AUTHOREMAIL . '</email>' . "\n";
 			echo "\t\t" . '</author>' . "\n";
-			echo "\t\t" . '<id>' . $base . 'feed/atom/</id>' . "\n";
+			echo "\t\t" . '<id>' . $this->templateEngine->siteURL("feed/atom/") . '</id>' . "\n";
 			
 			
 			while($this->templateEngine->postNext())

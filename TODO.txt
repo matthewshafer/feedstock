@@ -1,9 +1,6 @@
 Things to do in no perticular order
 
 Cacher
-	finish file checking
-	needs a purge function
-	check if writeable
 	
 Database
 	mysqli remove users.  need to rewrite how users are stored.
@@ -20,7 +17,6 @@ Themes
 	Visions could create something like $data.  themes could call $this->data-getPosts().  this sounds like a better idea.
 	
 router
-	function to return a specific piece of the uri
 	
 templateEngine
 	Checking for null pagedata in render()

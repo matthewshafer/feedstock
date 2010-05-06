@@ -144,8 +144,8 @@ class templateEngine
 						//echo "odd";
 					}
 					
-					$categoryOffset = $this->router->searchURI("category") + 2;
-					$categoryName = $this->router->getUriPosition($categoryOffset);
+					$categoryNameOffset = $this->router->searchURI("category") + 1;
+					$categoryName = $this->router->getUriPosition($categoryNameOffset);
 					//echo $categoryName;
 					
 					if($this->router->uriLength() == 1)
@@ -155,7 +155,7 @@ class templateEngine
 					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($categoryName, 0))
 					{
 						//echo "in here";
-						$pageOffset = $this->router->searchURI("page") + 2;
+						$pageOffset = $this->router->searchURI("page") + 1;
 						
 						if($pageOffset != -1)
 						{
@@ -168,7 +168,7 @@ class templateEngine
 							
 							if($pageID >= 0)
 							{
-								echo $pageID;
+								//echo $pageID;
 								$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $pageID);
 							}
 							else
@@ -241,8 +241,8 @@ class templateEngine
 					}
 					*/
 					
-					$tagOffset = $this->router->searchURI("tag") + 2;
-					$tagName = $this->router->getUriPosition($tagOffset);
+					$tagNameOffset = $this->router->searchURI("tag") + 1;
+					$tagName = $this->router->getUriPosition($tagNameOffset);
 					//echo $tagName;
 				
 					if($this->router->uriLength() == 1)
@@ -252,7 +252,7 @@ class templateEngine
 					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($tagName, 1))
 					{
 						//echo "in here";
-						$pageOffset = $this->router->searchURI("page") + 2;
+						$pageOffset = $this->router->searchURI("page") + 1;
 						
 						if($pageOffset != -1)
 						{
@@ -872,14 +872,14 @@ class templateEngine
 	}
 	
 	
-	private function generateUrlFromUri($URI)
+	private function generateURLFromURI($URI)
 	{
 		// need to remove slashes from the begining of the URI if we are using htaccess
-		$return = V_URL . V_HTTPBASE;
+		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
 		
 		if(V_HTACCESS)
 		{
-			$return .= "index.php";
+			$return = sprintf("%s%s", $return, "index.php/");
 		}
 		else
 		{
@@ -889,7 +889,7 @@ class templateEngine
 			}
 		}
 		
-		$return .= $URI;
+		$return = sprintf("%s%s", $return, $URI);
 		
 		return $return;
 	}
@@ -1261,6 +1261,34 @@ class templateEngine
 			$this->arrayPosition = 0;
 			$return = $this->getPostTime($format);
 			$this->arrayPosition = $tmp;
+		}
+		
+		return $return;
+	}
+	
+	public function siteURL($uri = null)
+	{
+		$return = null;
+		
+		if($uri == null)
+		{
+			$return = $this->generateSiteURL();
+		}
+		else
+		{
+			$return = $this->generateUrlFromUri($uri);
+		}
+		
+		return $return;
+	}
+	
+	private function generateSiteURL()
+	{
+		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
+		
+		if(!V_HTACCESS)
+		{
+			$return = sprintf("%s%s", $return, "index.php/");
 		}
 		
 		return $return;
