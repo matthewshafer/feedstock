@@ -147,9 +147,9 @@ class router
 	public function getUriPosition($position)
 	{
 		$return = null;
-		if(count($this->uriArray) >= $position)
+		if(count($this->uriArray) >= $position && $position > 0)
 		{
-			$position = $position-1;
+			$position = $position - 1;
 			//echo $position;
 			$return = $this->uriArray[$position];
 			//print_r($this->uriArray[$position]);

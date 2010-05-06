@@ -100,13 +100,15 @@ class mysqliDatabase
 	 * @param bool $draft. (default: false)
 	 * @return void
 	 */
-	public function getPosts($offset, $draft = false)
+	public function getPosts($limit, $offset, $draft = false)
 	{
 		$return = array();
 		
+		$limit = $limit + 1;
+		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 11 OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($offset));
+			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($limit), $this->dbConn->real_escape_string($offset));
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
@@ -117,7 +119,7 @@ class mysqliDatabase
 		}
 		else
 		{
-			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT 11 OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($offset));
+			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($limit), $this->dbConn->real_escape_string($offset));
 			$this->queries++;
 		}
 		
@@ -143,7 +145,7 @@ class mysqliDatabase
 			}
 			$result->close();
 			
-			if(count($tmpArr) == 11)
+			if(count($tmpArr) == ($limit))
 			{
 				$this->haveNext = true;
 				array_pop($tmpArr);
@@ -506,10 +508,11 @@ class mysqliDatabase
 	 * @param bool $draft. (default: false)
 	 * @return void
 	 */
-	public function getPostsInCategoryOrTag($URIName, $type, $offset, $draft = false)
+	public function getPostsInCategoryOrTag($URIName, $type, $limit, $offset, $draft = false)
 	{
 		$return = array();
 		$queryStr = null;
+		$limit = $limit + 1;
 		
 		$query = sprintf("SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'", $this->tablePrefix, $this->dbConn->real_escape_string($this->checkedCategoryOrTag["PrimaryKey"]));
 		
@@ -551,7 +554,7 @@ class mysqliDatabase
 		{
 			if(!$draft)
 			{
-				$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s) ORDER BY Date DESC LIMIT 11 OFFSET %d", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr), $offset);
+				$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s) ORDER BY Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->dbConn->real_escape_string($queryStr), $this->dbConn->real_escape_string($limit), $this->dbConn->real_escape_string($offset));
 			}
 			else
 			{
@@ -587,7 +590,7 @@ class mysqliDatabase
 				$return = $this->generateAuthors($return, $tmpAuthor);
 				
 				$tmpCt = count($return);
-				if($tmpCt > 10)
+				if($tmpCt == $limit)
 				{
 					$this->haveNext = true;
 					array_pop($return);

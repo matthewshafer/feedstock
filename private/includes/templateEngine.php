@@ -102,8 +102,9 @@ class templateEngine
 		}
 		else if(strtolower($this->router->pageType()) == "page")
 		{
-			$offset = $this->router->getPageOffset() * 10;
-			$this->pageData = $this->database->getPosts($offset);
+			$limit = intval(F_POSTSPERPAGE);
+			$offset = $this->router->getPageOffset() * $limit;
+			$this->pageData = $this->database->getPosts($limit, $offset);
 			$file = "/postList.php";
 		}
 		else
@@ -155,10 +156,12 @@ class templateEngine
 					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($categoryName, 0))
 					{
 						//echo "in here";
-						$pageOffset = $this->router->searchURI("page") + 1;
+						$pageOffset = $this->router->searchURI("page");
+						$limit = intval(F_POSTSPERPAGE);
 						
 						if($pageOffset != -1)
 						{
+							$pageOffset++;
 							$pageID = intval($this->router->getUriPosition($pageOffset));
 							//echo $pageID;
 							if($pageID > 0)
@@ -169,7 +172,7 @@ class templateEngine
 							if($pageID >= 0)
 							{
 								//echo $pageID;
-								$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $pageID);
+								$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $limit, $pageID);
 							}
 							else
 							{
@@ -180,7 +183,7 @@ class templateEngine
 						else
 						{
 							//echo "im here";
-							$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, 0);
+							$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $limit, 0);
 						}
 					}
 					
@@ -252,10 +255,12 @@ class templateEngine
 					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($tagName, 1))
 					{
 						//echo "in here";
-						$pageOffset = $this->router->searchURI("page") + 1;
+						$pageOffset = $this->router->searchURI("page");
+						$limit = intval(F_POSTSPERPAGE);
 						
 						if($pageOffset != -1)
 						{
+							$pageOffset++;
 							$pageID = intval($this->router->getUriPosition($pageOffset));
 							//echo $pageID;
 							if($pageID > 0)
@@ -266,7 +271,7 @@ class templateEngine
 							if($pageID >= 0)
 							{
 								echo $pageID;
-								$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, $pageID);
+								$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, $limit, $pageID);
 							}
 							else
 							{
@@ -277,7 +282,7 @@ class templateEngine
 						else
 						{
 							//echo "im here";
-							$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, 0);
+							$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, $limit, 0);
 						}
 					}
 					
@@ -306,7 +311,8 @@ class templateEngine
 				// need to rewrite the feed to use template engine over doing stuff on it's own
 				else if($this->router->pageType() == "feed")
 				{
-					$this->pageData = $this->database->getPosts(0);
+					$limit = intval(F_POSTSPERPAGE);
+					$this->pageData = $this->database->getPosts($limit, 0);
 					$return = V_BASELOC . "/private/includes";
 					$file = "/feed.php";
 				}
@@ -997,7 +1003,8 @@ class templateEngine
 	 */
 	public function getPostsIndex()
 	{
-		$this->pageData = $this->database->getPosts(0);
+		$limit = intval(F_POSTSPERPAGE);
+		$this->pageData = $this->database->getPosts($limit, 0);
 	}
 	
 	/**
