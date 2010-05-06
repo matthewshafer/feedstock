@@ -125,7 +125,6 @@ class mysqliDatabase
 		if($this->haveCacher && $this->cacher->checkExists(sprintf("%s%d", $query, 1)) && $this->cacher->checkExists($query))
 		{
 			$return = $this->cacher->getCachedData();
-			$this->cacher->checkExists(sprintf("%s%d", $query, 1));
 			$this->haveNext = $this->cacher->getCachedData();
 		}
 		else if($result = $this->dbConn->query($query))
@@ -151,6 +150,7 @@ class mysqliDatabase
 			}
 			//print_r($tmpAuthors);
 			$return = $this->generateAuthors($tmpArr, $tmpAuthors);
+			unset($tmpArr, $tmpAuthors);
 			
 			if($this->haveCacher)
 			{
@@ -321,6 +321,7 @@ class mysqliDatabase
 		}
 		
 		$return = $this->generateAuthors($tmpArr, $authorArr);
+		unset($tmpArr, $authorArr);
 		
 		if(isset($return[0]["PostData"]))
 		{
@@ -378,7 +379,6 @@ class mysqliDatabase
 				{
 					$queryStr = $this->cacher->getCachedData();
 				}
-				$this->cacher->checkExists($query1);
 				$arrayWithPostTax = $this->cacher->getCachedData();
 			}
 			else if($this->dbConn->multi_query($query))
@@ -414,6 +414,7 @@ class mysqliDatabase
 				} while($this->dbConn->next_result());
 				
 				$queryStr = implode(", ", $tmpArr);
+				unset($tmpArr);
 				
 				
 				if($this->haveCacher)
@@ -484,6 +485,8 @@ class mysqliDatabase
 					$return[$tmp["key"]] = $srsTemp;
 				}
 				
+				unset($catTagResultArr);
+				
 				if($this->haveCacher)
 				{
 					$this->cacher->writeCachedFile($query, $return);
@@ -523,7 +526,6 @@ class mysqliDatabase
 		if($this->haveCacher && $this->cacher->checkExists(sprintf("%s%d", $query, 1)) && $this->cacher->checkExists($query))
 		{
 			$queryStr = $this->cacher->getCachedData();
-			$this->cacher->checkExists(sprintf("%s%d", $query, 1));
 			$this->haveNext = $this->cacher->getCachedData();
 		}
 		else if($result = $this->dbConn->query($query))

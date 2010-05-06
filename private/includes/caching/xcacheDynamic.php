@@ -7,9 +7,10 @@
  */
 class xcacheDynamic
 {
-	private $currentData = null;
 	private $prefix = null;
 	private $prefixArr = null;
+	private $store = array();
+	private $storePos = -1;
 	
 	/**
 	 * __construct function.
@@ -38,7 +39,10 @@ class xcacheDynamic
 		// might need to make this so when we check we also reset the time on the array
 		if(xcache_isset($lookup))
 		{
-			$this->currentData = xcache_get($lookup);
+			//$this->currentData = xcache_get($lookup);
+			
+			array_push($this->store, xcache_get($lookup));
+			$this->storePos++;
 			
 			//if($this->currentData != null)
 			//{
@@ -57,8 +61,18 @@ class xcacheDynamic
 	 */
 	public function getCachedData()
 	{
-		$tmp = $this->currentData;
-		$this->currentData = null;
+		//$tmp = $this->currentData;
+		//$this->currentData = null;
+		if($this->storePos > -1)
+		{
+			$tmp = array_pop($this->store);
+			$this->storePos--;
+			//print_r($tmp);
+		}
+		else
+		{
+			$tmp = null;
+		}
 		
 		return $tmp;
 	}
