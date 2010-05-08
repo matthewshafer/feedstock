@@ -544,7 +544,7 @@ class mysqliDatabase
 			
 			if($this->haveCacher)
 			{
-				echo $query;
+				//echo $query;
 				$this->cacher->writeCachedFile($query, $queryStr);
 			}
 		}
