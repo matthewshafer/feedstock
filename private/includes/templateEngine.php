@@ -16,6 +16,7 @@ class templateEngine
 	private $arrayPosition = -1;
 	private $errorText = null;
 	private $themeValidError = false;
+	private $pageDataCt = null;
 	
 	/**
 	 * __construct function.
@@ -362,6 +363,11 @@ class templateEngine
 			}
 		}
 		
+		if(!empty($this->pageData))
+		{
+			$this->pageDataCt = count($this->pageData);
+		}
+		
 		//echo $file;
 		// we can provbably streamline this
 		$return .= $file;
@@ -473,7 +479,9 @@ class templateEngine
 	public function postNext()
 	{
 		$return = null;
-		if($this->arrayPosition + 1 < count($this->pageData) && count($this->pageData) != 0)
+		
+		
+		if($this->arrayPosition + 1 < $this->pageDataCt && $this->pageDataCt != 0)
 		{
 			$this->arrayPosition++;
 			$return = true;
@@ -1005,6 +1013,11 @@ class templateEngine
 	{
 		$limit = intval(F_POSTSPERPAGE);
 		$this->pageData = $this->database->getPosts($limit, 0);
+		
+		if(!empty($this->pageData))
+		{
+			$this->pageDataCt = count($this->pageData);
+		}
 	}
 	
 	/**
@@ -1088,7 +1101,7 @@ class templateEngine
 	{
 		$return = false;
 		
-		if(strtolower($this->router->pageType()) == "page" && $this->router->getPageOffset() > 0 && count($this->pageData) > 0)
+		if(strtolower($this->router->pageType()) == "page" && $this->router->getPageOffset() > 0 && $this->pageDataCt > 0)
 		{
 			$return = true;
 		}
