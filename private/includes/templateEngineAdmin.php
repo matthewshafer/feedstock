@@ -230,7 +230,7 @@ class templateEngineAdmin
 		{
 			//$tmpArr = $this->db->getPostList($limit, $offset);
 			// this one is from the normal database class.  It get's us things like author
-			$tmpArr = $this->db->getPosts($offset, true);
+			$tmpArr = $this->db->getPosts(99999999, $offset, true);
 		}
 		else
 		{
@@ -582,6 +582,25 @@ class templateEngineAdmin
 		}
 		
 		return $return;
+	}
+	
+	public function getAdminURL()
+	{
+		static $address = null;
+		
+		if($address == null)
+		{
+			if(substr(F_ADMINADDRESS, -1) == '/')
+			{
+				$address = substr(F_ADMINADDRESS, 0, (strlen(F_ADMINADDRESS) - 1));
+			}
+			else
+			{
+				$address = F_ADMINADDRESS;
+			}
+		}
+		
+		return $address;
 	}
 }
 ?>

@@ -1,4 +1,5 @@
-<form name="deletePages" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
+<?php require_once("header.php"); ?>
+<form name="deletePages" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php'); ?>">
 
 <div id="pageBox">
 <?php 
@@ -23,3 +24,4 @@ foreach($this->templateEngine->getTheData() as $key)
 		<input name="type" type="hidden" value="pageRemove">
 		<input name="submit" type=submit value="Delete">
 </form>
+<?php require_once("footer.php"); ?>

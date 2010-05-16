@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-		<title>Create Category</title>
-	</head>
-	
-	<body>
-		<div id="center">
+<?php require_once("header.php"); ?>
 			<form name="createCategory" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php/categories">
 				Category Title: (We create a URI based off this)<br>
 				<input name="categoryTitle" type="text" value="<?php echo $this->templateEngine->categoryTitleID(); ?>"><br>
@@ -24,6 +16,4 @@
 			echo "<br><br> The array of all the data<br>";
 			print_r($this->templateEngine->getCategoryData());
 			?>
-		</div>
-	</body>
-</html>
+<?php require_once("footer.php"); ?>

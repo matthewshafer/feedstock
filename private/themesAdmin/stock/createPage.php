@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-		<title>Create Page</title>
-	</head>
-	
-	<body>
-		<div id="center">
+<?php require_once("header.php"); ?>
 			<form name="createPage" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
 				Page Title: (We create a URI based off this)<br>
 				<input name="pageTitle" type="text" value="<?php echo $this->templateEngine->pageTitleID(); ?>"><br>
@@ -27,6 +19,4 @@
 				<input name="submit" type=submit value="Post">
 			</form>
 			</form>
-		</div>
-	</body>
-</html>
+<?php require_once("footer.php"); ?>

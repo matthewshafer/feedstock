@@ -8,6 +8,7 @@ define("V_HTACCESS", false);
 // Web address and base location
 define("V_URL", "http://localhost:8888/");
 define("V_HTTPBASE", "niftysvn/feedstock/public/");
+define("F_ADMINADDRESS", "http://localhost:8888/niftysvn/feedstock/public/admin/");
 
 
 /* Post Settings */
@@ -42,7 +43,7 @@ $tableprefix = "fs_";
 
 
 /* Caching Settings */
-define("V_CACHE", true);
+define("V_CACHE", false);
 // name of the cacher.  filecache does standard files.  xcache uses php xcache for caching
 define("F_CACHENAME", "xcacheDynamic");
 // This is in seconds. Should set to something like 1400.  Currently set low to help with testing.

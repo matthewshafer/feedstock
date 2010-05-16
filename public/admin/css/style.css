@@ -4,3 +4,34 @@ div.centerLogin
 	margin-left: auto;
 	margin-right: auto;
 }
+
+div#page
+{
+	margin: 0 auto;
+	padding: 5px;
+	text-align: left;
+}
+
+div#header
+{
+	height: 30px;
+}
+
+div#menu
+{
+	width: 150px;
+	float: left;
+	margin: 10px 0 10px 5px;
+	height: 400px;
+}
+
+div#content
+{
+	margin: 10px 0 10px 335px;
+	min-height: 500px;
+}
+
+div#footer
+{
+	height: 30px;
+}

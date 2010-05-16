@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-		<title>Create Post</title>
-	</head>
-	
-	<body>
-		<div class="centerCreatePost">
-			<form name="createPost" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
+<?php require_once("header.php"); ?>
+			<form name="createPost" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php'); ?>">
 				Post Title: (We create a URI based off this)<br>
 				<input name="postTitle" type="text" value="<?php echo $this->templateEngine->postTitleID(); ?>"><br>
 				Post Body: <br>
@@ -38,6 +30,4 @@
 				<br>
 				<input name="submit" type=submit value="Post">
 			</form>
-		</div>
-	</body>
-</html>
+<?php require_once("footer.php"); ?>
