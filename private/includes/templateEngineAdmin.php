@@ -602,5 +602,15 @@ class templateEngineAdmin
 		
 		return $address;
 	}
+	
+	public function siteName()
+	{
+	
+	}
+	
+	public function siteDescription()
+	{
+	
+	}
 }
 ?>

@@ -10,7 +10,8 @@
 	<div id="page">
 	
 	<div id="head">
-	
+		titleTest <br>
+		another test
 	</div>
 	
 	<div id="menu">
@@ -22,7 +23,7 @@
 			<li class="tab5"><a href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php/page'); ?>">New Page</a></li>
 			<li class="tab6"><a href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php/tags'); ?>">Tags</a></li>
 			<li class="tab7"><a href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php/categories'); ?>">Categories</a></li>
-			<li class="tab8"><a href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php/corral'); ?>">Corral (doesn't work yet)</a></li>
+			<li class="tab8"><a href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php/corral'); ?>">Corral</a></li>
 			<li class="tab9"><a href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php/snippets/'); ?>">Snippets</a></li>
 			<li class="tab10"><a href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php/snippet'); ?>">New Snippet</a></li>
 		</ul>

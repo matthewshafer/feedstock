@@ -1,5 +1,5 @@
 <?php require_once("header.php"); ?>
-			<form name="createPage" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
+			<form name="createPage" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php'); ?>">
 				Page Title: (We create a URI based off this)<br>
 				<input name="pageTitle" type="text" value="<?php echo $this->templateEngine->pageTitleID(); ?>"><br>
 				Custom URI:<br>

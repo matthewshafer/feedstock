@@ -25,6 +25,11 @@ div#menu
 	height: 400px;
 }
 
+div#menu ul
+{
+	list-style: none;
+}
+
 div#content
 {
 	margin: 10px 0 10px 335px;
@@ -34,4 +39,5 @@ div#content
 div#footer
 {
 	height: 30px;
+	text-align: center;
 }
