@@ -13,6 +13,11 @@
  	
  	public function __construct()
  	{
+ 		
+ 	}
+ 	
+ 	private function generateIP()
+ 	{
  		if(!empty($_SERVER["HTTP_CLIENT_IP"]))
  		{
  			$tmp = $_SERVER["HTTP_CLIENT_IP"];
@@ -43,6 +48,7 @@
  	
  	public function checkIP($ip)
  	{
+ 		$this->generateIP();
  		$return = false;
  		
  		if($ip == $this->ipAddress)

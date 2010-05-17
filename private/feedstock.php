@@ -41,51 +41,59 @@ class feedstock
 		
 		if($this->router->requestMethod() == "GET")
 		{
-		
-			require_once("includes/cacheHandler.php");
-			$this->cacheHandler = new cacheHandler($this->router);
-			
-			if(V_CACHE && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
+			if($this->maintenanceMode())
 			{
-				// Should create the cacher first so that we can check if a file exists before we even create a database
-				// for example if the database goes down we can still serve up pages, until they "expire" which would give us
-				// a little bit of time to get the DB back up and running
-				//require_once("includes/" . F_CACHENAME . ".php");
-				//$this->cacher = new cache($this->router->fullURI());
-				$this->cacher = $this->cacheHandler->cacheMaker();
-			
-				if($this->cacher->checkExists())
-				{
-					echo $this->cacher->getCachedData();
-				}
-				else
-				{
-					// need to figure out how to grab this yet if there is an error I need to keep using cached data.
-					$themeData = $this->heavyLift();
-					//echo $themeData;
-				
-					if($this->router->pageType() != "file")
-					{
-						$this->cacher->writeCachedFile($themeData);
-					}
-					echo $themeData;
-				}
+				require_once("includes/maintenance.php");
+				$maintenance = new maintenance(sprintf("%s%s%s", V_BASELOC, "/private/themes/", V_THEME), "maintenance.php");
+				echo $maintenance->render();
 			}
 			else
 			{
-				echo $this->heavyLift();
-				//echo "<br><br>Queries: " . $this->db->queries;
-				
-				if(F_MYSQLSTOREQUERIES)
+				require_once("includes/cacheHandler.php");
+				$this->cacheHandler = new cacheHandler($this->router);
+			
+				if(V_CACHE && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
 				{
-					echo "<br><br><br>";
-				//print_r($this->db->debugQueries);
-					foreach($this->db->debugQueries as $key)
+					// Should create the cacher first so that we can check if a file exists before we even create a database
+					// for example if the database goes down we can still serve up pages, until they "expire" which would give us
+					// a little bit of time to get the DB back up and running
+					//require_once("includes/" . F_CACHENAME . ".php");
+					//$this->cacher = new cache($this->router->fullURI());
+					$this->cacher = $this->cacheHandler->cacheMaker();
+				
+					if($this->cacher->checkExists())
 					{
-						echo $key . "<br>";
+						echo $this->cacher->getCachedData();
 					}
+					else
+					{
+						// need to figure out how to grab this yet if there is an error I need to keep using cached data.
+						$themeData = $this->heavyLift();
+						//echo $themeData;
 					
-					//echo '<br><br>' . $this->db->queryError();
+						if($this->router->pageType() != "file")
+						{
+							$this->cacher->writeCachedFile($themeData);
+						}
+						echo $themeData;
+					}
+				}
+				else
+				{
+					echo $this->heavyLift();
+					//echo "<br><br>Queries: " . $this->db->queries;
+					
+					if(F_MYSQLSTOREQUERIES)
+					{
+						echo "<br><br><br>";
+					//print_r($this->db->debugQueries);
+						foreach($this->db->debugQueries as $key)
+						{
+							echo $key . "<br>";
+						}
+						
+						//echo '<br><br>' . $this->db->queryError();
+					}
 				}
 			}
 		}
@@ -162,6 +170,25 @@ class feedstock
 			case "mysql":
 				$return = new mysqlDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
 			break;
+		}
+		
+		return $return;
+	}
+	
+	private function maintenanceMode()
+	{
+		$return = false;
+		
+		if(F_MAINTENANCE)
+		{
+			require_once("includes/ipChecker.php");
+			
+			$ipChecker = new ipChecker();
+			
+			if(!$ipChecker->checkIP(F_MAINTENANCEPASS))
+			{
+				$return = true;
+			}
 		}
 		
 		return $return;
