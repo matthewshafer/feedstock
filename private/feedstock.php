@@ -44,7 +44,7 @@ class feedstock
 			if($this->maintenanceMode())
 			{
 				require_once("includes/maintenance.php");
-				$maintenance = new maintenance(sprintf("%s%s%s", V_BASELOC, "/private/themes/", V_THEME), "maintenance.php");
+				$maintenance = new maintenance(sprintf("%s%s%s%s", V_BASELOC, "/private/themes/", V_THEME, "/maintenance.php"));
 				echo $maintenance->render();
 			}
 			else
@@ -175,6 +175,13 @@ class feedstock
 		return $return;
 	}
 	
+	/**
+	 * maintenanceMode function.
+	 * 
+	 * @brief Allows us to check if theres maintenance mode enabled and if the current person accessing the site can bypass maintenance mode
+	 * @access private
+	 * @return True if we are in maintenance mode, false if not or the user can bypass it;
+	 */
 	private function maintenanceMode()
 	{
 		$return = false;

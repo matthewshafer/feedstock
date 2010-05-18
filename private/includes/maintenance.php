@@ -11,9 +11,10 @@
  	private $fileValid = false;
  	private $fileLocation = null;
  	
- 	public function __construct($loc, $filename)
+	// changed the construct to we save having to do another sprintf statement
+ 	public function __construct($fileLoc)
  	{
- 		$fileLoc = sprintf("%s/%s", $loc, $filename);
+ 		//$fileLoc = sprintf("%s/%s", $loc, $filename);
  		
  		if(file_exists($fileLoc) && is_readable($fileLoc))
  		{
