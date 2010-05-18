@@ -32,12 +32,31 @@ div#menu ul
 
 div#content
 {
-	margin: 10px 0 10px 335px;
+	margin: 20px 0 20px 235px;
 	min-height: 500px;
 }
 
 div#footer
 {
 	height: 30px;
+	width: 200px;
 	text-align: center;
+}
+
+input.button
+{
+	background-color: #fff;
+	border: 1px solid;
+}
+
+input.textInput
+{
+	border: 1px solid #000;
+}
+
+textarea
+{
+	width: 450px;
+	height: 300px;
+	border: 1px solid #000;
 }

@@ -22,6 +22,6 @@ foreach($this->templateEngine->getTheData() as $key)
 </div>
 
 		<input name="type" type="hidden" value="postsRemove">
-		<input name="submit" type=submit value="Delete">
+		<input name="submit" type=submit value="Delete" class="button">
 </form>
 <?php require_once("footer.php"); ?>
