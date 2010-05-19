@@ -71,7 +71,14 @@ class router
 		// figure out what actually happens when we use htaccess
 		if($this->htaccess)
 		{
-			$this->firstPart = $this->uriArray[0];
+			if(isset($this->uriArray[0]))
+			{
+				$this->firstPart = $this->uriArray[0];
+			}
+			else
+			{
+				$this->firstPart = "";
+			}
 		}
 		else
 		{
