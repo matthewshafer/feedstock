@@ -12,6 +12,7 @@ class templateEngineAdmin
 	protected $isLoggedIn = false;
 	protected $theData = array();
 	protected $theCategoryData = array();
+	protected $theTagData = array();
 	private $haveNextPage = false;
 	private $count = -1;
 	
@@ -148,6 +149,8 @@ class templateEngineAdmin
 				$this->theData = $this->getCorrals();
 				break;
 			case "tags":
+				$return = "/tags.php";
+				$this->theTagData = $this->getTagsList();
 				break;
 			case "snippets":
 				$return = "/snippet.php";
@@ -291,6 +294,11 @@ class templateEngineAdmin
 		return $tmpArr;
 	}
 	
+	private function getTagsList()
+	{
+		return $this->db->listCategoriesOrTags(1);
+	}
+	
 	/**
 	 * getTheData function.
 	 * 
@@ -313,6 +321,11 @@ class templateEngineAdmin
 	public function getCategoryData()
 	{
 		return $this->theCategoryData;
+	}
+	
+	public function getTagData()
+	{
+		return $this->theTagData;
 	}
 	
 	/**
