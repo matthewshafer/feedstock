@@ -5,6 +5,7 @@ Cacher
 Database
 	mysqli remove users.  need to rewrite how users are stored.
 	posts in category or tag needs to be written with offsets and order by date desc and limit 11
+	check over getPostsInCategoriesOrTags and make that and the checker better.
 	
 Visions
 	--

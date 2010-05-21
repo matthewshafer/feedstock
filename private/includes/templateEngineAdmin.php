@@ -149,8 +149,9 @@ class templateEngineAdmin
 				$this->theData = $this->getCorrals();
 				break;
 			case "tags":
-				$return = "/tags.php";
-				$this->theTagData = $this->getTagsList();
+				$return = $this->figureTagPage();
+				//$return = "/tags.php";
+				//$this->theTagData = $this->getTagsList();
 				break;
 			case "snippets":
 				$return = "/snippet.php";
@@ -196,6 +197,33 @@ class templateEngineAdmin
 		{
 			// going to get a specific corral
 			$return = $this->db->getPagesInCorral($specificCorral);
+		}
+		
+		return $return;
+	}
+	
+	private function figureTagPage()
+	{
+		$return = null;
+		
+		if($this->router->uriLength() == 1)
+		{
+			$return = "/tags.php";
+			$this->theTagData = $this->getTagsList();
+		}
+		else if($this->router->uriLength() == 2)
+		{
+			$return = "/tagPosts.php";
+			
+			if($this->db->checkCategoryTagName((string)$this->router->getUriPosition(2), 1))
+			{
+				$this->theData = $this->db->getPostsInCategoryOrTag((string)$this->router->getUriPosition(2), 1, 99999, 0, true);
+				//print_r($this->theData);
+			}
+			else
+			{
+				$return = null;
+			}
 		}
 		
 		return $return;

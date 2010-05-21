@@ -945,5 +945,6 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		
 		return $return;
 	}
+
 }
 ?>
