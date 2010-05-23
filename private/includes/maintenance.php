@@ -33,7 +33,7 @@
  		}
  		else
  		{
- 		
+ 			echo 'The website is currently undergoing some maintenance. <br>Check back soon.';
  		}
  		
  		return ob_get_clean();

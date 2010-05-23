@@ -13,6 +13,7 @@ class templateEngineAdmin
 	protected $theData = array();
 	protected $theCategoryData = array();
 	protected $theTagData = array();
+	protected $htmlPageTitle = null;
 	private $haveNextPage = false;
 	private $count = -1;
 	
@@ -90,6 +91,7 @@ class templateEngineAdmin
 		else
 		{
 			$return .= "/login.php";
+			$this->htmlPageTitle = "login";
 		}
 		
 		return $return;
@@ -111,41 +113,60 @@ class templateEngineAdmin
 			case "":
 				$return = "/index.php";
 				// want to set up the page variables and stuff, yay
+				$this->htmlPageTitle = "index";
 				break;
 			case "post":
 				$return = "/createPost.php";
+				$this->htmlPageTitle = "New Post";
 				// set up some vars, we want to check if we have an ID in the uri and if we do we need to load that from the db and set up the vars
 				if($this->router->getUriPosition(2) != null)
 				{
 					$this->theData = $this->db->getPostDataByID(intval($this->router->getUriPosition(2)));
+					$tmpTitle = $this->postTitleID();
+					
+					if($tmpTitle != null)
+					{
+						$this->htmlPageTitle = sprintf("%s%s", $tmpTitle, " :: Post");
+					}
 				}
 				$this->theCategoryData = $this->getCategoriesList(intval($this->router->getUriPosition(2)));
 				break;
 			case "page":
 				$return = "/createPage.php";
+				$this->htmlPageTitle = "New Page";
 				// set up some vars, we want to check if we have an ID in the uri and we need to load that and set up some stuff
 				if($this->router->getUriPosition(2) != null)
 				{
 					$this->theData = $this->db->getPageDataByID(intval($this->router->getUriPosition(2)));
+					$tmpTitle = $this->pageTitleID();
+					
+					if($tmpTitle != null)
+					{
+						$this->htmlPageTitle = sprintf("%s%s", $tmpTitle, " :: Page");
+					}
 				}
 				break;
 			case "posts":
 				$return = "/postList.php";
+				$this->htmlPageTitle = "Post List";
 				// gonna want to set some stuff up
 				//$this->theData = $this->db->getPostList();
 				$this->theData = $this->getPostOrPageList("post");
 				break;
 			case "pages":
 				$return = "/pageList.php";
+				$this->htmlPageTitle = "Page List";
 				// gonna want to set some stuff up
 				$this->theData = $this->getPostOrPageList("page");
 				break;
 			case "categories":
 				$return = "/categories.php";
+				$this->htmlPageTitle = "Categories";
 				$this->theCategoryData = $this->getCategoriesList();
 				break;
 			case "corral":
 				$return = "/corral.php";
+				$this->htmlPageTitle = "Corrals";
 				$this->theData = $this->getCorrals();
 				break;
 			case "tags":
@@ -155,15 +176,24 @@ class templateEngineAdmin
 				break;
 			case "snippets":
 				$return = "/snippet.php";
+				$this->htmlPageTitle = "Snippets";
 				//need to get the data but i need to make a function first
 				$this->theData = $this->db->getSnippetList();
 				break;
 			case "snippet":
 				$return = "/createSnippet.php";
+				$this->htmlPageTitle = "New Snippet";
 				// also need to get data
 				if($this->router->getUriPosition(2) != null)
 				{
 					$this->theData = $this->db->getSnippetByID($this->router->getUriPosition(2));
+					
+					$tmpTitle = $this->snippetTitleID();
+					
+					if($tmpTitle != null)
+					{
+						$this->htmlPageTitle = sprintf("%s%s", $tmpTitle, " :: Snippet");
+					}
 				}
 				break;
 		}
@@ -197,6 +227,8 @@ class templateEngineAdmin
 		{
 			// going to get a specific corral
 			$return = $this->db->getPagesInCorral($specificCorral);
+			
+			$this->htmlPageTitle = sprintf("%s%s", $specificCorral, " :: Corral");
 		}
 		
 		return $return;
@@ -210,6 +242,7 @@ class templateEngineAdmin
 		{
 			$return = "/tags.php";
 			$this->theTagData = $this->getTagsList();
+			$this->htmlPageTitle = "Tags";
 		}
 		else if($this->router->uriLength() == 2)
 		{
@@ -219,6 +252,8 @@ class templateEngineAdmin
 			{
 				$this->theData = $this->db->getPostsInCategoryOrTag((string)$this->router->getUriPosition(2), 1, 99999, 0, true);
 				//print_r($this->theData);
+				
+				$this->htmlPageTitle = sprintf("%s%s", $this->router->getUriPosition(2), " :: Tag");
 			}
 			else
 			{
@@ -646,12 +681,22 @@ class templateEngineAdmin
 	
 	public function siteName()
 	{
-	
+		return V_SITETITLE;
 	}
 	
 	public function siteDescription()
 	{
+		return V_DESCRIPTION;
+	}
 	
+	public function siteNameLink()
+	{
+		return sprintf('<a href="%s%s">%s</a>', V_URL, V_HTTPBASE, $this->siteName());
+	}
+	
+	public function htmlTitle()
+	{
+		return $this->htmlPageTitle;
 	}
 }
 ?>

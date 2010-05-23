@@ -3,15 +3,16 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<Link href="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/css/style.css'); ?>" rel="stylesheet" type="text/css">
-		<title>Login</title>
+		<title><?php echo $this->templateEngine->htmlTitle();  ?></title>
 	</head>
 	
 	<body>
 	<div id="page">
 	
 	<div id="head">
-		titleTest <br>
-		another test
+		 <?php echo $this->templateEngine->siteNameLink(); ?>
+		 <br>
+		&nbsp&nbsp <?php echo $this->templateEngine->siteDescription();  ?>
 	</div>
 	
 	<div id="menu">
