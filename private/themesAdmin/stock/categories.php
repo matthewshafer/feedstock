@@ -13,7 +13,7 @@
 				echo "Category: " . $key["Name"] . " " . "URI: " . $key["URIName"] . "<br><br>";
 			}
 
-			echo "<br><br> The array of all the data<br>";
-			print_r($this->templateEngine->getCategoryData());
+			//echo "<br><br> The array of all the data<br>";
+			//print_r($this->templateEngine->getCategoryData());
 			?>
 <?php require_once("footer.php"); ?>

@@ -2,10 +2,9 @@
 			<?php
 			foreach($this->templateEngine->getTagData() as $key)
 			{
-				echo "Tag: " . $key["Name"] . " " . "URI: " . $key["URIName"] . "<br><br>";
+				//echo 'Tag: <a href="''" . $key['Name'] . ' ' . 'URI: ' . $key['URIName'] . '<br><br>';
+				
+				echo 'Tag: <a href="' . sprintf("%s%s%s", $this->templateEngine->getAdminURL(), "/index.php/tags/", $key["URIName"]) . '">' . $key["Name"] . '</a> ' . 'URI: ' . $key["URIName"] . '<br><br>';
 			}
-
-			echo "<br><br> The array of all the data<br>";
-			print_r($this->templateEngine->getTagData());
 			?>
 <?php require_once("footer.php"); ?>
