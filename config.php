@@ -8,7 +8,6 @@ define("V_HTACCESS", false);
 // Web address and base location
 define("V_URL", "http://localhost:8888/");
 define("V_HTTPBASE", "niftysvn/feedstock/public/");
-define("F_ADMINADDRESS", "http://localhost:8888/niftysvn/feedstock/public/admin/");
 define("F_MAINTENANCE", false);
 define("F_MAINTENANCEPASS", "127.0.0.1");
 
@@ -63,6 +62,7 @@ define("F_PSALT", "ChangeThisToSomething");
 
 
 /* Admin Settings */
+define("F_ADMINADDRESS", "http://localhost:8888/niftysvn/feedstock/public/admin/");
 define("F_ADMINBASE", V_HTTPBASE . "admin/");
 define("F_ADMINHTACCESS", false);
 
