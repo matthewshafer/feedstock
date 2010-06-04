@@ -1,7 +1,7 @@
 <?php require_once("header.php"); ?>
 <div id="postBox">
 <?php 
-echo "Post's containing the tag ";
+printf("%s%s%s%s", "Post's containing the tag ", '"', $this->templateEngine->tagPostName(), '"');
 foreach($this->templateEngine->getTheData() as $key)
 {
 	echo '<div class="singlePostBox">';

@@ -698,5 +698,17 @@ class templateEngineAdmin
 	{
 		return $this->htmlPageTitle;
 	}
+	
+	public function tagPostName()
+	{
+		$return = null;
+		
+		if(substr($this->htmlPageTitle, -3) == "Tag")
+		{
+			$return = substr($this->htmlPageTitle, 0, -7);
+		}
+		
+		return $return;
+	}
 }
 ?>
