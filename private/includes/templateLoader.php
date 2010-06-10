@@ -11,6 +11,7 @@ class templateLoader
 	
 	private $themeLoc = null;
 	private $templateEngine = null;
+	private $outputHelper = null;
 	
 	/**
 	 * __construct function.
@@ -19,9 +20,10 @@ class templateLoader
 	 * @param mixed $templateEngine
 	 * @return void
 	 */
-	public function __construct($templateEngine)
+	public function __construct($templateEngine, $outputHelper)
 	{
 		$this->templateEngine = $templateEngine;
+		$this->outputHelper = $outputHelper;
 		//$this->themeLoc = $this->templateEngine->getThemeLoc();
 	}
 	
@@ -35,7 +37,7 @@ class templateLoader
 	{
 		$this->themeLoc = $this->templateEngine->getThemeLoc();
 		//echo $this->themeLoc;
-		ob_start();
+		//ob_start();
 		if(!$this->templateEngine->themeError())
 		{
 			include $this->themeLoc;
@@ -44,7 +46,8 @@ class templateLoader
 		{
 			echo $this->templateEngine->themeErrorText();
 		}
-		return ob_get_clean();
+		//return ob_get_clean();
+		return $this->outputHelper->stopStoreGetBuffer();
 	}
 
 

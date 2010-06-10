@@ -45,6 +45,7 @@ class outputHelper
 		$tmp = ob_get_contents();
 		
 		ob_flush();
+		flush();
 		
 		if($tmp != false)
 		{
@@ -67,7 +68,7 @@ class outputHelper
 		
 		if($tmp != false)
 		{
-			$this->pageStore = sprintf("%s%s" $this->pageStore, $tmp);
+			$this->pageStore = sprintf("%s%s", $this->pageStore, $tmp);
 		}
 				
 		return $this->pageStore;

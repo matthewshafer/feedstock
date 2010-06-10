@@ -8,6 +8,9 @@ require_once("header.php");
 //echo "<br><br>this is the theme talking<br>";
 
 //print_r($this->templateEngine->getPageData());
+echo "test";
+$this->outputHelper->flushBuffer();
+
 
 while($this->templateEngine->postNext())
 {
@@ -29,9 +32,9 @@ while($this->templateEngine->postNext())
 	echo "Date: " . $this->templateEngine->getPostTime("m/d/y");
 	echo "<br>";
 	echo "<br>";
+
 	
 }
-
 echo $this->templateEngine->haveNextPostPageHTML();
 echo "<br><br><br>";
 echo $this->templateEngine->getFormattedCorralByName("test1234");

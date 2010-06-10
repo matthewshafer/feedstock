@@ -14,6 +14,7 @@ class feedstock
 	private $tableprefix = null;
 	private $cacher = null;
 	private $templateEngine = null;
+	private $outputHelper = null;
 	private $templateLoader = null;
 	private $router = null;
 	private $db = null;
@@ -75,12 +76,13 @@ class feedstock
 						{
 							$this->cacher->writeCachedFile($themeData);
 						}
-						echo $themeData;
+						//echo $themeData;
 					}
 				}
 				else
 				{
-					echo $this->heavyLift();
+					//echo $this->heavyLift();
+					$this->heavyLift();
 					//echo "<br><br>Queries: " . $this->db->queries;
 					
 					if(F_MYSQLSTOREQUERIES)
@@ -129,8 +131,10 @@ class feedstock
 			{
 				require_once("includes/templateEngine.php");
 				$this->templateEngine = new templateEngine($this->db, $this->router);
+				require_once("includes/outputHelper.php");
+				$this->outputHelper = new outputHelper();
 				require_once("includes/templateLoader.php");
-				$this->templateLoader = new templateLoader($this->templateEngine);
+				$this->templateLoader = new templateLoader($this->templateEngine, $this->outputHelper);
 				$data = $this->templateLoader->render();
 			}
 			
