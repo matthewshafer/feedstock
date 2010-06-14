@@ -18,6 +18,7 @@ class feedstockAdmin
 	private $dbAdmin = null;
 	private $cookieMonster = null;
 	private $router = null;
+	private $sitemap = null;
 	
 	/**
 	 * __construct function.
@@ -56,8 +57,17 @@ class feedstockAdmin
 		
 		$this->templateEngine = new templateEngineAdmin($this->dbAdmin, $this->router);
 		
+		require_once("includes/outputHelper.php");
+		$outputHelper = new outputHelper();
+		
 		require_once("includes/templateLoader.php");
-		$this->templateLoader = new templateLoader($this->templateEngine);
+		$this->templateLoader = new templateLoader($this->templateEngine, $outputHelper);
+		
+		if(F_SITEMAPGENERATE)
+		{
+			require_once("includes/sitemapCreator.php");
+			$this->sitemap = new sitemapCreator($this->dbAdmin);
+		}
 		
 		if($this->postManager->getPostType() == "login")
 		{
@@ -79,7 +89,8 @@ class feedstockAdmin
 		if(!$this->cookieMonster->checkCookie())
 		{
 			// user is NOT logged in
-			echo $this->templateLoader->render();
+			//echo $this->templateLoader->render();
+			$this->templateLoader->render();
 		
 		}
 		else
@@ -91,8 +102,9 @@ class feedstockAdmin
 				$this->handlePosts();
 			}
 			$this->templateEngine->loggedIn(true);
-			echo $this->templateLoader->render();
+			//echo $this->templateLoader->render();
 			// user is logged in
+			$this->templateLoader->render();
 		
 		}
 	}
@@ -334,6 +346,11 @@ class feedstockAdmin
 			}
 			
 			$this->purgeCache();
+		}
+		
+		if($this->sitemap != null)
+		{
+			$this->sitemap->generateSitemap();
 		}
 	}
 	

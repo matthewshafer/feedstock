@@ -53,6 +53,11 @@ define("F_EXPIRECACHETIME", 120);
 define("F_XCACHEPREFIX", "something_");
 
 
+/* Sitemap Settings */
+define("F_SITEMAPGENERATE", true);
+define("F_SITEMAPMAXITEMS", 30000);
+
+
 /* Cookie Settings */
 define("F_COOKIENAME", "FeedStock");
 

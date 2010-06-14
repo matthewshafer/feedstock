@@ -945,6 +945,53 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		
 		return $return;
 	}
+	
+	public function getAllPostsSitemap()
+	{
+		$return = array();
+		
+		$formattedQuery = sprintf("SELECT URI, Date FROM %sposts ORDER BY Date DESC", parent::$this->tablePrefix);
+		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query->execute();
+		$query->store_result();
+		$query->bind_result($uri, $date);
+		$count = 0;
+		
+		while($query->fetch())
+		{
+			$return[$count] = array();
+			$return[$count]["URI"] = $uri;
+			$return[$count]["Date"] = $date;
+			$count++;
+		}
+		$query->close();
+		
+		return $return;
+	}
+	
+	public function getAllPagesSitemap()
+	{
+		$return = array();
+		
+		$formattedQuery = sprintf("SELECT URI, Date FROM %spages ORDER BY Date DESC", parent::$this->tablePrefix);
+		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query->execute();
+		$query->store_result();
+		$query->bind_result($uri, $date);
+		$count = 0;
+		
+		while($query->fetch())
+		{
+			$return[$count] = array();
+			$return[$count]["URI"] = $uri;
+			$return[$count]["Date"] = $date;
+			$count++;
+		}
+		$query->close();
+		
+		return $return;
+	}
+	
 
 }
 ?>
