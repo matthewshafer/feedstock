@@ -5,10 +5,6 @@ $this->templateEngine->generateCategories();
 
 require_once("header.php");
 
-//echo "<br><br>this is the theme talking<br>";
-
-//print_r($this->templateEngine->getPageData());
-echo "test";
 $this->outputHelper->flushBuffer();
 
 

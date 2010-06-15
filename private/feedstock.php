@@ -37,16 +37,18 @@ class feedstock
 		$this->tableprefix = $tableprefix;
 		
 		require_once("includes/router.php");
-		
 		$this->router = new router(V_HTACCESS);
+		
+		require_once("includes/outputHelper.php");
+		$this->outputHelper = new outputHelper();
 		
 		if($this->router->requestMethod() == "GET")
 		{
 			if($this->maintenanceMode())
 			{
 				require_once("includes/maintenance.php");
-				$maintenance = new maintenance(sprintf("%s%s%s%s", V_BASELOC, "/private/themes/", V_THEME, "/maintenance.php"));
-				echo $maintenance->render();
+				$maintenance = new maintenance(sprintf("%s/private/themes/%s/maintenance.php", V_BASELOC, V_THEME), $this->outputHelper);
+				$maintenance->render();
 			}
 			else
 			{
@@ -131,8 +133,6 @@ class feedstock
 			{
 				require_once("includes/templateEngine.php");
 				$this->templateEngine = new templateEngine($this->db, $this->router);
-				require_once("includes/outputHelper.php");
-				$this->outputHelper = new outputHelper();
 				require_once("includes/templateLoader.php");
 				$this->templateLoader = new templateLoader($this->templateEngine, $this->outputHelper);
 				$data = $this->templateLoader->render();

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief The template for sitemaps
+ * 
+ */
 class sitemapTemplate
 {
 	public function __construct()

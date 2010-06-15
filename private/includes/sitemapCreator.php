@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ * @brief Creates Sitemaps
+ * 
+ */
 class sitemapCreator
 {
 	private $db;

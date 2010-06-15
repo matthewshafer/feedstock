@@ -2,7 +2,7 @@
 /**
  * @file
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief checks Ip address, it's super basic at the moment
+ * @brief maintenance mode
  * 
  */
  
@@ -10,11 +10,14 @@
  {
  	private $fileValid = false;
  	private $fileLocation = null;
+ 	private $outputHelper;
  	
 	// changed the construct to we save having to do another sprintf statement
- 	public function __construct($fileLoc)
+ 	public function __construct($fileLoc, $outputHelper)
  	{
  		//$fileLoc = sprintf("%s/%s", $loc, $filename);
+ 		
+ 		$this->outputHelper = $outputHelper;
  		
  		if(file_exists($fileLoc) && is_readable($fileLoc))
  		{
@@ -25,7 +28,6 @@
  	
  	public function render()
  	{
- 		ob_start();
  		
  		if($this->fileValid)
  		{
@@ -36,7 +38,7 @@
  			echo 'The website is currently undergoing some maintenance. <br>Check back soon.';
  		}
  		
- 		return ob_get_clean();
+ 		$this->outputHelper->flushBuffer();
  	}
  }
 ?>

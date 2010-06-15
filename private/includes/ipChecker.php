@@ -156,7 +156,7 @@
  	/**
  	 * classSearch function.
  	 * 
- 	 * @brief Does the cecking to see if an IP address falls inside the given start and finish address.
+ 	 * @brief Does the checking to see if an IP address falls inside the given start and finish address.
  	 * @access private
  	 * @param mixed $ipAddr
  	 * @param mixed $startAddr

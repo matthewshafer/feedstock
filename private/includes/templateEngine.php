@@ -31,15 +31,6 @@ class templateEngine
 	{
 		$this->database = $database;
 		$this->router = $router;
-		
-		// I don't think we need this any more since we print an error if themes dont exist so im going to comment it out.  if we need it i'll un comment it.
-		/*
-		if(!$this->themeFileIsValid("404.php"))
-		{
-			// really need to fix this. It'll probably happen when I refactor the template engine
-			die("no valid theme file found. You have no 404.php");
-		}
-		*/
 	}
 	
 	/**
@@ -63,17 +54,16 @@ class templateEngine
 	 */
 	private function themeFileIsValid($file, $loc = null)
 	{
-		//$loc = V_BASELOC . "/private/themes/" . V_THEME;
 		$return = null;
 		
 		if($loc == null)
 		{
-			$loc = sprintf("%s%s%s", V_BASELOC, "/private/themes/", V_THEME);
+			$loc = sprintf("%s/private/themes/%s", V_BASELOC, V_THEME);
 		}
 		
-		//echo $loc . "/" . $file;
+		$fileLoc = sprintf("%s/%s", $loc, $file);
 		
-		if(file_exists($loc . "/" . $file) && is_readable($loc . "/" . $file))
+		if(file_exists($fileLoc) && is_readable($fileLoc))
 		{
 			$return = true;
 		}
@@ -94,19 +84,19 @@ class templateEngine
 	 */	
 	private function request()
 	{
-		$return = V_BASELOC . "/private/themes/" . V_THEME;
+		$return = sprintf("%s/private/themes/%s", V_BASELOC, V_THEME);
 		$file = null;
 		
 		if(strtolower($this->router->pageType()) == "")
 		{	
-			$file = "/index.php";
+			$file = "index.php";
 		}
 		else if(strtolower($this->router->pageType()) == "page")
 		{
 			$limit = intval(F_POSTSPERPAGE);
 			$offset = $this->router->getPageOffset() * $limit;
 			$this->pageData = $this->database->getPosts($limit, $offset);
-			$file = "/postList.php";
+			$file = "postList.php";
 		}
 		else
 		{
@@ -115,7 +105,6 @@ class templateEngine
 			{
 				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
 				
-				//print_r($this->pageData);
 				
 				if(isset($this->pageData[0]["PrimaryKey"]))
 				{
@@ -131,12 +120,8 @@ class templateEngine
 			{
 				if($this->router->pageType() == "category")
 				{
-					//echo "win!";
 					
-					//echo $this->router->fullURI();
-					
-					//echo $this->router->searchURI("category");
-					
+					// I totally forget what this was for, I should probably figure it out
 					if($this->router->evenURIParts())
 					{
 						//echo "even";
@@ -148,7 +133,6 @@ class templateEngine
 					
 					$categoryNameOffset = $this->router->searchURI("category") + 1;
 					$categoryName = $this->router->getUriPosition($categoryNameOffset);
-					//echo $categoryName;
 					
 					if($this->router->uriLength() == 1)
 					{
@@ -156,15 +140,16 @@ class templateEngine
 					}
 					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($categoryName, 0))
 					{
-						//echo "in here";
+						
 						$pageOffset = $this->router->searchURI("page");
 						$limit = intval(F_POSTSPERPAGE);
 						
 						if($pageOffset != -1)
 						{
+							// need to increase by 1 in order to get the right offset that the page number is on
 							$pageOffset++;
 							$pageID = intval($this->router->getUriPosition($pageOffset));
-							//echo $pageID;
+							
 							if($pageID > 0)
 							{
 								$pageID = ($pageID - 1) * 10;
@@ -172,7 +157,6 @@ class templateEngine
 							
 							if($pageID >= 0)
 							{
-								//echo $pageID;
 								$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $limit, $pageID);
 							}
 							else
@@ -183,43 +167,20 @@ class templateEngine
 						}
 						else
 						{
-							//echo "im here";
 							$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $limit, 0);
 						}
 					}
-					
-					/*
-					// we could possibly make this a private function that allows us to grab the data, compare it and then return true or false and set the data to a global variable
- 					if($this->database->checkCategoryTagName($this->router->getUriPosition($this->router->uriLength()), 0))
- 					{
-						//echo "true";
-						$this->pageData = $this->database->getPostsInCategoryOrTag($this->router->getUriPosition($this->router->uriLength()), 0);
-						//print_r($this->pageData);
-					}
-					else if($this->router->uriLength() == 1)
-					{
-						//echo "cool";
-						$this->pageData = $this->database->listCategoriesOrTags(0);
-					}
-					else
-					{
-						//echo "false";
-						$this->errorText = "Category Not Found";
-						
-					}
-					*/
-					//$this->pageData = $this->database->getSpecificCategory($this->router->getUriPosition(2), $this->router->getPageOffset() * 10);
 					// need some error checking for null pagedata
 					if(!empty($this->pageData))
 					{
 						// just here for default
 						if($this->router->uriLength() > 1)
 						{
-							$file = "/postList.php";
+							$file = "postList.php";
 						}
 						else
 						{
-							$file = "/category.php";
+							$file = "category.php";
 						}
 					}
 					else
@@ -229,25 +190,9 @@ class templateEngine
 			
 				}
 				else if($this->router->pageType() == "tag")
-				{
-					/*
-					if($this->database->checkCategoryTagName($this->router->getUriPosition($this->router->uriLength()), 1))
- 					{
-						//echo "true";
-						$this->pageData = $this->database->getPostsInCategoryOrTag($this->router->getUriPosition($this->router->uriLength()), 1);
-						//print_r($this->pageData);
-					}
-					else
-					{
-						//echo "false";
-						$this->errorText = "Tag Not Found";
-						
-					}
-					*/
-					
+				{	
 					$tagNameOffset = $this->router->searchURI("tag") + 1;
 					$tagName = $this->router->getUriPosition($tagNameOffset);
-					//echo $tagName;
 				
 					if($this->router->uriLength() == 1)
 					{
@@ -255,7 +200,6 @@ class templateEngine
 					}
 					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($tagName, 1))
 					{
-						//echo "in here";
 						$pageOffset = $this->router->searchURI("page");
 						$limit = intval(F_POSTSPERPAGE);
 						
@@ -263,7 +207,7 @@ class templateEngine
 						{
 							$pageOffset++;
 							$pageID = intval($this->router->getUriPosition($pageOffset));
-							//echo $pageID;
+							
 							if($pageID > 0)
 							{
 								$pageID = ($pageID - 1) * 10;
@@ -282,7 +226,6 @@ class templateEngine
 						}
 						else
 						{
-							//echo "im here";
 							$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, $limit, 0);
 						}
 					}
@@ -294,11 +237,11 @@ class templateEngine
 						
 						if($this->router->uriLength() > 1)
 						{
-							$file = "/postList.php";
+							$file = "postList.php";
 						}
 						else
 						{
-							$file = "/tag.php";
+							$file = "tag.php";
 						}
 						
 						//$file = "/tag.php";
@@ -314,15 +257,13 @@ class templateEngine
 				{
 					$limit = intval(F_POSTSPERPAGE);
 					$this->pageData = $this->database->getPosts($limit, 0);
-					$return = V_BASELOC . "/private/includes";
-					$file = "/feed.php";
+					$return = sprintf("%s/private/includes", V_BASELOC);
+					$file = "feed.php";
 				}
 				else
 				{
-					//echo $this->router->getPageOffset() . "<br>";
-					//echo "boobs";
 					$this->pageData = $this->database->getPage($this->router->fullURIRemoveTrailingSlash());
-					//print_r($this->pageData);
+					
 					// need some error checking for null pagedata
 					if(!empty($this->pageData))
 					{
@@ -337,16 +278,15 @@ class templateEngine
 				}
 			}
 		}
-		//print_r($this->pageData);
+		
 		
 		if($file == null)
 		{
-			//echo "null file";
 			// we have some error which we need to figure out what to do.  for now we will just die
 			//die("Invalid theme file");
 			if($this->themeFileIsValid("404.php"))
 			{
-				$file = "/404.php";
+				$file = "404.php";
 			}
 			else
 			{
@@ -356,8 +296,7 @@ class templateEngine
 		// need to check for the theme file being valid here
 		else
 		{
-			//echo substr($file, 1, strlen($file));
-			if(!$this->themeFileIsValid(substr($file, 1, strlen($file)), $return))
+			if(!$this->themeFileIsValid($file, $return))
 			{
 				$this->themeValidError = "Theme file does not exist";
 			}
@@ -368,9 +307,8 @@ class templateEngine
 			$this->pageDataCt = count($this->pageData);
 		}
 		
-		//echo $file;
 		// we can provbably streamline this
-		$return .= $file;
+		$return = sprintf("%s/%s", $return, $file);
 		//$this->getCategoriesForPageData();
 		return $return;
 	}
@@ -379,11 +317,11 @@ class templateEngine
 	{
 		if($this->pageData[$this->arrayPosition]["themeFile"] == null)
 		{
-			$return = sprintf("/%s.php", $defaultFile);
+			$return = sprintf("%s.php", $defaultFile);
 		}
 		else
 		{
-			$return = sprintf("/%s.php", $this->pageData[$this->arrayPosition]["themeFile"]);
+			$return = sprintf("%s.php", $this->pageData[$this->arrayPosition]["themeFile"]);
 		}
 		
 		return $return;
@@ -1186,9 +1124,10 @@ class templateEngine
 	/**
 	 * getSnippetByName function.
 	 * 
+	 * @brief gets the snippet data from the snippet specified by the name
 	 * @access public
 	 * @param mixed $name
-	 * @return void
+	 * @return String containing the snippet with html escaped
 	 */
 	public function getSnippetByName($name)
 	{
@@ -1209,9 +1148,10 @@ class templateEngine
 	/**
 	 * getSnippetByNameHTML function.
 	 * 
+	 * @brief gets the snippet data from the snippet specified by the name and allows html to be run by the browser
 	 * @access public
 	 * @param mixed $name
-	 * @return void
+	 * @return String containing the snippet data with HTML
 	 */
 	public function getSnippetByNameHTML($name)
 	{
@@ -1230,13 +1170,20 @@ class templateEngine
 		return $return;
 	}
 	
+	/**
+	 * themeBaseLoc function.
+	 * 
+	 * @brief Builds the http location of a theme
+	 * @access public
+	 * @return String containing the http address of the base of a theme
+	 */
 	public function themeBaseLoc()
 	{
 		static $return = null;
 		
 		if($return == null)
 		{
-			$return = sprintf("%s%s%s%s%s", V_URL, V_HTTPBASE, "themes/", V_THEME, "/");
+			$return = sprintf("%s%sthemes/%s/", V_URL, V_HTTPBASE, V_THEME);
 		}
 		
 		return $return;
