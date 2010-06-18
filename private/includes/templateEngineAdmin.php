@@ -5,7 +5,7 @@
  * @brief Does all the heavy lifting for admin page themes
  * 
  */
-class templateEngineAdmin
+class TemplateEngineAdmin
 {
 	protected $db;
 	protected $router;
@@ -43,20 +43,20 @@ class templateEngineAdmin
 	 * @param bool $loggedIn. (default: false)
 	 * @return void
 	 */
-	public function getThemeLoc()
+	public function getThemeLocation()
 	{
 		return $this->request();
 	}
 	
 	/**
-	 * themeFileIsValid function.
+	 * isThemeFileValid function.
 	 * 
 	 * @brief Checks admin theme files, only because I allow custom themes to be created otherwise I could do without this
 	 * @access private
 	 * @param mixed $file
 	 * @return void
 	 */
-	private function themeFileIsValid($file)
+	private function isThemeFileValid($file)
 	{
 		// need to fix the part that says stock because what if you were using a different theme.
 		$loc = V_BASELOC . "/private/themesAdmin/" . "stock";
@@ -121,7 +121,7 @@ class templateEngineAdmin
 				// set up some vars, we want to check if we have an ID in the uri and if we do we need to load that from the db and set up the vars
 				if($this->router->getUriPosition(2) != null)
 				{
-					$this->theData = $this->db->getPostDataByID(intval($this->router->getUriPosition(2)));
+					$this->theData = $this->db->getPostDataById(intval($this->router->getUriPosition(2)));
 					$tmpTitle = $this->postTitleID();
 					
 					if($tmpTitle != null)
@@ -137,7 +137,7 @@ class templateEngineAdmin
 				// set up some vars, we want to check if we have an ID in the uri and we need to load that and set up some stuff
 				if($this->router->getUriPosition(2) != null)
 				{
-					$this->theData = $this->db->getPageDataByID(intval($this->router->getUriPosition(2)));
+					$this->theData = $this->db->getPageDataById(intval($this->router->getUriPosition(2)));
 					$tmpTitle = $this->pageTitleID();
 					
 					if($tmpTitle != null)
@@ -186,7 +186,7 @@ class templateEngineAdmin
 				// also need to get data
 				if($this->router->getUriPosition(2) != null)
 				{
-					$this->theData = $this->db->getSnippetByID($this->router->getUriPosition(2));
+					$this->theData = $this->db->getSnippetById($this->router->getUriPosition(2));
 					
 					$tmpTitle = $this->snippetTitleID();
 					
@@ -392,13 +392,13 @@ class templateEngineAdmin
 	}
 	
 	/**
-	 * postTitleID function.
+	 * postTitleId function.
 	 * 
 	 * @brief Simply returns the post title
 	 * @access public
 	 * @return String with the title of the post.  If it doesn't exist then null
 	 */
-	public function postTitleID()
+	public function postTitleId()
 	{
 		if(isset($this->theData["Title"]))
 		{
@@ -412,13 +412,13 @@ class templateEngineAdmin
 	}
 	
 	/**
-	 * postBodyID function.
+	 * postBodyId function.
 	 * 
 	 * @brief Simply returns the post's body
 	 * @access public
 	 * @return String with the body of the post
 	 */
-	public function postBodyID()
+	public function postBodyId()
 	{
 		if(isset($this->theData["PostData"]))
 		{
@@ -433,19 +433,19 @@ class templateEngineAdmin
 	
 	
 	
-	public function postCategoriesID()
+	public function postCategoriesId()
 	{
 		return "cat1, cat2, cat3";
 	}
 	
 	/**
-	 * postTagsID function.
+	 * postTagsId function.
 	 * 
 	 * @brief Builds a correctly formatted tag string so tags can be added or removed by the user
 	 * @access public
 	 * @return String with the Tags else blank
 	 */
-	public function postTagsID()
+	public function postTagsId()
 	{
 		if($this->router->getUriPosition(2) != null)
 		{
@@ -460,13 +460,13 @@ class templateEngineAdmin
 	}
 	
 	/**
-	 * postID function.
+	 * postId function.
 	 * 
 	 * @brief Returns the ID of the post otherwise it returns -1 which stands for a new post
 	 * @access public
 	 * @return Integer that is the postID
 	 */
-	public function postID()
+	public function postId()
 	{
 		if(isset($this->theData["PrimaryKey"]))
 		{
@@ -480,13 +480,13 @@ class templateEngineAdmin
 	}
 	
 	/**
-	 * pageTitleID function.
+	 * pageTitleId function.
 	 * 
 	 * @brief Returns the title of the page
 	 * @access public
 	 * @return String with the title of the page, else null
 	 */
-	public function pageTitleID()
+	public function pageTitleId()
 	{
 		if(isset($this->theData["Title"]))
 		{
@@ -500,13 +500,13 @@ class templateEngineAdmin
 	}
 	
 	/**
-	 * pageURI function.
+	 * pageUri function.
 	 * 
 	 * @brief Returns the URI for the page
 	 * @access public
 	 * @return String with the URI, else null
 	 */
-	public function pageURI()
+	public function pageUri()
 	{
 		if(isset($this->theData["URI"]))
 		{
@@ -520,13 +520,13 @@ class templateEngineAdmin
 	}
 	
 	/**
-	 * pageBodyID function.
+	 * pageBodyId function.
 	 * 
 	 * @brief Returns the body of the page
 	 * @access public
 	 * @return String with the body information, else null
 	 */
-	public function pageBodyID()
+	public function pageBodyId()
 	{
 		if(isset($this->theData["PageData"]))
 		{
@@ -540,13 +540,13 @@ class templateEngineAdmin
 	}
 	
 	/**
-	 * pageID function.
+	 * pageId function.
 	 * 
 	 * @brief Simply returns the ID of the page, if the page is new then it returns -1
 	 * @access public
 	 * @return Integer of the ID of the page
 	 */
-	public function pageID()
+	public function pageId()
 	{
 		if(isset($this->theData["PrimaryKey"]))
 		{
@@ -559,12 +559,12 @@ class templateEngineAdmin
 		return $return;
 	}
 	
-	public function categoryTitleID()
+	public function categoryTitleId()
 	{
 		return "test";
 	}
 	
-	public function categoryID()
+	public function categoryId()
 	{
 		return -1;
 	}
@@ -591,7 +591,7 @@ class templateEngineAdmin
 	}
 	
 	// for now we just say we never have an error
-	public function themeError()
+	public function haveThemeError()
 	{
 		return false;
 	}
@@ -603,7 +603,7 @@ class templateEngineAdmin
 	 * @access public
 	 * @return String with the Page's Corral name
 	 */
-	public function pageCorral()
+	public function getPageCorral()
 	{
 		$return = null;
 		
@@ -624,7 +624,7 @@ class templateEngineAdmin
 	
 	}
 	
-	public function snippetTitleID()
+	public function snippetTitleId()
 	{
 		$return = null;
 		
@@ -636,7 +636,7 @@ class templateEngineAdmin
 		return $return;
 	}
 	
-	public function snippetBodyID()
+	public function snippetBodyId()
 	{
 		$return = null;
 		
@@ -648,7 +648,7 @@ class templateEngineAdmin
 		return $return;
 	}
 	
-	public function snippetID()
+	public function snippetId()
 	{
 		$return = -1;
 		
@@ -660,7 +660,7 @@ class templateEngineAdmin
 		return $return;
 	}
 	
-	public function getAdminURL()
+	public function getAdminUrl()
 	{
 		static $address = null;
 		
@@ -694,7 +694,7 @@ class templateEngineAdmin
 		return sprintf('<a href="%s%s">%s</a>', V_URL, V_HTTPBASE, $this->siteName());
 	}
 	
-	public function htmlTitle()
+	public function getHtmlTitle()
 	{
 		return $this->htmlPageTitle;
 	}

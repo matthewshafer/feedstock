@@ -5,7 +5,7 @@
  * @brief Does all the heavy lifting for themes
  * 
  */
-class templateEngine
+class TemplateEngine
 {
 
 	private $database = null;
@@ -34,34 +34,35 @@ class templateEngine
 	}
 	
 	/**
-	 * getThemeLoc function.
+	 * getThemeLocation function.
 	 * 
 	 * @brief simply calls our private function which should return the location of the theme file
 	 * @access public
 	 * @return void
 	 */
-	public function getThemeLoc()
+	public function getThemeLocation()
 	{
 		return $this->request();	
 	}
 	
 	/**
-	 * themeFileIsValid function.
+	 * isThemeFileValid function.
 	 * 
 	 * @access private
 	 * @param mixed $file
-	 * @return void
+	 * @param mixed $location (Default = null)
+	 * @return True if theme file is valid, false if it isnt
 	 */
-	private function themeFileIsValid($file, $loc = null)
+	private function isThemeFileValid($file, $location = null)
 	{
 		$return = null;
 		
-		if($loc == null)
+		if($location == null)
 		{
-			$loc = sprintf("%s/private/themes/%s", V_BASELOC, V_THEME);
+			$location = sprintf("%s/private/themes/%s", V_BASELOC, V_THEME);
 		}
 		
-		$fileLoc = sprintf("%s/%s", $loc, $file);
+		$fileLoc = sprintf("%s/%s", $location, $file);
 		
 		if(file_exists($fileLoc) && is_readable($fileLoc))
 		{
@@ -157,7 +158,7 @@ class templateEngine
 							
 							if($pageID >= 0)
 							{
-								$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $limit, $pageID);
+								$this->pageData = $this->database->getPostsInCategoryOrTag(0, $limit, $pageID);
 							}
 							else
 							{
@@ -167,7 +168,7 @@ class templateEngine
 						}
 						else
 						{
-							$this->pageData = $this->database->getPostsInCategoryOrTag($categoryName, 0, $limit, 0);
+							$this->pageData = $this->database->getPostsInCategoryOrTag(0, $limit, 0);
 						}
 					}
 					// need some error checking for null pagedata
@@ -216,7 +217,7 @@ class templateEngine
 							if($pageID >= 0)
 							{
 								echo $pageID;
-								$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, $limit, $pageID);
+								$this->pageData = $this->database->getPostsInCategoryOrTag(1, $limit, $pageID);
 							}
 							else
 							{
@@ -226,7 +227,7 @@ class templateEngine
 						}
 						else
 						{
-							$this->pageData = $this->database->getPostsInCategoryOrTag($tagName, 1, $limit, 0);
+							$this->pageData = $this->database->getPostsInCategoryOrTag(1, $limit, 0);
 						}
 					}
 					
@@ -284,7 +285,7 @@ class templateEngine
 		{
 			// we have some error which we need to figure out what to do.  for now we will just die
 			//die("Invalid theme file");
-			if($this->themeFileIsValid("404.php"))
+			if($this->isThemeFileValid("404.php"))
 			{
 				$file = "404.php";
 			}
@@ -296,7 +297,7 @@ class templateEngine
 		// need to check for the theme file being valid here
 		else
 		{
-			if(!$this->themeFileIsValid($file, $return))
+			if(!$this->isThemeFileValid($file, $return))
 			{
 				$this->themeValidError = "Theme file does not exist";
 			}
@@ -407,14 +408,14 @@ class templateEngine
 	}
 	
 	/**
-	 * postNext function.
+	 * haveNextPost function.
 	 * 
 	 * @brief returns true if there are more posts to display, false if there are no new posts
 	 * @brief if there is a next post it moves to that one so you can call the rest of the functions to get it's info
 	 * @access public
 	 * @return Boolean
 	 */
-	public function postNext()
+	public function haveNextPost()
 	{
 		$return = null;
 		
@@ -449,13 +450,13 @@ class templateEngine
 	}
 	
 	/**
-	 * getPostURI function.
+	 * getPostUri function.
 	 * 
 	 * @brief Returns only the URI of the post
 	 * @access public
 	 * @return String of URI or null
 	 */
-	public function getPostURI()
+	public function getPostUri()
 	{
 		$return = null;
 		
@@ -467,13 +468,13 @@ class templateEngine
 	}
 	
 	/**
-	 * getPostURL function.
+	 * getPostUrl function.
 	 * 
 	 * @brief returns the full URI of a post
 	 * @access public
 	 * @return String, URL of the post or null if no post
 	 */
-	public function getPostURL()
+	public function getPostUrl()
 	{
 		if(!V_HTACCESS)
 		{
@@ -544,13 +545,13 @@ class templateEngine
 	}
 	
 	/**
-	 * getPostBodyHTML function.
+	 * getPostBodyHtml function.
 	 * 
 	 * @brief Formatts the body so html runs and \n are converted to < br > "minus the spaces in there ofcourse"
 	 * @access public
 	 * @return String with the post body executing html on the client side, null if post doesn't exist
 	 */
-	public function getPostBodyHTML()
+	public function getPostBodyHtml()
 	{
 		$return = null;
 		
@@ -648,7 +649,7 @@ class templateEngine
 					$return .= 'index.php/';
 				}
 			
-				$return .= 'tag/' . $this->generateSubTagURI($key) . '">' . $key["Name"] . '</a>, ';
+				$return .= 'tag/' . $this->generateSubTagUri($key) . '">' . $key["Name"] . '</a>, ';
 			}
 			$return = substr($return, 0, -2);
 		}
@@ -657,13 +658,13 @@ class templateEngine
 	
 	
 	/**
-	 * getPostCats function.
+	 * getPostCategories function.
 	 * 
 	 * @brief Makes the categories for a post look nice, so something like cat1, cat2, cat3
 	 * @access public
 	 * @return String with the categories for a post
 	 */
-	public function getPostCats()
+	public function getPostCategories()
 	{
 		$return = null;
 		
@@ -681,13 +682,13 @@ class templateEngine
 	
 	
 	/**
-	 * getPostCatsFormatted function.
+	 * getPostCategoriesFormatted function.
 	 * 
 	 * @brief Returns a formatted string that contains the html for a category.  so for instance < href="http://someurl/category/cat1">cat1</a>
 	 * @access public
 	 * @return String that contains the html
 	 */
-	public function getPostCatsFormatted()
+	public function getPostCategoriesFormatted()
 	{
 		$return = null;
 		if(isset($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
@@ -701,7 +702,7 @@ class templateEngine
 					$tmp .= 'index.php/';
 				}
 			
-				$tmp .= 'category/' .  $this->generateSubCategoryURI($key);
+				$tmp .= 'category/' .  $this->generateSubCategoryUri($key);
 			
 				$return .= sprintf('<a href="%s">%s</a>, ', $tmp, $key["Name"]);
 			}
@@ -724,15 +725,15 @@ class templateEngine
 	}
 	
 	/**
-	 * getPageURI function.
+	 * getPageUri function.
 	 * 
 	 * @brief Uri of the current page
 	 * @access public
 	 * @return String with the URI or null if something went wrong
 	 */
-	public function getPageURI()
+	public function getPageUri()
 	{
-		return $this->getPostURI();
+		return $this->getPostUri();
 	}
 	
 	/**
@@ -742,9 +743,9 @@ class templateEngine
 	 * @access public
 	 * @return String with the URL or null if there is no data
 	 */
-	public function getPageURL()
+	public function getPageUrl()
 	{
-		return $this->getPostURL();
+		return $this->getPostUrl();
 	}
 	
 	/**
@@ -772,7 +773,7 @@ class templateEngine
 	 * @access public
 	 * @return String with the body of the page, null if there is nothing
 	 */
-	public function getPageBodyHTML()
+	public function getPageBodyHtml()
 	{
 		$return = null;
 		
@@ -824,7 +825,7 @@ class templateEngine
 	}
 	
 	
-	private function generateURLFromURI($URI)
+	private function generateUrlFromUri($uri)
 	{
 		// need to remove slashes from the begining of the URI if we are using htaccess
 		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
@@ -847,7 +848,7 @@ class templateEngine
 	}
 	
 	// needs to check for null and no data in the array
-	private function generateSubCategoryURI($array)
+	private function generateSubCategoryUri($array)
 	{
 		$subCat = $array["SubCat"];
 		$URI = $array["URIName"];
@@ -866,7 +867,7 @@ class templateEngine
 		return $URI;
 	}
 	
-	private function generateSubTagURI($array)
+	private function generateSubTagUri($array)
 	{
 		$URI = null;
 		if($array != null)
@@ -887,7 +888,7 @@ class templateEngine
 		return $URI;
 	}
 	
-	private function subCategoryURI()
+	private function subCategoryUri()
 	{
 		
 	}
@@ -1048,14 +1049,14 @@ class templateEngine
 	}
 	
 	/**
-	 * haveNextPostPageHTML function.
+	 * haveNextPostPageHtml function.
 	 * 
 	 * @brief Makes us a nice next link if we have a next page.  Can specify your own next text.
 	 * @access public
 	 * @param string $title. (default: "Next Page ->")
 	 * @return String containing the link, null if we don't have a next page
 	 */
-	public function haveNextPostPageHTML($title = "Next Page ->")
+	public function haveNextPostPageHtml($title = "Next Page ->")
 	{
 		$return = null;
 		
@@ -1085,14 +1086,14 @@ class templateEngine
 	}
 	
 	/**
-	 * havePreviousPostPageHTML function.
+	 * havePreviousPostPageHtml function.
 	 * 
 	 * @brief Makes us a nice previous link if we have a previous page.  Can specify your own previous text
 	 * @access public
 	 * @param string $title. (default: "<- Previous Page")
 	 * @return String containing the link, null if we don't have a previous page
 	 */
-	public function havePreviousPostPageHTML($title = "<- Previous Page")
+	public function havePreviousPostPageHtml($title = "<- Previous Page")
 	{
 		$return = null;
 		
@@ -1146,14 +1147,14 @@ class templateEngine
 	}
 	
 	/**
-	 * getSnippetByNameHTML function.
+	 * getSnippetByNameHtml function.
 	 * 
 	 * @brief gets the snippet data from the snippet specified by the name and allows html to be run by the browser
 	 * @access public
 	 * @param mixed $name
 	 * @return String containing the snippet data with HTML
 	 */
-	public function getSnippetByNameHTML($name)
+	public function getSnippetByNameHtml($name)
 	{
 		$return = null;
 		
@@ -1171,13 +1172,13 @@ class templateEngine
 	}
 	
 	/**
-	 * themeBaseLoc function.
+	 * themeBaseLocation function.
 	 * 
 	 * @brief Builds the http location of a theme
 	 * @access public
 	 * @return String containing the http address of the base of a theme
 	 */
-	public function themeBaseLoc()
+	public function themeBaseLocation()
 	{
 		static $return = null;
 		
@@ -1218,7 +1219,7 @@ class templateEngine
 		return $return;
 	}
 	
-	public function lastUpdated($format)
+	public function lastUpdatedTime($format)
 	{
 		$return = null;
 		
@@ -1233,13 +1234,13 @@ class templateEngine
 		return $return;
 	}
 	
-	public function siteURL($uri = null)
+	public function siteUrl($uri = null)
 	{
 		$return = null;
 		
 		if($uri == null)
 		{
-			$return = $this->generateSiteURL();
+			$return = $this->generateSiteUrl();
 		}
 		else
 		{
@@ -1249,7 +1250,7 @@ class templateEngine
 		return $return;
 	}
 	
-	private function generateSiteURL()
+	private function generateSiteUrl()
 	{
 		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
 		
@@ -1300,7 +1301,7 @@ class templateEngine
 	 * @access public
 	 * @return Boolean True if we have an error with the themes
 	 */
-	public function themeError()
+	public function haveThemeError()
 	{
 		if($this->themeValidError == null)
 		{
@@ -1321,7 +1322,7 @@ class templateEngine
 	 * @access public
 	 * @return String with the error encountered or null if no error
 	 */
-	public function themeErrorText()
+	public function getThemeError()
 	{
 		return $this->themeValidError;
 	}

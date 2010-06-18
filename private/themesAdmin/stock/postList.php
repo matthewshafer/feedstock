@@ -1,5 +1,5 @@
 <?php require_once("header.php"); ?>
-<form name="deletePosts" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminURL(), '/index.php'); ?>">
+<form name="deletePosts" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminUrl(), '/index.php'); ?>">
 
 <div id="postBox">
 <?php 

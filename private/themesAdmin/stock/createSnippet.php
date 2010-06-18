@@ -1,12 +1,12 @@
 <?php require_once("header.php"); ?>
-			<form name="createSnippet" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php">
+			<form name="createSnippet" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminUrl(), '/index.php'); ?>">
 				Snippet Title:<br>
-				<input name="snippetTitle" type="text" class="textInput" value="<?php echo $this->templateEngine->snippetTitleID(); ?>"><br>
+				<input name="snippetTitle" type="text" class="textInput" value="<?php echo $this->templateEngine->snippetTitleId(); ?>"><br>
 				Post Body: <br>
-				<textarea name="postorpagedata"><?php echo $this->templateEngine->snippetBodyID(); ?></textarea>
+				<textarea name="postorpagedata"><?php echo $this->templateEngine->snippetBodyId(); ?></textarea>
 				<br>
 				<input name="type" type="hidden" value="snippetAdd">
-				<input name="id" type="hidden" value="<?php echo $this->templateEngine->snippetID(); ?>">
+				<input name="id" type="hidden" value="<?php echo $this->templateEngine->snippetId(); ?>">
 				<br>
 				<input name="submit" type=submit value="Submit" class="button">
 			</form>

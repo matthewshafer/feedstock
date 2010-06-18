@@ -11,7 +11,7 @@ $this->templateEngine->generateCategories();
 <body>
 	<div id="Post">
 		<div id="Title"></div>
-			<a href="<?php echo $this->templateEngine->getPostURL(); ?>"><?php echo $this->templateEngine->getPostTitle(); ?></a>
+			<a href="<?php echo $this->templateEngine->getPostUrl(); ?>"><?php echo $this->templateEngine->getPostTitle(); ?></a>
 		</div>
 		<div id="Date">
 			Date: <?php echo $this->templateEngine->getPostTime("m/d/y"); ?>
@@ -20,7 +20,7 @@ $this->templateEngine->generateCategories();
 			Author: <?php echo $this->templateEngine->getPostAuthor(); ?>
 		</div>
 		<div id="PostBody">
-			Body: <?php echo $this->templateEngine->getPostBodyHTML(); ?>
+			Body: <?php echo $this->templateEngine->getPostBodyHtml(); ?>
 		</div>
 		<div id="Tags">
 			Tags: <?php echo $this->templateEngine->getPostTagsFormatted(); ?>

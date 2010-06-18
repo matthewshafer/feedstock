@@ -115,7 +115,7 @@ class feedstock
 		//$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
 		$this->db = $this->databaseMaker();
 		
-		if($this->db->haveConnError() == null)
+		if($this->db->haveConnectionError() == null)
 		{		
 			//if($this->router->pageType() == "feed")
 			//{
@@ -132,7 +132,7 @@ class feedstock
 			else
 			{
 				require_once("includes/templateEngine.php");
-				$this->templateEngine = new templateEngine($this->db, $this->router);
+				$this->templateEngine = new TemplateEngine($this->db, $this->router);
 				require_once("includes/templateLoader.php");
 				$this->templateLoader = new templateLoader($this->templateEngine, $this->outputHelper);
 				$data = $this->templateLoader->render();
@@ -164,11 +164,11 @@ class feedstock
 			case "mysqli":
 				if(V_CACHE && $this->cacheHandler->cacheType() == "dynamic")
 				{
-					$return = new mysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix, $this->cacheHandler->cacheMaker());
+					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix, $this->cacheHandler->cacheMaker());
 				}
 				else
 				{
-					$return = new mysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
 				}
 			break;
 			case "mysql":

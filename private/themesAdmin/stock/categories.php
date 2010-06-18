@@ -1,9 +1,9 @@
 <?php require_once("header.php"); ?>
-			<form name="createCategory" method="post" action="<?php echo V_URL . V_HTTPBASE;?>admin/index.php/categories">
+			<form name="createCategory" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminUrl(), '/index.php'); ?>">
 				Category Title: (We create a URI based off this)<br>
-				<input name="categoryTitle" type="text" value="<?php echo $this->templateEngine->categoryTitleID(); ?>"><br>
+				<input name="categoryTitle" type="text" value="<?php echo $this->templateEngine->categoryTitleId(); ?>"><br>
 				<input name="type" type="hidden" value="categoryAdd">
-				<input name="id" type="hidden" value="<?php echo $this->templateEngine->categoryID(); ?>">
+				<input name="id" type="hidden" value="<?php echo $this->templateEngine->categoryId(); ?>">
 				<input name="submit" type=submit value="Post">
 			</form>
 			<br><br>

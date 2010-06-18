@@ -1,5 +1,5 @@
 <?php
-require_once(V_DATABASE . ".php");
+require_once("mysqli.php");
 
 /**
  * @file
@@ -7,7 +7,7 @@ require_once(V_DATABASE . ".php");
  * @brief the database class for the admin section.  It houses a bunch of functions which is why we keep it seperate from the frontend database.
  * @extends database
  */
-class mysqliDatabaseAdmin extends mysqliDatabase
+class MysqliDatabaseAdmin extends mysqliDatabase
 {
 	/**
 	 * __construct function.
@@ -17,13 +17,13 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	 * @param mixed $username
 	 * @param mixed $password
 	 * @param mixed $serverAddress
-	 * @param mixed $dbname
+	 * @param mixed $databaseName
 	 * @param mixed $tablePrefix
 	 * @return void
 	 */
-	public function __construct($username, $password, $serverAddress, $dbname, $tablePrefix)
+	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix)
 	{
-		parent::__construct($username, $password, $serverAddress, $dbname, $tablePrefix);
+		parent::__construct($username, $password, $serverAddress, $databaseName, $tablePrefix);
 	}
 	
 	/**
@@ -49,7 +49,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		if($id == null)
 		{
 			$formattedQuery = sprintf("INSERT INTO %sposts (Title, NiceTitle, URI, PostData, Author, Date, Draft) VALUES(?, ?, ?, ?, ?, ?, ?)", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('ssssisi', $title, $niceTitle, $uri, $data, $author, $date, $draft);
 			$query->execute();
 			
@@ -63,7 +63,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		else
 		{
 			$formattedQuery = sprintf("UPDATE %sposts SET Title=?, NiceTitle=?, URI=?, PostData=?, Author=?, Draft=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('ssssiii', $title, $niceTitle, $uri, $data, $author, $draft, $id);
 			$query->execute();
 			
@@ -91,7 +91,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$return = false;
 		
 		$formattedQuery = sprintf("DELETE FROM %sposts WHERE PrimaryKey=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->bind_param('i', $id);
 		$query->execute();
 		
@@ -134,7 +134,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		{
 			
 			$formattedQuery = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('ssssisis', $title, $niceTitle, $uri, $data, $author, $date, $draft, $corral);
 			$query->execute();
 			
@@ -147,7 +147,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		else
 		{	
 			$formattedQuery = sprintf("UPDATE %spages SET Title=?, NiceTitle=?, URI=?, PageData=?, Author=?, Draft=?, Corral=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('ssssiisi', $title, $niceTitle, $uri, $data, $author, $draft, $corral, $id);
 			$query->execute();
 			
@@ -174,7 +174,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$return = false;
 		
 		$formattedQuery = sprintf("DELETE FROM %spages WHERE PrimaryKey=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->bind_param('i', $id);
 		$query->execute();
 		
@@ -194,19 +194,19 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	 * @access public
 	 * @param mixed $username
 	 * @param mixed $displayName
-	 * @param mixed $passHash
+	 * @param mixed $passwordHash
 	 * @param mixed $salt
 	 * @param int $permissions. (default: 99)
 	 * @param int $canAdministrateUsers. (default: 0)
 	 * @return True if able to insert, False if not.
 	 */
-	public function addUser($username, $displayName, $passHash, $salt, $permissions = 99, $canAdministrateUsers = 0)
+	public function addUser($username, $displayName, $passwordHash, $salt, $permissions = 99, $canAdministrateUsers = 0)
 	{
 		$return = false;
 		
 		$formattedQuery = sprintf("INSERT INTO %susers (loginName, displayName, PasswordHash, Salt, Permissions, CanAdminUsers) VALUES(?, ?, ?, ?, ?, ?)", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
-		$query->bind_param('ssssii', $username, $displayName, $passHash, $salt, $permissions, $canAdministrateUsers);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
+		$query->bind_param('ssssii', $username, $displayName, $passwordHash, $salt, $permissions, $canAdministrateUsers);
 		$query->execute();
 		
 		if($query->affected_rows > 0)
@@ -223,26 +223,26 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	 * 
 	 * @brief Removes a user from the database if the user deleting them has a higher user level and is allowed to administrate users.
 	 * @access public
-	 * @param mixed $userRemoveID
-	 * @param mixed $currUserID
+	 * @param mixed $userIdToRemove
+	 * @param mixed $currentUserID
 	 * @return Boolean, True if the delete worked, false if it failed some how.
 	 */
-	public function removeUser($userRemoveID, $currUserID)
+	public function removeUser($userIdToRemove, $currentUserID)
 	{
 		$return = false;
 		$formattedQuery = sprintf("SELECT Permissions, CanAdminUsers FROM %susers WHERE id=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->bind_param('i', $id);
-		$id = $currUserID;
+		$id = $currentUserID;
 		$query->execute();
 		//added ths store_result need to test
 		$query->store_result();
 		$query->bind_result($permissions, $canAdmin);
 		$query->fetch();
-		$currPerm = $permissions;
-		$currAdmin = $canAdmin;
+		$currentPermissions = $permissions;
+		$currentAdmin = $canAdmin;
 		$query->free_result();
-		$id = $userRemoveID;
+		$id = $userIdToRemove;
 		$query->execute();
 		// added the store_result need to test
 		$query->store_result();
@@ -250,11 +250,11 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$query->bind_result($permissions, $canAdmin);
 		$query->fetch();
 		
-		if($currPerm < $permissions && $currAdmin === 1)
+		if($currentPermissions < $permissions && $currentAdmin === 1)
 		{
 			$formattedQuery2 = sprintf("DELETE FROM %susers WHERE id=?", parent::$this->tablePrefix);
-			$query2 = parent::$this->dbConn->prepare($formattedQuery2);
-			$query2->bind_param('i', $userRemoveID);
+			$query2 = parent::$this->databaseConnection->prepare($formattedQuery2);
+			$query2->bind_param('i', $userIdToRemove);
 			$query->execute();
 			
 			if($query2->affected_rows > 0)
@@ -280,9 +280,9 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	{
 		$return = null;
 		
-		$query = sprintf("SELECT * FROM %susers WHERE loginName='%s' LIMIT 1", parent::$this->tablePrefix, parent::$this->dbConn->real_escape_string($username));
+		$query = sprintf("SELECT * FROM %susers WHERE loginName='%s' LIMIT 1", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($username));
 		
-		if($result = parent::$this->dbConn->query($query))
+		if($result = parent::$this->databaseConnection->query($query))
 		{
 			$return = $result->fetch_assoc();
 			$result->close();
@@ -292,21 +292,21 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	}
 	
 	/**
-	 * getPostIDNiceCheckedTitle function.
+	 * getPostIdNiceCheckedTitle function.
 	 * 
 	 * @brief Returns the postID that the title passed in has
 	 * @access public
-	 * @param mixed $nice
+	 * @param mixed $niceTitle
 	 * @return Post's key (integer).  If not found then null.
 	 */
-	public function getPostIDNiceCheckedTitle($nice)
+	public function getPostIdNiceCheckedTitle($niceTitle)
 	{
 		$return = null;
 		
 		$formattedQuery = sprintf("SELECT PrimaryKey FROM %sposts WHERE NiceTitle=? LIMIT 1", parent::$this->tablePrefix);
 		
-		$query = parent::$this->dbConn->prepare($formattedQuery);
-		$query->bind_param('s', $nice);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
+		$query->bind_param('s', $niceTitle);
 		$query->execute();
 		$query->bind_result($result);
 		
@@ -320,7 +320,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	}
 	
 	/**
-	 * checkDuplicateURI function.
+	 * checkDuplicateUri function.
 	 * 
 	 * @brief checks to see if a URI already exists in the database
 	 * @access public
@@ -329,7 +329,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	 * @param mixed $id. (default: null)
 	 * @return True if the URI doesn't exist. False if it exists.
 	 */
-	public function checkDuplicateURI($type, $uri, $id = null)
+	public function checkDuplicateUri($type, $uri, $id = null)
 	{
 		$formattedQuery = null;
 		$return = false;
@@ -345,7 +345,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		
 		if($formattedQuery != null)
 		{
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('s', $uri);
 			$query->execute();
 			$query->store_result();
@@ -400,7 +400,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		
 		if($formattedQuery != null)
 		{
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('s', $niceTitle);
 			$query->execute();
 			$query->store_result();
@@ -428,15 +428,15 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	 * 
 	 * @brief Updates the user's cookievalue in the database
 	 * @access public
-	 * @param mixed $userID
-	 * @param string $val. (default: "")
+	 * @param mixed $userId
+	 * @param string $cookieValue. (default: "")
 	 * @return void
 	 */
-	public function updateCookieVal($userID, $val = "")
+	public function updateCookieVal($userId, $cookieValue = "")
 	{
 		$formattedQuery = sprintf("UPDATE %susers SET CookieVal=? WHERE id=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
-		$query->bind_param('si', $val, $userID);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
+		$query->bind_param('si', $cookieValue, $userId);
 		$query->execute();
 		$query->close();
 	}
@@ -444,18 +444,18 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	/**
 	 * findCookie function.
 	 * 
-	 * @brief finds the userID based on the cookievalue passed in
+	 * @brief finds the userId based on the cookievalue passed in
 	 * @access public
-	 * @param mixed $val
+	 * @param mixed $cookieValue
 	 * @return The ID (integer) of the user. Null if doesn't exist.
 	 */
-	public function findCookie($val)
+	public function findCookie($cookieValue)
 	{
 		$return = null;
 		
 		$formattedQuery = sprintf("SELECT id FROM %susers WHERE CookieVal=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
-		$query->bind_param('s', $val);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
+		$query->bind_param('s', $cookieValue);
 		$query->execute();
 		$query->store_result();
 		$query->bind_result($result);
@@ -471,19 +471,19 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	}
 	
 	/**
-	 * getPostDataByID function.
+	 * getPostDataById function.
 	 * 
 	 * @brief Returns the post data based on the ID passed in.
 	 * @access public
 	 * @param mixed $id
 	 * @return Array with post information
 	 */
-	public function getPostDataByID($id)
+	public function getPostDataById($id)
 	{
 		$return = array();
-		$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->dbConn->real_escape_string($id));
+		$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($id));
 		
-		if($result = parent::$this->dbConn->query($query))
+		if($result = parent::$this->databaseConnection->query($query))
 		{
 			$return = $result->fetch_assoc();
 			$result->close();
@@ -493,20 +493,20 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	}
 	
 	/**
-	 * getPageDataByID function.
+	 * getPageDataById function.
 	 * 
 	 * @brief Returns the page data based in the ID passed in.
 	 * @access public
 	 * @param mixed $id
 	 * @return Array with page information
 	 */
-	public function getPageDataByID($id)
+	public function getPageDataById($id)
 	{
 		$return = array();
 		
-		$query = sprintf("SELECT * FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->dbConn->real_escape_string($id));
+		$query = sprintf("SELECT * FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($id));
 		
-		if($result = parent::$this->dbConn->query($query))
+		if($result = parent::$this->databaseConnection->query($query))
 		{
 			$return = $result->fetch_assoc();
 			$result->close();
@@ -524,9 +524,9 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	{
 		$return = array();
 		
-		$query = sprintf("SELECT * FROM %spages ORDER BY PrimaryKey desc LIMIT %d OFFSET %d", parent::$this->tablePrefix, parent::$this->dbConn->real_escape_string($limit), parent::$this->dbConn->real_escape_string($offset));
+		$query = sprintf("SELECT * FROM %spages ORDER BY PrimaryKey desc LIMIT %d OFFSET %d", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($limit), parent::$this->databaseConnection->real_escape_string($offset));
 		
-		if($result = parent::$this->dbConn->query($query))
+		if($result = parent::$this->databaseConnection->query($query))
 		{
 			while($row = $result->fetch_assoc())
 			{
@@ -552,7 +552,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$return = false;
 		
 		$formattedQuery = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName=? AND Type='0' LIMIT 1", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->bind_param('s', $niceTitle);
 		$query->execute();
 		$query->store_result();
@@ -563,7 +563,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		if($rows == 0)
 		{
 				$formattedQuery = sprintf("INSERT INTO %scatstags (Name, URIName, Type) VALUES(?, ?, ?)", parent::$this->tablePrefix);
-				$query = parent::$this->dbConn->prepare($formattedQuery);
+				$query = parent::$this->databaseConnection->prepare($formattedQuery);
 				// if i were to replace type in the bind_param with 0 we get a fatal error for passing something by reference.
 				$type = 0;
 				$query->bind_param('ssi', $name, $niceTitle, $type);
@@ -590,9 +590,9 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	public function getSinglePostCategories($id)
 	{
 		$return = array();
-		$query = sprintf("SELECT * FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, parent::$this->dbConn->real_escape_string($id));
+		$query = sprintf("SELECT * FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($id));
 		
-		if($result = parent::$this->dbConn->query($query))
+		if($result = parent::$this->databaseConnection->query($query))
 		{
 			while($row = $result->fetch_assoc())
 			{
@@ -618,24 +618,24 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$return = array();
 		
 		$formattedQuery = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->bind_param('i', $id);
 		$query->execute();
 		$query->store_result();
-		$query->bind_result($catTagID);
+		$query->bind_result($categoryTagId);
 		
 		while($query->fetch())
 		{
-			array_push($return, $catTagID);
+			array_push($return, $categoryTagId);
 		}
 		$query->close();
 		
-		$queryStr = implode(", ", $return);
+		$queryString = implode(", ", $return);
 		$return = array();
 		
-		$query = sprintf("SELECT Name FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", parent::$this->tablePrefix, $queryStr);
+		$query = sprintf("SELECT Name FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", parent::$this->tablePrefix, $queryString);
 		
-		if($result = parent::$this->dbConn->query($query))
+		if($result = parent::$this->databaseConnection->query($query))
 		{
 			while($row = $result->fetch_assoc())
 			{
@@ -653,19 +653,19 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	 * @brief Insert the categories for the post into the database.
 	 * @access public
 	 * @param mixed $id
-	 * @param mixed $catArr
+	 * @param mixed $categoryArray
 	 * @return True if able to insert categories for post. False if not able to.
 	 */
-	public function processPostCategories($id, $catArr)
+	public function processPostCategories($id, $categoryArray)
 	{
 		$return = false;
-		if($catArr != null or !empty($catArr))
+		if($categoryArray != null or !empty($categoryArray))
 		{
 			$formattedQuery = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES(?, ?)", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('ii', $id, $key);
 			
-			foreach($catArr as $key)
+			foreach($categoryArray as $key)
 			{
 				$query->execute();
 			}
@@ -688,13 +688,12 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	 * @param mixed $id
 	 * @return True if we were able to Delete.  False if we were unable to Delete or there was nothing to delete.
 	 */
-	public function unlinkPostCatsAndTags($id)
+	public function unlinkPostCategoriessAndTags($id)
 	{
 		$return = false;
-		$type = 1;
 		
 		$formattedQuery = sprintf("DELETE FROM %sposts_tax WHERE PostID=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->bind_param('i', $id);
 		$query->execute();
 		
@@ -723,21 +722,21 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$type = 1;
 		$title = null;
 		$niceTitle = null;
-		$pkArray = array();
+		$primaryKeyArray = array();
 		
 		if($tagArray != null or !empty($tagArray))
 		{
 			$formattedQuery1 = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName=? AND Type='1' LIMIT 1", parent::$this->tablePrefix);
-			$query1 = parent::$this->dbConn->prepare($formattedQuery1);
+			$query1 = parent::$this->databaseConnection->prepare($formattedQuery1);
 			$query1->bind_param('s', $niceTitle);
 			
 			
 			$formattedQuery2 = sprintf("INSERT INTO %scatstags (Name, URIName, Type) VALUES(?, ?, ?)", parent::$this->tablePrefix);
-			$query2 = parent::$this->dbConn->prepare($formattedQuery2);
+			$query2 = parent::$this->databaseConnection->prepare($formattedQuery2);
 			$query2->bind_param('ssi', $title, $niceTitle, $type);
 			
 			$formattedQuery3 = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES(?, ?)", parent::$this->tablePrefix);
-			$query3 = parent::$this->dbConn->prepare($formattedQuery3);
+			$query3 = parent::$this->databaseConnection->prepare($formattedQuery3);
 			$query3->bind_param('ii', $id, $catID);
 			
 			foreach($tagArray as $key)
@@ -762,23 +761,23 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 						$query1->store_result();
 						$query1->bind_result($primaryKey);
 						$query1->fetch();
-						array_push($pkArray, $primaryKey);
+						array_push($primaryKeyArray, $primaryKey);
 						$query1->free_result();
 					}
 				}
 				else
 				{
-					array_push($pkArray, $primaryKey);
+					array_push($primaryKeyArray, $primaryKey);
 				}
 			}
 			$query1->close();
 			$query2->close();
 			
-			$tmpCt = count($pkArray);
-			print_r($pkArray);
+			$tmpCt = count($primaryKeyArray);
+			print_r($primaryKeyArray);
 			for($i = 0; $i < $tmpCt; $i++)
 			{
-				$catID = $pkArray[$i];
+				$catID = $primaryKeyArray[$i];
 				$query3->execute();
 			}
 			
@@ -808,7 +807,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$return = array();
 		$query = sprintf("SELECT DISTINCT Corral FROM %spages WHERE Corral IS NOT NULL", parent::$this->tablePrefix);
 		
-		if($result = parent::$this->dbConn->query($query))
+		if($result = parent::$this->databaseConnection->query($query))
 		{
 			while($row = $result->fetch_assoc())
 			{
@@ -832,18 +831,18 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 	{
 		$return = array();
 		$formattedQuery = sprintf("SELECT PrimaryKey, Title FROM %spages WHERE Corral=?", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->bind_param('s', $name);
 		$query->execute();
 		$query->store_result();
-		$query->bind_result($pk, $title);
+		$query->bind_result($primaryKey, $title);
 		
 		$count = 0;
 		
 		while($query->fetch())
 		{
 			$return[$count] = array();
-			$return[$count]["PrimaryKey"] = $pk;
+			$return[$count]["PrimaryKey"] = $primaryKey;
 			$return[$count]["Corral"] = $title;
 			$count++;
 		}
@@ -859,7 +858,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		if($id == null)
 		{
 			$formattedQuery = sprintf("INSERT INTO %ssnippet (Name, SnippetData) VALUES(?, ?)", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('ss', $name, $data);
 			$query->execute();
 			
@@ -872,7 +871,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		else
 		{
 			$formattedQuery = sprintf("UPDATE %ssnippet SET Name=?, SnippetData=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('ssi', $name, $data, $id);
 			$query->execute();
 			
@@ -893,7 +892,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		if($id != null)
 		{
 			$formattedQuery = sprintf("DELETE %ssnippet WHERE PrimaryKey=?", parent::$this->tablePrefix);
-			$query = parent::$this->dbConn->prepare($formattedQuery);
+			$query = parent::$this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('i', $id);
 			$query->execute();
 			
@@ -913,7 +912,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		
 		$formattedQuery = sprintf("SELECT * FROM %ssnippet ORDER BY PrimaryKey DESC", parent::$this->tablePrefix);
 		
-		if($result = parent::$this->dbConn->query($formattedQuery))
+		if($result = parent::$this->databaseConnection->query($formattedQuery))
 		{
 			while($row = $result->fetch_assoc())
 			{
@@ -925,7 +924,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		return $return;
 	}
 	
-	public function getSnippetByID($id)
+	public function getSnippetById($id)
 	{
 		$return = array();
 		
@@ -933,7 +932,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		{
 			$formattedQuery = sprintf("SELECT * FROM %ssnippet WHERE PrimaryKey='%s'", parent::$this->tablePrefix, $id);
 			
-			if($result = parent::$this->dbConn->query($formattedQuery))
+			if($result = parent::$this->databaseConnection->query($formattedQuery))
 			{
 				if($row = $result->fetch_assoc())
 				{
@@ -951,7 +950,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$return = array();
 		
 		$formattedQuery = sprintf("SELECT URI, Date FROM %sposts ORDER BY Date DESC", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->execute();
 		$query->store_result();
 		$query->bind_result($uri, $date);
@@ -974,7 +973,7 @@ class mysqliDatabaseAdmin extends mysqliDatabase
 		$return = array();
 		
 		$formattedQuery = sprintf("SELECT URI, Date FROM %spages ORDER BY Date DESC", parent::$this->tablePrefix);
-		$query = parent::$this->dbConn->prepare($formattedQuery);
+		$query = parent::$this->databaseConnection->prepare($formattedQuery);
 		$query->execute();
 		$query->store_result();
 		$query->bind_result($uri, $date);

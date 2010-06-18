@@ -55,7 +55,7 @@ class feedstockAdmin
 		
 		require_once("includes/templateEngineAdmin.php");
 		
-		$this->templateEngine = new templateEngineAdmin($this->dbAdmin, $this->router);
+		$this->templateEngine = new TemplateEngineAdmin($this->dbAdmin, $this->router);
 		
 		require_once("includes/outputHelper.php");
 		$outputHelper = new outputHelper();
@@ -183,7 +183,7 @@ class feedstockAdmin
 				$id);
 				
 				// only need to unlink updates
-				$this->dbAdmin->unlinkPostCatsAndTags($id);
+				$this->dbAdmin->unlinkPostCategoriessAndTags($id);
 				$this->dbAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
 				$this->dbAdmin->processTags($id, $this->tagsToArray());
 			}
@@ -206,7 +206,7 @@ class feedstockAdmin
 				$this->postManager->getPostByName("draft")
 				);
 				
-				$id = $this->dbAdmin->getPostIDNiceCheckedTitle($niceCheckedTitle);
+				$id = $this->dbAdmin->getPostIdNiceCheckedTitle($niceCheckedTitle);
 				
 				
 				//print_r($this->postManager->getPostByName("postCategories"));
@@ -461,13 +461,13 @@ class feedstockAdmin
 		$i = 1;
 		$moreThanOne = true;
 		
-		$moreThanOne = $this->dbAdmin->checkDuplicateURI($type, $niceUri, $id);
+		$moreThanOne = $this->dbAdmin->checkDuplicateUri($type, $niceUri, $id);
 		
 		while(!$moreThanOne)
 		{
 			$tmp = $niceUri . "-" . ($i + 1);
 			
-			$moreThanOne = $this->dbAdmin->checkDuplicateURI($type, $tmp, $id);
+			$moreThanOne = $this->dbAdmin->checkDuplicateUri($type, $tmp, $id);
 			
 			$i++;
 		}
@@ -659,7 +659,7 @@ class feedstockAdmin
 		switch(V_DATABASE)
 		{
 			case "mysqli":
-				$return = new mysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
 			break;
 			case "mysql":
 				$return = new mysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);

@@ -6,9 +6,9 @@ require_once("header.php");
 //print_r($this->templateEngine->getPageData());
 
 	echo '
-	<a href="' . $this->templateEngine->getPageURL() . '">' . $this->templateEngine->getPageTitle() . '</a>';
+	<a href="' . $this->templateEngine->getPageUrl() . '">' . $this->templateEngine->getPageTitle() . '</a>';
 	echo "<br>";
-	echo "Body: " . $this->templateEngine->getPageBodyHTML();
+	echo "Body: " . $this->templateEngine->getPageBodyHtml();
 	echo "<br>";
 	echo "Date: " . $this->templateEngine->getPageTime("m/d/y");
 	echo "<br>";
