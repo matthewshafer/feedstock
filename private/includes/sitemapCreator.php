@@ -40,7 +40,7 @@ class sitemapCreator
 		
 		
 		
-		
+		// need to generate pages for categories and tags
 		$categories = $this->db->listCategoriesOrTags(0);
 		$categories = $this->formatAddData($categories, ".5", "monthly");
 		$this->totalLen = $this->totalLen + count($categories);
