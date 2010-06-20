@@ -139,7 +139,7 @@ class TemplateEngine
 					{
 						$this->pageData = $this->database->listCategoriesOrTags(0);
 					}
-					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($categoryName, 0))
+					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryOrTagName($categoryName, 0))
 					{
 						
 						$pageOffset = $this->router->searchURI("page");
@@ -199,7 +199,7 @@ class TemplateEngine
 					{
 						$this->pageData = $this->database->listCategoriesOrTags(1);
 					}
-					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryTagName($tagName, 1))
+					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryOrTagName($tagName, 1))
 					{
 						$pageOffset = $this->router->searchURI("page");
 						$limit = intval(F_POSTSPERPAGE);

@@ -614,7 +614,7 @@ class MysqliDatabase
 	}
 	
 	/**
-	 * checkCategoryTagName function.
+	 * checkCategoryOrTagName function.
 	 * 
 	 * @access public
 	 * @param mixed $name

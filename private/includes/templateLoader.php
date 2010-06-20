@@ -38,13 +38,13 @@ class templateLoader
 		$this->themeLoc = $this->templateEngine->getThemeLocation();
 		//echo $this->themeLoc;
 		//ob_start();
-		if(!$this->templateEngine->themeError())
+		if(!$this->templateEngine->haveThemeError())
 		{
 			include $this->themeLoc;
 		}
 		else
 		{
-			echo $this->templateEngine->themeErrorText();
+			echo $this->templateEngine->getThemeErrorText();
 		}
 		//return ob_get_clean();
 		return $this->outputHelper->stopStoreGetBuffer();

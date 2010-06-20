@@ -26,7 +26,7 @@ $this->templateEngine->generateCategories();
 			Tags: <?php echo $this->templateEngine->getPostTagsFormatted(); ?>
 		</div>
 		<div id="Categories">
-			Categories: <?php echo $this->templateEngine->getPostCatsFormatted(); ?>
+			Categories: <?php echo $this->templateEngine->getPostCategoriesFormatted(); ?>
 		</div>
 	</div>
 
