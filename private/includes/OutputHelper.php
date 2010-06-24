@@ -6,7 +6,7 @@
  * 
  */
  
-class outputHelper
+class OutputHelper
 {
 	private $pageStore = "";
 	

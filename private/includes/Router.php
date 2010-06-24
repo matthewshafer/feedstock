@@ -5,7 +5,7 @@
  * @brief Handles simple routing of pages
  *
  */
-class router
+class Router
 {
 	protected $uri = null;
 	protected $firstPart = null;

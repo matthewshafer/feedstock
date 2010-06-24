@@ -6,7 +6,7 @@
  * @brief we then include that file that was returned to which it calls stuff from template engine
  * @brief but now since template engine is an object seperate from the theme it can't call it's private methods which is what we want
  */
-class templateLoader
+class TemplateLoader
 {
 	
 	private $themeLoc = null;

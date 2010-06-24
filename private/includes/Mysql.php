@@ -5,7 +5,7 @@
  * @brief standard mysql class
  * 
  */
-class mysqlDatabase
+class MysqlDatabase
 {
 	protected $dbConn = null;
 	protected $dBaseValid = null;

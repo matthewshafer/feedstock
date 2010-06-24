@@ -5,7 +5,7 @@
  * @brief Siteindex template for sitemaps
  * 
  */
-class siteindexTemplate
+class SiteindexTemplate
 {
 	public function __construct()
 	{

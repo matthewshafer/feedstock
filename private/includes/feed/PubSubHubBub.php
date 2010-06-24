@@ -1,5 +1,5 @@
 <?php
-class pubsubhubbub
+class PubSubHubBub
 {
 	private $hubURL = null;
 	private $hubValid = null;

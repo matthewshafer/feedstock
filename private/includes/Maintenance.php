@@ -6,7 +6,7 @@
  * 
  */
  
- class maintenance
+ class Maintenance
  {
  	private $fileValid = false;
  	private $fileLocation = null;

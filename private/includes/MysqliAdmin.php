@@ -7,7 +7,7 @@ require_once("mysqli.php");
  * @brief the database class for the admin section.  It houses a bunch of functions which is why we keep it seperate from the frontend database.
  * @extends database
  */
-class MysqliDatabaseAdmin extends mysqliDatabase
+class MysqliDatabaseAdmin extends MysqliDatabase
 {
 	/**
 	 * __construct function.

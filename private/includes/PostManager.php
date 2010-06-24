@@ -5,7 +5,7 @@
  * @brief handles all the post stuff.  We can make it sanitize stuff if needed.
  * 
  */
-class postManager
+class PostManager
 {
 	private $postArray = array();
 	private $haveVals = false;

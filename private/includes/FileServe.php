@@ -5,7 +5,7 @@
  * @brief Serves up files from the files folder.  It is really basic and hasn't been tested
  * 
  */
-class fileServe
+class FileServe
 {
 	protected $database;
 	protected $router;

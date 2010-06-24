@@ -5,7 +5,7 @@
  * @brief The template for sitemaps
  * 
  */
-class sitemapTemplate
+class SitemapTemplate
 {
 	public function __construct()
 	{

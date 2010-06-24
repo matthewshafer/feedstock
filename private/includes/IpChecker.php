@@ -6,7 +6,7 @@
  * 
  */
  
- class ipChecker
+ class IpChecker
  {
  	private $ipAddress = null;
  	private $customHeader;

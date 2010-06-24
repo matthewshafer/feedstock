@@ -1,6 +1,6 @@
 <?php
 
-class cacheHandler
+class CacheHandler
 {
 	private $router = null;
 	
@@ -29,14 +29,14 @@ class cacheHandler
 		
 		switch(F_CACHENAME)
 		{
-			case "filecache":
-				$cacher = new filecache($this->router->fullURI());
+			case "FileCache":
+				$cacher = new FileCache($this->router->fullURI());
 			break;
-			case "xcacheStatic":
-				$cacher = new xcacheStatic($this->router->fullURI());
+			case "XcacheStatic":
+				$cacher = new XcacheStatic($this->router->fullURI());
 			break;
-			case "xcacheDynamic":
-				$cacher = new xcacheDynamic();
+			case "XcacheDynamic":
+				$cacher = new XcacheDynamic();
 			break;
 		}
 		

@@ -5,7 +5,7 @@
  * @brief Creates Sitemaps
  * 
  */
-class sitemapCreator
+class SitemapCreator
 {
 	private $db;
 	private $sitemapLoc;
@@ -20,8 +20,8 @@ class sitemapCreator
 	
 	public function generateSitemap()
 	{
-		require_once("sitemap/sitemapTemplate.php");
-		$sitemapTemplate = new sitemapTemplate();
+		require_once("Sitemap/sitemapTemplate.php");
+		$sitemapTemplate = new SitemapTemplate();
 		
 		$indexArr = $this->makeIndexArray();
 		

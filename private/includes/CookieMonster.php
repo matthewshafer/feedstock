@@ -5,7 +5,7 @@
  * @brief Handles creating/removing/checking of cookies
  *
  */
-class cookieMonster
+class CookieMonster
 {
 	protected $db = null;
 	protected $userID = null;

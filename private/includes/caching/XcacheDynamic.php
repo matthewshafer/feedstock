@@ -5,7 +5,7 @@
  * @brief Used to cache the sql from the database so we can get the data without having to talk to the database, if it's cached
  * 
  */
-class xcacheDynamic
+class XcacheDynamic
 {
 	private $prefix = null;
 	private $prefixArr = null;

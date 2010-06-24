@@ -5,7 +5,7 @@
  * @brief caches using only xcache.  So no static files.  The downside is if the DB dies and xcache cleares the cache nothing is there to cache.
  * 
  */
-class xcacheStatic
+class XcacheStatic
 {
 	private $uri = null;
 	private $urimd5 = null;
