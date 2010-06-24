@@ -1,7 +1,7 @@
 <?php
 	// change the require to actually point to feedstockAdmin.php
-	require_once("../../private/feedstockAdmin.php");
+	require_once("../../private/FeedstockAdmin.php");
 
-	$feedstockAdmin = new feedstockAdmin();
+	$feedstockAdmin = new FeedstockAdmin();
 
 ?>

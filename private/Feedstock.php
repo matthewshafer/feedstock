@@ -5,7 +5,7 @@
  * @brief Makes everything we need to generate the front facing pages. You can think of it as the brain's of the operation.
  * 
  */
-class feedstock
+class Feedstock
 {
 	private $username = null;
 	private $password = null;
@@ -36,24 +36,24 @@ class feedstock
 		$this->database = $database;
 		$this->tableprefix = $tableprefix;
 		
-		require_once("includes/router.php");
-		$this->router = new router(V_HTACCESS);
+		require_once("includes/Router.php");
+		$this->router = new Router(V_HTACCESS);
 		
-		require_once("includes/outputHelper.php");
-		$this->outputHelper = new outputHelper();
+		require_once("includes/OutputHelper.php");
+		$this->outputHelper = new OutputHelper();
 		
 		if($this->router->requestMethod() == "GET")
 		{
 			if($this->maintenanceMode())
 			{
-				require_once("includes/maintenance.php");
-				$maintenance = new maintenance(sprintf("%s/private/themes/%s/maintenance.php", V_BASELOC, V_THEME), $this->outputHelper);
+				require_once("includes/Maintenance.php");
+				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", V_BASELOC, V_THEME), $this->outputHelper);
 				$maintenance->render();
 			}
 			else
 			{
-				require_once("includes/cacheHandler.php");
-				$this->cacheHandler = new cacheHandler($this->router);
+				require_once("includes/CacheHandler.php");
+				$this->cacheHandler = new CacheHandler($this->router);
 			
 				if(V_CACHE && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
 				{
@@ -125,16 +125,16 @@ class feedstock
 			//}
 			if($this->router->pageType() == "file")
 			{
-				require_once("includes/fileServe.php");
-				$fileServe = new fileServe($this->db, $this->router);
+				require_once("includes/FileServe.php");
+				$fileServe = new FileServe($this->db, $this->router);
 				$data = $fileServe->render();
 			}
 			else
 			{
-				require_once("includes/templateEngine.php");
+				require_once("includes/TemplateEngine.php");
 				$this->templateEngine = new TemplateEngine($this->db, $this->router);
-				require_once("includes/templateLoader.php");
-				$this->templateLoader = new templateLoader($this->templateEngine, $this->outputHelper);
+				require_once("includes/TemplateLoader.php");
+				$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
 				$data = $this->templateLoader->render();
 			}
 			
@@ -172,7 +172,7 @@ class feedstock
 				}
 			break;
 			case "mysql":
-				$return = new mysqlDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+				$return = new MysqlDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
 			break;
 		}
 		
@@ -192,9 +192,9 @@ class feedstock
 		
 		if(F_MAINTENANCE)
 		{
-			require_once("includes/ipChecker.php");
+			require_once("includes/IpChecker.php");
 			
-			$ipChecker = new ipChecker();
+			$ipChecker = new IpChecker();
 			
 			if(!$ipChecker->checkIP(F_MAINTENANCEPASS))
 			{

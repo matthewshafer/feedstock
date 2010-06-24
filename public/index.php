@@ -1,6 +1,6 @@
 <?php
-	require_once("../private/feedstock.php");
+	require_once("../private/Feedstock.php");
 	
-	$feedstock = new feedstock();
+	$feedstock = new Feedstock();
 
 ?>

@@ -5,7 +5,7 @@
 * @brief Build's all the admin things.
 * 
 */
-class feedstockAdmin
+class FeedstockAdmin
 {
 	private $username = null;
 	private $password = null;

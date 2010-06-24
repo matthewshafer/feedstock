@@ -1,6 +1,7 @@
 Things to do in no perticular order
 
 Cacher
+	update cache names to start with uppercase
 	
 Database
 	mysqli remove users.  need to rewrite how users are stored.
