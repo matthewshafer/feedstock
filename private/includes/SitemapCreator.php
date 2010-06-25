@@ -9,26 +9,36 @@ class SitemapCreator
 {
 	private $db;
 	private $sitemapLoc;
-	private $totalLen = 0;
+	private $totalLength = 0;
 	private $totalSitemaps = 0;
+	private $sitemapDataSoFar;
+	private $sitemapTemplate;
+	private $siteindexTemplate;
 	
 	public function __construct($db)
 	{
 		$this->db = $db;
 		$this->sitemapLoc = V_BASELOC . "/public/";
+		
+		require_once("Sitemap/sitemapTemplate.php");
+		$this->sitemapTemplate = new SitemapTemplate();
+		
+		//require_once("Sitemap/siteindexTemplate.php");
+		//$this->siteindexTemplate = new SiteindexTemplate();
 	}
 	
 	public function generateSitemap()
 	{
-		require_once("Sitemap/sitemapTemplate.php");
-		$sitemapTemplate = new SitemapTemplate();
 		
-		$indexArr = $this->makeIndexArray();
+		$indexArray = $this->makeIndexArray();
 		
 		$pages = $this->db->getAllPagesSitemap();
 		$pages = $this->formatAddData($pages, ".5", "monthly");
-		$this->totalLen = $this->totalLen + count($pages);
+		$this->totalLength = $this->totalLen + count($pages);
 		
+		$this->sitemapDataSoFar = array_merge($indexArray, $pages);
+		
+		$this->processGeneratedSitemapData();
 		
 		$posts = $this->db->getAllPostsSitemap();
 		$posts = $this->formatAddData($posts, ".5", "monthly");
@@ -37,6 +47,11 @@ class SitemapCreator
 		$num = $postCt / F_POSTSPERPAGE;
 		$totalPostPages = ceil($num) - 1;
 		$postPage = $this->makePostPageLinks($totalPostPages);
+		$this->totalLen = $this->totalLen + count($postPage);
+		
+		$this->sitemapDataSoFar = array_merge($this->sitemapDataSoFar, $posts, $postPage);
+		
+		$this->processGeneratedSitemapData();
 		
 		
 		
@@ -45,21 +60,82 @@ class SitemapCreator
 		$categories = $this->formatAddData($categories, ".5", "monthly");
 		$this->totalLen = $this->totalLen + count($categories);
 		
+		$this->sitemapDataSoFar = array_merge($this->sitemapDataSoFar, $categories);
+		// calling this after every block should allow us to use less memory as we can free the previous variables
+		// we arent doing that yet because well things arent done
+		$this->processGeneratedSitemapData();
+		
 		
 		$tags = $this->db->listCategoriesOrTags(1);
 		$tags = $this->formatAddData($tags, ".5", "monthly");
 		$this->totalLen = $this->totalLen + count($tags);
 		
-		$finalData = array_merge($indexArr, $postPage, $posts, $pages, $categories, $tags);
+		$this->sitemapDataSoFar = array_merge($this->sitemapDataSoFar, $tags);
 		
-		//print_r($finalData);
 		
-		$sitemapOutput = $sitemapTemplate->generateSitemap($finalData);
+		// final generation of sitemap
+		$this->finalGenerateSitemapData();
 		
-		//echo $sitemapOutput;
+	}
+	
+	private processGeneratedSitemapData()
+	{
+		if($this->totalLength >= F_SITEMAPMAXITEMS)
+		{
+			$fileName = sprintf("sitemap%i.xml", $this->totalSitemaps);
+			
+			$maxSitemapData = array_splice($this->sitemapDataSoFar, 0, F_SITEMAPMAXITEMS);
+			$this->writeFile($fileName, $this->sitemapTemplate->generateSitemap($maxSitemapData));
+			
+			$this->totalLength = $this->totalLength - F_SITEMAPMAXITEMS;
+			$this->totalSitemaps++;
+			
+			$this->processGeneratedSitemapData();
+		}
+	}
+	
+	private finalGenerateSitemapData()
+	{
+		$this->processGenerateSitemapData();
 		
-		$this->writeFile("sitemap.xml", $sitemapOutput);
+		if($this->totalSitemaps > 0)
+		{
+			$fileName = sprintf("sitemap%i.xml", $this->totalSitemaps);
+			
+			$this->writeFile($fileName, $this->sitemapTemplate->generateSitemap($this->sitemapDataSoFar));
+			
+			$this->totalSitemaps++;
+			
+			// then write sitemap index
+			
+			$this->writeSiteindex();
+		}
+		else
+		{
+			$this->writeFile("sitemap.xml", $this->sitemapTemplate->generateSitemap($this->sitemapDataSoFar));
+		}
+	}
+	
+	private function writeSiteindex()
+	{
+		$fileLoc = sprintf("%s%s", $this->sitemapLoc, $name);
 		
+		$data = $this->siteindexTemplate->generateSiteindex($this->totalSitemaps);
+		
+		if($data != null)
+		{
+			if($file = fopen($fileLoc, 'w'))
+			{
+			
+				if(flock($file, LOCK_EX))
+				{	
+					fwrite($file, $data);
+					flock($file, LOCK_UN);
+				}
+				
+				fclose($file);
+			}
+		}
 	}
 	
 	private function formatAddData($data, $priority, $changeFreq)
