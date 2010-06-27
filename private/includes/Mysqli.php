@@ -108,7 +108,9 @@ class MysqliDatabase
 		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
+			//$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
+			
+			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE Draft='0' ORDER BY Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
@@ -119,7 +121,9 @@ class MysqliDatabase
 		}
 		else
 		{
-			$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
+			//$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
+			
+			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author  ORDER BY Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 			$this->queries++;
 		}
 		
@@ -132,16 +136,14 @@ class MysqliDatabase
 		else if($result = $this->databaseConnection->query($query))
 		{
 			$tempArray = array();
-			$tempAuthors = array();
 			
 			while($row = $result->fetch_assoc())
 			{
-				array_push($tempArray, $row);
-				
-				if(!isset($tempAuthors[$row["Author"]]))
+				if($row["Author"] == null)
 				{
-					$tempAuthors[$row["Author"]] = $row["Author"];
+					$row["Author"] = "Unknown";
 				}
+				array_push($tempArray, $row);
 			}
 			$result->close();
 			
@@ -151,8 +153,7 @@ class MysqliDatabase
 				array_pop($tempArray);
 			}
 			//print_r($tempAuthors);
-			$return = $this->generateAuthors($tempArray, $tempAuthors);
-			unset($tempArray, $tempAuthors);
+			$return = $tempArray;
 			
 			if($this->haveCacher)
 			{
@@ -165,63 +166,6 @@ class MysqliDatabase
 		return $return;
 	}
 	
-	/**
-	 * generateAuthors function.
-	 * 
-	 * @access private
-	 * @param mixed $postArray
-	 * @param mixed $authorArray
-	 * @return void
-	 */
-	private function generateAuthors($postArray, $authorArray)
-	{
-		if($postArray != null && $authorArray != null)
-		{
-			$queryString = implode(", ", $authorArray);
-			unset($authorArray);
-			$authorArray = array();
-			
-			if($queryString != null)
-			{
-				$query = sprintf("SELECT id, DisplayName FROM %susers WHERE id IN (%s)", $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString));
-				
-				if(F_MYSQLSTOREQUERIES)
-				{
-					array_push($this->debugQueries, $query);
-				}
-		
-				$this->queries++;
-				if($result = $this->databaseConnection->query($query))
-				{
-					while($row = $result->fetch_assoc())
-					{
-						$authorArray[$row["id"]] = $row["DisplayName"];
-					}
-					
-					$result->close();
-				}
-			}
-
-			$tmpCt = count($postArray);
-			
-			for($i = 0; $i < $tmpCt; $i++)
-			{
-				$id = $postArray[$i]["Author"];
-			
-				if(isset($authorArray[$id]))
-				{
-					$postArray[$i]["Author"] = $authorArray[$id];
-				}
-				else
-				{
-					$postArray[$i]["Author"] = "Unknown";
-				}
-			}	
-		}
-		unset($authorArray);
-		
-		return $postArray;
-	}
 	
 	/**
 	 * getPage function.
@@ -283,11 +227,10 @@ class MysqliDatabase
 	public function getSinglePost($uri, $draft = false)
 	{
 		$tempArray = array();
-		$authorArray = array();
 		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
+			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
@@ -297,40 +240,35 @@ class MysqliDatabase
 		}
 		else
 		{
-			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s'", $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
+			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE URI='/%s'", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
 		}
 		
 		if($this->haveCacher && $this->cacher->checkExists($query))
 		{
 			$tempArray = $this->cacher->getCachedData();
 			
-			if(isset($tempArray[0]["Author"]))
-			{
-				array_push($authorArray, $tempArray[0]["Author"]);
-			}
 		}
 		else if($result = $this->databaseConnection->query($query))
 		{
 			$row = $result->fetch_assoc();
-			array_push($tempArray, $row);
 			
-			if(isset($row["Author"]))
+			if($row["Author"] == null)
 			{
-				array_push($authorArray, $row["Author"]);
+				$row["Author"] = "Unknown";
 			}
 			
+			array_push($tempArray, $row);
+			
 			$result->close();
+			
+			
+			if($this->haveCacher)
+			{
+				$this->cacher->writeCachedFile($query, $tempArray);
+			}
 		}
 		
-		$return = $this->generateAuthors($tempArray, $authorArray);
-		unset($tempArray, $authorArray);
-		
-		if(isset($return[0]["PostData"]))
-		{
-			$return[0]["PostData"] = stripslashes($return[0]["PostData"]);
-		}
-		
-		return $return;
+		return $tempArray;
 	}
 	
 	/**

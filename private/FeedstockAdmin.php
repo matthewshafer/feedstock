@@ -35,13 +35,13 @@ class FeedstockAdmin
 		$this->database = $database;
 		$this->tableprefix = $tableprefix;
 		
-		require_once("includes/router.php");
+		require_once("includes/Router.php");
 		
-		$this->router = new router(F_ADMINHTACCESS, F_ADMINBASE);
+		$this->router = new Router(F_ADMINHTACCESS, F_ADMINBASE);
 		
-		require_once("includes/postManager.php");
+		require_once("includes/PostManager.php");
 		
-		$this->postManager = new postManager();
+		$this->postManager = new PostManager();
 		
 		//require_once("includes/" . V_DATABASE . "Admin.php");
 		
@@ -49,24 +49,24 @@ class FeedstockAdmin
 		
 		$this->dbAdmin = $this->databaseMaker();
 		
-		require_once("includes/cookieMonster.php");
+		require_once("includes/CookieMonster.php");
 		
-		$this->cookieMonster = new cookieMonster($this->dbAdmin);
+		$this->cookieMonster = new CookieMonster($this->dbAdmin);
 		
-		require_once("includes/templateEngineAdmin.php");
+		require_once("includes/TemplateEngineAdmin.php");
 		
 		$this->templateEngine = new TemplateEngineAdmin($this->dbAdmin, $this->router);
 		
 		require_once("includes/outputHelper.php");
 		$outputHelper = new outputHelper();
 		
-		require_once("includes/templateLoader.php");
-		$this->templateLoader = new templateLoader($this->templateEngine, $outputHelper);
+		require_once("includes/TemplateLoader.php");
+		$this->templateLoader = new TemplateLoader($this->templateEngine, $outputHelper);
 		
 		if(F_SITEMAPGENERATE)
 		{
-			require_once("includes/sitemapCreator.php");
-			$this->sitemap = new sitemapCreator($this->dbAdmin);
+			require_once("includes/SitemapCreator.php");
+			$this->sitemap = new SitemapCreator($this->dbAdmin);
 		}
 		
 		if($this->postManager->getPostType() == "login")

@@ -20,7 +20,7 @@ class SitemapCreator
 		$this->db = $db;
 		$this->sitemapLoc = V_BASELOC . "/public/";
 		
-		require_once("Sitemap/sitemapTemplate.php");
+		require_once("Sitemap/SitemapTemplate.php");
 		$this->sitemapTemplate = new SitemapTemplate();
 		
 		//require_once("Sitemap/siteindexTemplate.php");
@@ -78,7 +78,7 @@ class SitemapCreator
 		
 	}
 	
-	private processGeneratedSitemapData()
+	private function processGeneratedSitemapData()
 	{
 		if($this->totalLength >= F_SITEMAPMAXITEMS)
 		{
@@ -94,7 +94,7 @@ class SitemapCreator
 		}
 	}
 	
-	private finalGenerateSitemapData()
+	private function finalGenerateSitemapData()
 	{
 		$this->processGenerateSitemapData();
 		
