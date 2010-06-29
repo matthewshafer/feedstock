@@ -11,11 +11,11 @@ class FeedstockAdmin
 	private $password = null;
 	private $address = null;
 	private $database = null;
-	private $tableprefix = null;
+	private $tablePrefix = null;
 	private $templateEngine = null;
 	private $templateLoader = null;
 	private $postManager = null;
-	private $dbAdmin = null;
+	private $databaseAdmin = null;
 	private $cookieMonster = null;
 	private $router = null;
 	private $sitemap = null;
@@ -33,7 +33,7 @@ class FeedstockAdmin
 		$this->password = $password;
 		$this->username = $username;
 		$this->database = $database;
-		$this->tableprefix = $tableprefix;
+		$this->tablePrefix = $tablePrefix;
 		
 		require_once("includes/Router.php");
 		
@@ -45,17 +45,17 @@ class FeedstockAdmin
 		
 		//require_once("includes/" . V_DATABASE . "Admin.php");
 		
-		//$this->dbAdmin = new databaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+		//$this->databaseAdmin = new databaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 		
-		$this->dbAdmin = $this->databaseMaker();
+		$this->databaseAdmin = $this->databaseMaker();
 		
 		require_once("includes/CookieMonster.php");
 		
-		$this->cookieMonster = new CookieMonster($this->dbAdmin);
+		$this->cookieMonster = new CookieMonster($this->databaseAdmin);
 		
 		require_once("includes/TemplateEngineAdmin.php");
 		
-		$this->templateEngine = new TemplateEngineAdmin($this->dbAdmin, $this->router);
+		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router);
 		
 		require_once("includes/outputHelper.php");
 		$outputHelper = new outputHelper();
@@ -66,7 +66,7 @@ class FeedstockAdmin
 		if(F_SITEMAPGENERATE)
 		{
 			require_once("includes/SitemapCreator.php");
-			$this->sitemap = new SitemapCreator($this->dbAdmin);
+			$this->sitemap = new SitemapCreator($this->databaseAdmin);
 		}
 		
 		if($this->postManager->getPostType() == "login")
@@ -74,7 +74,7 @@ class FeedstockAdmin
 			// check the login info and then set the cookie
 			if($this->postManager->getPostByName("username") != null and $this->postManager->getPostByName("username") != null)
 			{
-				$userArray = $this->dbAdmin->getUserByUserName($this->postManager->getPostByName("username"));
+				$userArray = $this->databaseAdmin->getUserByUserName($this->postManager->getPostByName("username"));
 				//print_r($userArray);
 				
 				// this should be true if the person supplied the correct information
@@ -170,9 +170,26 @@ class FeedstockAdmin
 				// update
 				
 				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $id);
-				$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), $id);
 				
-				$this->dbAdmin->addPost(
+				if($this->postManager->getPostByName("updateDate") == 0)
+				{
+					$tempPostArray = $this->datebaseAdmin->getPostDataById($id);
+					
+					$tempDate = null;
+					
+					if(isset($tempPostArray["Date"]))
+					{
+						$tempDate = strtotime($tempPostArray["Date"]);
+					}
+					
+					$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $tempDate), $id);
+				}
+				else
+				{
+					$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), $id);
+				}
+				
+				$this->databaseAdmin->addPost(
 				$this->postManager->getPostByName("postTitle"), 
 				$this->postManager->getPostByName("postorpagedata"), 
 				$niceCheckedTitle, 
@@ -183,9 +200,9 @@ class FeedstockAdmin
 				$id);
 				
 				// only need to unlink updates
-				$this->dbAdmin->unlinkPostCategoriessAndTags($id);
-				$this->dbAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
-				$this->dbAdmin->processTags($id, $this->tagsToArray());
+				$this->databaseAdmin->unlinkPostCategoriessAndTags($id);
+				$this->databaseAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
+				$this->databaseAdmin->processTags($id, $this->tagsToArray());
 			}
 			else
 			{
@@ -196,7 +213,7 @@ class FeedstockAdmin
 				// doing it this way allows to only have 1 of the same title and 1 of the same uri.  So if the user changes the structure we'll be fine
 				$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))));
 				
-				$this->dbAdmin->addPost(
+				$this->databaseAdmin->addPost(
 				$this->postManager->getPostByName("postTitle"), 
 				$this->postManager->getPostByName("postorpagedata"), 
 				$niceCheckedTitle, 
@@ -206,12 +223,12 @@ class FeedstockAdmin
 				$this->postManager->getPostByName("draft")
 				);
 				
-				$id = $this->dbAdmin->getPostIdNiceCheckedTitle($niceCheckedTitle);
+				$id = $this->databaseAdmin->getPostIdNiceCheckedTitle($niceCheckedTitle);
 				
 				
 				//print_r($this->postManager->getPostByName("postCategories"));
-				$this->dbAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
-				$this->dbAdmin->processTags($id, $this->tagsToArray());
+				$this->databaseAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
+				$this->databaseAdmin->processTags($id, $this->tagsToArray());
 			}
 			
 			$this->purgeCache();
@@ -261,7 +278,7 @@ class FeedstockAdmin
 			//print_r($this->postManager->getPostByName("postsDelete"));
 			foreach($this->postManager->getPostByName("postsDelete") as $key)
 			{
-				$this->dbAdmin->deletePost($key);
+				$this->databaseAdmin->deletePost($key);
 			}
 			
 			$this->purgeCache();
@@ -304,7 +321,7 @@ class FeedstockAdmin
 				}
 				$goodUri = $this->checkAndFixNiceUriCollision("page", $nonCheckedUri, $id);
 				
-				$this->dbAdmin->addPage(
+				$this->databaseAdmin->addPage(
 				$this->postManager->getPostByName("pageTitle"), 
 				$this->postManager->getPostByName("postorpagedata"), 
 				$niceCheckedTitle, 
@@ -333,7 +350,7 @@ class FeedstockAdmin
 				}
 				$goodUri = $this->checkAndFixNiceUriCollision("page", $nonCheckedUri);
 				
-				$this->dbAdmin->addPage(
+				$this->databaseAdmin->addPage(
 				$this->postManager->getPostByName("pageTitle"), 
 				$this->postManager->getPostByName("postorpagedata"), 
 				$niceCheckedTitle, 
@@ -363,7 +380,7 @@ class FeedstockAdmin
 		{
 			foreach($this->postManager->getPostByName("pageDelete") as $key)
 			{
-				$this->dbAdmin->removePage($key);
+				$this->databaseAdmin->removePage($key);
 			}
 			
 			$this->purgeCache();
@@ -384,7 +401,7 @@ class FeedstockAdmin
 			{
 				$niceTitle = $this->uriFriendlyTitle($this->postManager->getPostByName("categoryTitle"));
 				
-				$this->dbAdmin->addCategory($this->postManager->getPostByName("categoryTitle"), $niceTitle);
+				$this->databaseAdmin->addCategory($this->postManager->getPostByName("categoryTitle"), $niceTitle);
 			}
 			
 			$this->purgeCache();
@@ -406,14 +423,14 @@ class FeedstockAdmin
 			{
 				$niceTitle = $this->uriFriendlyTitle($this->postManager->getPostByName("snippetTitle"));
 				$niceTitle = $this->checkAndFixNiceTitleCollision("snippet", $niceTitle, $this->postManager->getPostByName("id"));
-				$this->dbAdmin->addSnippet($niceTitle, $this->postManager->getPostByName("postorpagedata"), $this->postManager->getPostByName("id"));
+				$this->databaseAdmin->addSnippet($niceTitle, $this->postManager->getPostByName("postorpagedata"), $this->postManager->getPostByName("id"));
 			}
 			else
 			{
 				echo "here";
 				$niceTitle = $this->uriFriendlyTitle($this->postManager->getPostByName("snippetTitle"));
 				$niceTitle = $this->checkAndFixNiceTitleCollision("snippet", $niceTitle);
-				$this->dbAdmin->addSnippet($niceTitle, $this->postManager->getPostByName("postorpagedata"));
+				$this->databaseAdmin->addSnippet($niceTitle, $this->postManager->getPostByName("postorpagedata"));
 			}
 		}
 	}
@@ -424,14 +441,14 @@ class FeedstockAdmin
 		$moreThanOne = true;
 		$temp = null;
 		
-		$moreThanOne = $this->dbAdmin->checkDuplicateTitle($type, $niceTitle, $id);
+		$moreThanOne = $this->databaseAdmin->checkDuplicateTitle($type, $niceTitle, $id);
 		
 		
 		while(!$moreThanOne)
 		{
 			$tmp = $niceTitle . "-" . ($i + 1);
 			//echo $tmp;
-			$moreThanOne = $this->dbAdmin->checkDuplicateTitle($type, $tmp, $id);
+			$moreThanOne = $this->databaseAdmin->checkDuplicateTitle($type, $tmp, $id);
 			
 			$i++;
 		}
@@ -461,13 +478,13 @@ class FeedstockAdmin
 		$i = 1;
 		$moreThanOne = true;
 		
-		$moreThanOne = $this->dbAdmin->checkDuplicateUri($type, $niceUri, $id);
+		$moreThanOne = $this->databaseAdmin->checkDuplicateUri($type, $niceUri, $id);
 		
 		while(!$moreThanOne)
 		{
 			$tmp = $niceUri . "-" . ($i + 1);
 			
-			$moreThanOne = $this->dbAdmin->checkDuplicateUri($type, $tmp, $id);
+			$moreThanOne = $this->databaseAdmin->checkDuplicateUri($type, $tmp, $id);
 			
 			$i++;
 		}
@@ -659,10 +676,10 @@ class FeedstockAdmin
 		switch(V_DATABASE)
 		{
 			case "mysqli":
-				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 			break;
 			case "mysql":
-				$return = new mysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+				$return = new mysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 			break;
 		}
 		
