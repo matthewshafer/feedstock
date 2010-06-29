@@ -62,17 +62,34 @@ class MysqliDatabaseAdmin extends MysqliDatabase
 		}
 		else
 		{
-			$formattedQuery = sprintf("UPDATE %sposts SET Title=?, NiceTitle=?, URI=?, PostData=?, Author=?, Draft=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
-			$query = parent::$this->databaseConnection->prepare($formattedQuery);
-			$query->bind_param('ssssiii', $title, $niceTitle, $uri, $data, $author, $draft, $id);
-			$query->execute();
-			
-			if($query->affected_rows > 0)
+			if($date != null)
 			{
-				$return = true;
-			}
+				$formattedQuery = sprintf("UPDATE %sposts SET Title=?, NiceTitle=?, URI=?, PostData=?, Author=?, Date=?, Draft=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
+				$query = parent::$this->databaseConnection->prepare($formattedQuery);
+				$query->bind_param('ssssisii', $title, $niceTitle, $uri, $data, $author, $date, $draft, $id);
+				$query->execute();
 			
-			$query->close();
+				if($query->affected_rows > 0)
+				{
+					$return = true;
+				}
+			
+				$query->close();
+			}
+			else
+			{
+				$formattedQuery = sprintf("UPDATE %sposts SET Title=?, NiceTitle=?, URI=?, PostData=?, Author=?, Draft=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
+				$query = parent::$this->databaseConnection->prepare($formattedQuery);
+				$query->bind_param('ssssiii', $title, $niceTitle, $uri, $data, $author, $draft, $id);
+				$query->execute();
+			
+				if($query->affected_rows > 0)
+				{
+					$return = true;
+				}
+			
+				$query->close();
+			}
 		}
 		
 		return $return;

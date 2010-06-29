@@ -171,7 +171,7 @@ class FeedstockAdmin
 				
 				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $id);
 				
-				if($this->postManager->getPostByName("updateDate") == 0)
+				if($this->postManager->getPostByName("useCurrentDate") == 0)
 				{
 					$tempPostArray = $this->datebaseAdmin->getPostDataById($id);
 					
@@ -189,15 +189,26 @@ class FeedstockAdmin
 					$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), $id);
 				}
 				
+				
+				if($this->postManager->getPostByName("useCurrentDate") == 1)
+				{
+					$date = date("Y-m-d H:i:s", time());
+				}
+				else
+				{
+					$date = null;
+				}
+				
 				$this->databaseAdmin->addPost(
-				$this->postManager->getPostByName("postTitle"), 
-				$this->postManager->getPostByName("postorpagedata"), 
-				$niceCheckedTitle, 
-				$goodUri, 
-				$this->cookieMonster->getUserID(), 
-				null, 
-				$this->postManager->getPostByName("draft"), 
-				$id);
+					$this->postManager->getPostByName("postTitle"), 
+					$this->postManager->getPostByName("postorpagedata"), 
+					$niceCheckedTitle, 
+					$goodUri, 
+					$this->cookieMonster->getUserID(), 
+					$date, 
+					$this->postManager->getPostByName("draft"), 
+					$id
+				);
 				
 				// only need to unlink updates
 				$this->databaseAdmin->unlinkPostCategoriessAndTags($id);
@@ -214,13 +225,13 @@ class FeedstockAdmin
 				$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))));
 				
 				$this->databaseAdmin->addPost(
-				$this->postManager->getPostByName("postTitle"), 
-				$this->postManager->getPostByName("postorpagedata"), 
-				$niceCheckedTitle, 
-				$goodUri, 
-				$this->cookieMonster->getUserID(), 
-				date("Y-m-d H:i:s", time()), 
-				$this->postManager->getPostByName("draft")
+					$this->postManager->getPostByName("postTitle"), 
+					$this->postManager->getPostByName("postorpagedata"), 
+					$niceCheckedTitle, 
+					$goodUri, 
+					$this->cookieMonster->getUserID(), 
+					date("Y-m-d H:i:s", time()), 
+					$this->postManager->getPostByName("draft")
 				);
 				
 				$id = $this->databaseAdmin->getPostIdNiceCheckedTitle($niceCheckedTitle);

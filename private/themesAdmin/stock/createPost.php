@@ -24,7 +24,10 @@
 				<input name="postTags" type="text" class="textInput" value="<?php echo $this->templateEngine->postTagsId(); ?>"><br>
 				Draft: <br>
 				yes<input name="draft" type="radio" value="1" <?php echo $this->templateEngine->isDraft() == 1 ? "Checked" : ""; ?>>
-				no<input name="draft" type="radio" value="0" <?php echo $this->templateEngine->isDraft() == 0 ? "Checked" : ""; ?>>
+				no<input name="draft" type="radio" value="0" <?php echo $this->templateEngine->isDraft() == 0 ? "Checked" : ""; ?>><br>
+				Use current date: <br>
+				yes<input name="useCurrentDate" type="radio" value="1">
+				no<input name="useCurrentDate" type="radio" value="0" Checked>
 				<input name="type" type="hidden" value="postAdd">
 				<input name="id" type="hidden" value="<?php echo $this->templateEngine->postId(); ?>">
 				<br>
