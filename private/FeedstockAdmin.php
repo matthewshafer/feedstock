@@ -33,7 +33,7 @@ class FeedstockAdmin
 		$this->password = $password;
 		$this->username = $username;
 		$this->database = $database;
-		$this->tablePrefix = $tablePrefix;
+		$this->tablePrefix = $tableprefix;
 		
 		require_once("includes/Router.php");
 		
@@ -173,7 +173,7 @@ class FeedstockAdmin
 				
 				if($this->postManager->getPostByName("useCurrentDate") == 0)
 				{
-					$tempPostArray = $this->datebaseAdmin->getPostDataById($id);
+					$tempPostArray = $this->databaseAdmin->getPostDataById($id);
 					
 					$tempDate = null;
 					
