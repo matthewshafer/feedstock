@@ -24,4 +24,10 @@ foreach($this->templateEngine->getTheData() as $key)
 		<input name="type" type="hidden" value="postsRemove">
 		<input name="submit" type=submit value="Delete" class="button">
 </form>
+
+<?php
+echo $this->templateEngine->havePreviousPostsPageHtml();
+echo " | ";
+echo $this->templateEngine->haveNextPostsPageHtml();
+?>
 <?php require_once("footer.php"); ?>

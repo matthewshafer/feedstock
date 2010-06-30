@@ -296,7 +296,7 @@ class TemplateEngineAdmin
 		{
 			//$tmpArr = $this->db->getPostList($limit, $offset);
 			// this one is from the normal database class.  It get's us things like author
-			$tmpArr = $this->db->getPosts(99999999, $offset, true);
+			$tmpArr = $this->db->getPosts($limit, $offset, true);
 		}
 		else
 		{
@@ -314,6 +314,107 @@ class TemplateEngineAdmin
 		}
 		
 		return $tmpArr;
+	}
+	
+	public function haveNextPage()
+	{
+		return $this->haveNextPage;
+	}
+	
+	public function haveNextPagesPageHtml($title = "Next Page ->")
+	{
+		$return = "";
+		
+		if($this->haveNextPage)
+		{
+			if(!F_ADMINHTACCESS)
+			{
+				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
+				
+				if($pageNumber == 1)
+				{
+					$pageNumber = 2;
+				}
+				
+				$return = sprintf('<a href="%sindex.php/pages/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
+			}
+		}
+		
+		return $return;
+	}
+	
+	public function haveNextPostsPageHtml($title = "Next Page ->")
+	{
+		$return = "";
+		
+		if($this->haveNextPage)
+		{
+			if(!F_ADMINHTACCESS)
+			{
+				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
+				
+				if($pageNumber == 1)
+				{
+					$pageNumber = 2;
+				}
+				
+				$return = sprintf('<a href="%sindex.php/posts/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
+			}
+		}
+		
+		return $return;
+	}
+	
+	public function havePreviousPage()
+	{
+		$return = false;
+		
+		$tempVal = $this->router->getUriPosition($this->router->uriLength());
+		
+		if($this->theData != null && is_int($tempVal) && intval($tempVal) > 1)
+		{
+			$return = true;
+		}
+		
+		return $return;
+	}
+	
+	public function havePreviousPagesPageHtml($title = "<- Previous Page")
+	{
+		$return = "";
+		
+		$tempVal = $this->router->getUriPosition($this->router->uriLength());
+		
+		if($this->theData != null && is_int((int)$tempVal) && intval($tempVal) > 1)
+		{
+			if(!F_ADMINHTACCESS)
+			{
+				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
+				
+				$return = sprintf('<a href="%sindex.php/pages/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
+			}
+		}
+		
+		return $return;
+	}
+	
+	public function havePreviousPostsPageHtml($title = "<- Previous Page")
+	{
+		$return = "";
+		
+		$tempVal = $this->router->getUriPosition($this->router->uriLength());
+		
+		if($this->theData != null && is_int((int)$tempVal) && intval($tempVal) > 1)
+		{
+			if(!F_ADMINHTACCESS)
+			{
+				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
+				
+				$return = sprintf('<a href="%sindex.php/posts/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
+			}
+		}
+		
+		return $return;
 	}
 	
 	/**
@@ -614,15 +715,6 @@ class TemplateEngineAdmin
 		return $return;
 	}
 	
-	public function haveNextPage()
-	{
-	
-	}
-	
-	public function havePreviousPage()
-	{
-	
-	}
 	
 	public function snippetTitleId()
 	{
