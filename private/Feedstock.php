@@ -17,7 +17,7 @@ class Feedstock
 	private $outputHelper = null;
 	private $templateLoader = null;
 	private $router = null;
-	private $db = null;
+	private $database = null;
 	private $cacheHandler = null;
 	
 	/**
@@ -42,6 +42,11 @@ class Feedstock
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();
 		
+		$this->handleRequest();
+	}
+	
+	private function handleRequest()
+	{
 		if($this->router->requestMethod() == "GET")
 		{
 			if($this->maintenanceMode())
@@ -91,7 +96,7 @@ class Feedstock
 					{
 						echo "<br><br><br>";
 					//print_r($this->db->debugQueries);
-						foreach($this->db->debugQueries as $key)
+						foreach($this->database->debugQueries as $key)
 						{
 							echo $key . "<br>";
 						}
@@ -113,9 +118,9 @@ class Feedstock
 	{
 		//require_once("includes/" . V_DATABASE . ".php");
 		//$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
-		$this->db = $this->databaseMaker();
+		$this->database = $this->databaseMaker();
 		
-		if($this->db->haveConnectionError() == null)
+		if($this->database->haveConnectionError() == null)
 		{		
 			//if($this->router->pageType() == "feed")
 			//{
@@ -126,23 +131,23 @@ class Feedstock
 			if($this->router->pageType() == "file")
 			{
 				require_once("includes/FileServe.php");
-				$fileServe = new FileServe($this->db, $this->router);
+				$fileServe = new FileServe($this->database, $this->router);
 				$data = $fileServe->render();
 			}
 			else
 			{
 				require_once("includes/TemplateEngine.php");
-				$this->templateEngine = new TemplateEngine($this->db, $this->router);
+				$this->templateEngine = new TemplateEngine($this->database, $this->router);
 				require_once("includes/TemplateLoader.php");
 				$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
 				$data = $this->templateLoader->render();
 			}
 			
-			$this->db->closeConnection();
+			$this->database->closeConnection();
 		}
 		else
 		{
-			$data = $this->db->haveConnError();
+			$data = $this->database->haveConnError();
 		}
 		return $data;
 	}

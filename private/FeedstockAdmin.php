@@ -69,6 +69,11 @@ class FeedstockAdmin
 			$this->sitemap = new SitemapCreator($this->databaseAdmin);
 		}
 		
+		$this->handleRequest();
+	}
+	
+	private function handleRequest()
+	{
 		if($this->postManager->getPostType() == "login")
 		{
 			// check the login info and then set the cookie

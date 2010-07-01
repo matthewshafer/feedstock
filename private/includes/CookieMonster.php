@@ -7,16 +7,16 @@
  */
 class CookieMonster
 {
-	protected $db = null;
+	protected $database = null;
 	protected $userID = null;
 	/**
 	* Constructor which grabs the client cookie and stores what it has locally
 	* 
 	* @param database that was created, this is used to invalidate the info from the database
 	*/
-	public function __construct($db)
+	public function __construct($database)
 	{
-		$this->db = $db;
+		$this->database = $database;
 	}
 	
 	/**
@@ -41,7 +41,7 @@ class CookieMonster
 		//echo $val;
 		// we need to write the value to the DB so we can do checking later
 		// i should probably create this function
-		$this->db->updateCookieVal($userID, $val);
+		$this->database->updateCookieVal($userID, $val);
 		
 		// ok time to make the cookie
 		setcookie(F_COOKIENAME, $val, 0);
@@ -57,7 +57,7 @@ class CookieMonster
 	public function removeCookie($userID)
 	{
 		// remove the cookie from the db
-		$this->db->updateCookieVal($userID);
+		$this->database->updateCookieVal($userID);
 		
 		unset($_COOKIE[F_COOKIENAME]);
 	}
@@ -75,7 +75,7 @@ class CookieMonster
 		if($this->userID == null and isset($_COOKIE[F_COOKIENAME]))
 		{
 			//print_r($_COOKIE);
-			$this->userID = $this->db->findCookie($_COOKIE[F_COOKIENAME]);
+			$this->userID = $this->database->findCookie($_COOKIE[F_COOKIENAME]);
 		}
 		
 		if($this->userID != null)

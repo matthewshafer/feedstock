@@ -79,7 +79,7 @@
  	 * @param mixed $ip
  	 * @return Boolean. True if the IP is a match, false if not a match
  	 */
- 	public function checkIP($ip)
+ 	public function checkIP($ipToCheck)
  	{
  		$return = false;
  		
@@ -92,7 +92,7 @@
  			$this->getIPFromCustomHeader();
  		}
  		
- 		if($ip == $this->ipAddress)
+ 		if($ipToCheck == $this->ipAddress)
  		{
  			$return = true;
  		}
