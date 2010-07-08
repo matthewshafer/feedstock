@@ -10,8 +10,8 @@ class Feedstock
 	private $username = null;
 	private $password = null;
 	private $address = null;
-	private $database = null;
-	private $tableprefix = null;
+	private $databaseName = null;
+	private $tablePrefix = null;
 	private $cacher = null;
 	private $templateEngine = null;
 	private $outputHelper = null;
@@ -33,8 +33,8 @@ class Feedstock
 		$this->address = $address;
 		$this->password = $password;
 		$this->username = $username;
-		$this->database = $database;
-		$this->tableprefix = $tableprefix;
+		$this->databaseName = $database;
+		$this->tablePrefix = $tableprefix;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -169,15 +169,15 @@ class Feedstock
 			case "mysqli":
 				if(V_CACHE && $this->cacheHandler->cacheType() == "dynamic")
 				{
-					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix, $this->cacheHandler->cacheMaker());
+					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $this->cacheHandler->cacheMaker());
 				}
 				else
 				{
-					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix);
 				}
 			break;
 			case "mysql":
-				$return = new MysqlDatabase($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
+				$return = new MysqlDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix);
 			break;
 		}
 		

@@ -82,6 +82,6 @@ ini_set('display_errors',1);
 error_reporting(E_ALL);
 
 // Mysql debugging stuff
-define("F_MYSQLSTOREQUERIES", false);
+define("F_MYSQLSTOREQUERIES", true);
 
 ?>
