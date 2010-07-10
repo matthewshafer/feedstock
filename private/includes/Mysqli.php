@@ -279,6 +279,91 @@ class MysqliDatabase
 	 * @param mixed $type
 	 * @return void
 	 */
+	 public function getPostCategoryOrTag($idArray, $type)
+	 {
+	 	$arrayWithCatsAndTags = array();
+	 	static $categoryArray = array();
+	 	static $tagArray = array();
+	 	static $hasRunQuery = false;
+	 	$catsTagsArrayLength = 0;
+	 	$return = array();
+	 	
+	 	
+	 	if(!$hasRunQuery)
+	 	{
+	 		$queryString = implode(", ", $idArray);
+	 		
+	 		$query = sprintf("SELECT Name, URIName, Type, SubCat, PostID FROM %sposts_tax LEFT JOIN %scatstags ON PrimaryKey = CatTagID WHERE PostID IN (%s) AND PrimaryKey IS NOT NULL ORDER BY PostID DESC", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString));
+	 		
+	 		if(F_MYSQLSTOREQUERIES)
+			{
+				array_push($this->debugQueries, $query);
+			}
+			$this->queries++;
+			
+	 		
+	 		if($this->haveCacher && $this->cacher->checkExists($query))
+	 		{
+	 			$arrayWithCatsAndTags = $this->cacher->getCachedData();
+	 		}
+	 		else if($result = $this->databaseConnection->query($query))
+	 		{
+	 			
+	 			while($row = $result->fetch_assoc())
+	 			{
+	 				array_push($arrayWithCatsAndTags, $row);
+	 			}
+	 			
+	 			if($this->haveCacher)
+	 			{
+	 				$this->cacher->writeCachedFile($query, $arrayWithCatsAndTags);
+	 			}
+	 		}
+	 		
+	 		$catsTagsArrayLength = count($arrayWithCatsAndTags);
+	 		
+	 		for($i = 0; $i < $catsTagsArrayLength; $i++)
+	 		{
+	 			if($arrayWithCatsAndTags[$i]["Type"] == 1)
+	 			{
+	 				// tag
+	 				
+	 				if(!isset($tagArray[$arrayWithCatsAndTags[$i]["PostID"]]))
+	 				{
+	 					$tagArray[$arrayWithCatsAndTags[$i]["PostID"]] = array();
+	 				}
+	 				
+	 				array_push($tagArray[$arrayWithCatsAndTags[$i]["PostID"]], $arrayWithCatsAndTags[$i]);
+	 			}
+	 			else
+	 			{
+	 				// category
+	 				if(!isset($categoryArray[$arrayWithCatsAndTags[$i]["PostID"]]))
+	 				{
+	 					$categoryArray[$arrayWithCatsAndTags[$i]["PostID"]] = array();
+	 				}
+	 				
+	 				array_push($categoryArray[$arrayWithCatsAndTags[$i]["PostID"]], $arrayWithCatsAndTags[$i]);
+	 			}
+	 		}
+	 		
+	 		$hasRunQuery = true;
+	 		
+	 	}
+	 	
+	 	if($type == 1)
+	 	{
+	 		$return = $tagArray;
+	 	}
+	 	else
+	 	{
+	 		$return = $categoryArray;
+	 	}
+	 	
+	 	return $return;
+	 }
+	 
+	 /*
 	public function getPostCategoryOrTag($idArray, $type)
 	{
 		$idCount = null;
@@ -436,6 +521,8 @@ class MysqliDatabase
 		
 		return $return;
 	}
+	
+	*/
 	
 	/**
 	 * getPostsInCategoryOrTag function.

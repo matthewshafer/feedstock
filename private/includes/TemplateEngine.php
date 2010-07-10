@@ -701,7 +701,6 @@ class TemplateEngine
 				{
 					$tmp .= 'index.php/';
 				}
-			
 				$tmp .= 'category/' .  $this->generateSubCategoryUri($key);
 			
 				$return .= sprintf('<a href="%s">%s</a>, ', $tmp, $key["Name"]);
