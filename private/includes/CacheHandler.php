@@ -39,7 +39,6 @@ class CacheHandler
 				$cacher = new XcacheDynamic();
 			break;
 		}
-		
 		return $cacher;
 	}
 	
@@ -89,7 +88,7 @@ class CacheHandler
 		
 		switch(F_CACHENAME)
 		{
-			case "xcacheDynamic":
+			case "XcacheDynamic":
 				$return = "dynamic";
 			break;
 		}

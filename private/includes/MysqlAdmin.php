@@ -22,7 +22,7 @@ class MysqlDatabaseAdmin extends MysqlDatabase
 	 */
 	public function __construct($username, $password, $serverAddress, $dbname, $tablePrefix)
 	{
-		parent::__construct($username, $password, $serverAddress, $dbname, $tablePrefix);
+		parent::__construct($username, $password, $serverAddress, $dbname, $tablePrefix, null, false);
 	}
 	
 	/**

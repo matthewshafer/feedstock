@@ -7,6 +7,10 @@
  */
 class MysqliDatabase
 {
+	private $username = null;
+	private $password = null;
+	private $serverAddress = null;
+	private $databaseName = null;
 	protected $databaseConnection = null;
 	protected $tablePrefix = null;
 	protected $connectionError = null;
@@ -28,9 +32,18 @@ class MysqliDatabase
 	 * @param mixed $tablePrefix
 	 * @return void
 	 */
-	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null)
+	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null, $lazy = true)
 	{
-		$this->databaseConnection = new mysqli($serverAddress, $username, $password, $databaseName);
+		$this->username = $username;
+		$this->password = $password;
+		$this->serverAddress = $serverAddress;
+		$this->databaseName = $databaseName;
+		$this->tablePrefix = $tablePrefix;
+		
+		if(!$lazy)
+		{
+			$this->lazyConnect();
+		}
 		
 		/*
 		// Note that php 5.2.9 or 5.3.0 is needed for this to work or else it won't tell us when there is a failure
@@ -51,16 +64,22 @@ class MysqliDatabase
 		{
 			$this->haveCacher = true;
 		}
+	}
+	
+	private function lazyConnect()
+	{
+		$return = true;
 		
+		if(!is_resource($this->databaseConnection))
+		{
+			if(!$this->databaseConnection = new mysqli($this->serverAddress, $this->username, $this->password, $this->databaseName))
+			{
+				trigger_error(sprintf("Cannot connect to server: %s", mysql_error()), E_USER_ERROR);
+				$return = false;
+			}
+		}
 		
-		if(mysqli_connect_error())
-		{
-			$this->connectionError = 'Unable to connect to the Database Server';
-		}
-		else
-		{
-			$this->tablePrefix = $this->databaseConnection->real_escape_string($tablePrefix);
-		}
+		return $return;
 	}
 	
 	/**
@@ -109,12 +128,13 @@ class MysqliDatabase
 		if(!$draft)
 		{
 			//$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
+			$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE Draft='0' ORDER BY Date DESC LIMIT %s OFFSET %s";
+			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $limit, $offset);
 			
-			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE Draft='0' ORDER BY Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
-				array_push($this->debugQueries, $query);
+				array_push($this->debugQueries, $nonEscapedQuery);
 			}
 			
 			$this->queries++;
@@ -123,43 +143,53 @@ class MysqliDatabase
 		{
 			//$query = sprintf("SELECT * FROM %sposts order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 			
-			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author  ORDER BY Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
+			$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author  ORDER BY Date DESC LIMIT %s OFFSET %s";
+			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $limit, $offset);
 			$this->queries++;
 		}
 		
 		
-		if($this->haveCacher && $this->cacher->checkExists(sprintf("%s%d", $query, 1)) && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists(sprintf("%s%d", $nonEscapedQuery, 1)) && $this->cacher->checkExists($nonEscapedQuery))
 		{
 			$return = $this->cacher->getCachedData();
 			$this->haveNextPage = $this->cacher->getCachedData();
 		}
-		else if($result = $this->databaseConnection->query($query))
+		else if($this->lazyConnect())
 		{
-			$tempArray = array();
+		
+			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 			
-			while($row = $result->fetch_assoc())
-			{
-				if($row["Author"] == null)
+
+			
+			if($result = $this->databaseConnection->query($escapedQuery))
+			{		
+				$tempArray = array();
+			
+				while($row = $result->fetch_assoc())
 				{
+					if($row["Author"] == null)
+					{
 					$row["Author"] = "Unknown";
+					}
+					array_push($tempArray, $row);
 				}
-				array_push($tempArray, $row);
-			}
-			$result->close();
+				$result->close();
 			
-			if(count($tempArray) == ($limit))
-			{
-				$this->haveNextPage = true;
-				array_pop($tempArray);
-			}
-			//print_r($tempAuthors);
-			$return = $tempArray;
+				if(count($tempArray) == ($limit))
+				{
+					$this->haveNextPage = true;
+					array_pop($tempArray);
+				}
+				//print_r($tempAuthors);
+				$return = $tempArray;
 			
-			if($this->haveCacher)
-			{
-				//echo "here";
-				$this->cacher->writeCachedFile(sprintf("%s%d", $query, 1), $this->haveNextPage);
-				$this->cacher->writeCachedFile($query, $return);
+			
+				if($this->haveCacher)
+				{
+					//echo "here";
+					$this->cacher->writeCachedFile(sprintf("%s%d", $nonEscapedQuery, 1), $this->haveNextPage);
+					$this->cacher->writeCachedFile($nonEscapedQuery, $return);
+				}
 			}
 		}
 		
@@ -181,36 +211,43 @@ class MysqliDatabase
 		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
+			$stockQuery = "SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'";
+			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $uri);
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
-				array_push($this->debugQueries, $query);
+				array_push($this->debugQueries, $nonEscapedQuery);
 			}
 			
 			$this->queries++;
 		}
 		else
 		{
-			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s'", $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
+			$stockQuery = "SELECT * FROM %spages WHERE URI='/%s'";
+			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $uri);
 		}
-		if($this->haveCacher && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists($nonEscapedQuery))
 		{
 			$return = $this->cacher->getCachedData();
 		}
-		else if($result = $this->databaseConnection->query($query))
+		else if($this->lazyConnect())
 		{
-			$tmp = $result->fetch_assoc();
-			if(!empty($tmp))
-			{
-				array_push($return, $tmp);
-			}
+			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
 			
-			if($this->haveCacher)
+			if($result = $this->databaseConnection->query($escapedQuery))
 			{
-				$this->cacher->writeCachedFile($query, $return);
+				$tmp = $result->fetch_assoc();
+				if(!empty($tmp))
+				{
+					array_push($return, $tmp);
+				}
+			
+				if($this->haveCacher)
+				{
+					$this->cacher->writeCachedFile($nonEscapedQuery, $return);
+				}
+				$result->close();
 			}
-			$result->close();
 		}
 		
 		return $return;
@@ -230,41 +267,48 @@ class MysqliDatabase
 		
 		if(!$draft)
 		{
-			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
+			$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE URI='/%s' AND Draft='0'";
+			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $uri);
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
-				array_push($this->debugQueries, $query);
+				array_push($this->debugQueries, $nonEscapedQuery);
 			}
 			$this->queries++;
 		}
 		else
 		{
-			$query = sprintf("SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE URI='/%s'", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
+			$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE URI='/%s'";
+			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $uri);
 		}
 		
-		if($this->haveCacher && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists($nonEscapedQuery))
 		{
 			$tempArray = $this->cacher->getCachedData();
 			
 		}
-		else if($result = $this->databaseConnection->query($query))
+		else if($this->lazyConnect())
 		{
-			$row = $result->fetch_assoc();
+			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($uri));
 			
-			if($row["Author"] == null)
+			if($result = $this->databaseConnection->query($escapedQuery))
 			{
-				$row["Author"] = "Unknown";
-			}
+				$row = $result->fetch_assoc();
 			
-			array_push($tempArray, $row);
+				if($row["Author"] == null)
+				{
+					$row["Author"] = "Unknown";
+				}
 			
-			$result->close();
+				array_push($tempArray, $row);
+			
+				$result->close();
 			
 			
-			if($this->haveCacher)
-			{
-				$this->cacher->writeCachedFile($query, $tempArray);
+				if($this->haveCacher)
+				{
+					$this->cacher->writeCachedFile($nonEscapedQuery, $tempArray);
+				}
 			}
 		}
 		
@@ -293,30 +337,38 @@ class MysqliDatabase
 	 	{
 	 		$queryString = implode(", ", $idArray);
 	 		
-	 		$query = sprintf("SELECT Name, URIName, Type, SubCat, PostID FROM %sposts_tax LEFT JOIN %scatstags ON PrimaryKey = CatTagID WHERE PostID IN (%s) AND PrimaryKey IS NOT NULL ORDER BY PostID DESC", $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString));
+	 		$stockQuery = "SELECT Name, URIName, Type, SubCat, PostID FROM %sposts_tax LEFT JOIN %scatstags ON PrimaryKey = CatTagID WHERE PostID IN (%s) AND PrimaryKey IS NOT NULL ORDER BY PostID DESC";
+	 		$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $queryString);
+	 		
+	 		
 	 		
 	 		if(F_MYSQLSTOREQUERIES)
 			{
-				array_push($this->debugQueries, $query);
+				array_push($this->debugQueries, $nonEscapedQuery);
 			}
 			$this->queries++;
 			
 	 		
-	 		if($this->haveCacher && $this->cacher->checkExists($query))
+	 		if($this->haveCacher && $this->cacher->checkExists($nonEscapedQuery))
 	 		{
 	 			$arrayWithCatsAndTags = $this->cacher->getCachedData();
 	 		}
-	 		else if($result = $this->databaseConnection->query($query))
+	 		else if($this->lazyConnect())
 	 		{
+	 			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString));
 	 			
-	 			while($row = $result->fetch_assoc())
+	 			if($result = $this->databaseConnection->query($escapedQuery))
 	 			{
-	 				array_push($arrayWithCatsAndTags, $row);
-	 			}
 	 			
-	 			if($this->haveCacher)
-	 			{
-	 				$this->cacher->writeCachedFile($query, $arrayWithCatsAndTags);
+	 				while($row = $result->fetch_assoc())
+	 				{
+	 					array_push($arrayWithCatsAndTags, $row);
+	 				}
+	 			
+	 				if($this->haveCacher)
+	 				{
+	 					$this->cacher->writeCachedFile($nonEscapedQuery, $arrayWithCatsAndTags);
+	 				}
 	 			}
 	 		}
 	 		
@@ -540,7 +592,8 @@ class MysqliDatabase
 		$limit = $limit + 1;
 		
 		// checking for valid categories or tags is done before we get here and we store that in a value so there is no need to check it again. thats why we use $this->checkedCategoryOrTag["PrimaryKey"]
-		$query = sprintf("SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'", $this->tablePrefix, $this->databaseConnection->real_escape_string($this->checkedCategoryOrTag["PrimaryKey"]));
+		$stockQuery = "SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'";
+		$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->checkedCategoryOrTag["PrimaryKey"]);
 		
 		if(F_MYSQLSTOREQUERIES)
 		{
@@ -552,39 +605,58 @@ class MysqliDatabase
 		$tempArray = array();
 		
 		
-		if($this->haveCacher && $this->cacher->checkExists(sprintf("%s%d", $query, 1)) && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists($nonEscapedQuery))
 		{
 			$queryString = $this->cacher->getCachedData();
-			$this->haveNextPage = $this->cacher->getCachedData();
 		}
-		else if($result = $this->databaseConnection->query($query))
+		else if($this->lazyConnect())
 		{
+			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->databaseConnection->real_escape_string($this->checkedCategoryOrTag["PrimaryKey"]));
+			
+			if($result = $this->databaseConnection->query($escapedQuery))
+			{
+			
 			while($row = $result->fetch_assoc())
 			{
 				array_push($tempArray, $row["PostID"]);
 			}
 			
-			$result->close();
+				$result->close();
 			
-			$queryString = implode(", ", $tempArray);
+				$queryString = implode(", ", $tempArray);
 			
-			if($this->haveCacher)
-			{
-				//echo $query;
-				$this->cacher->writeCachedFile($query, $queryString);
+				if($this->haveCacher)
+				{
+					//echo $query;
+					$this->cacher->writeCachedFile($nonEscapedQuery, $queryString);
+				}
 			}
 		}
 		
-		
+		// this query needs rewriting
+		//
+		//
+		//
+		//
+		// so it doesnt use generate authors
+		//
+		//
+		//
+		//
+		//
+		//
+		// so rewrite me
 		if($queryString != null)
 		{
 			if(!$draft)
 			{
-				$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s) ORDER BY Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString), $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
+				$stockQuery = "SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s) ORDER BY Date DESC LIMIT %s OFFSET %s";
+				$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $queryString, $limit, $offset);
 			}
 			else
 			{
-				$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey IN (%s)", $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString));
+				$stockQuery = "SELECT * FROM %sposts WHERE PrimaryKey IN (%s) ORDER BY Date DESC LIMIT %s OFFSET %s";
+				$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $queryString, $limit, $offset);
 			}
 			
 			if(F_MYSQLSTOREQUERIES)
@@ -594,39 +666,45 @@ class MysqliDatabase
 	
 			$this->queries++;
 			
-			if($this->haveCacher && $this->cacher->checkExists($query))
+			if($this->haveCacher && $this->cacher->checkExists($query) && $this->cacher->checkExists(sprintf("%s%d", $nonEscapedQuery, 1)))
 			{
 				$return = $this->cacher->getCachedData();
+				$this->haveNextPage = $this->cacher->getCachedData();
 				//echo "\nhere\n";
 			}
-			else if($result = $this->databaseConnection->query($query))
+			else if($this->lazyConnect())
 			{
+				$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString), $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 				$tempAuthor = array();
-				while($row = $result->fetch_assoc())
+				
+				if($result = $this->databaseConnection->query($escapedQuery))
 				{
-					if(!isset($tempAuthor[$row["Author"]]))
+					while($row = $result->fetch_assoc())
 					{
-						$tempAuthor[$row["Author"]] = $row["Author"];
-					}
+						if(!isset($tempAuthor[$row["Author"]]))
+						{
+							$tempAuthor[$row["Author"]] = $row["Author"];
+						}
 					
-					array_push($return, $row);
-				}
-				$result->close();
-				
-				$return = $this->generateAuthors($return, $tempAuthor);
-				
-				$returnCout = count($return);
-				if($returnCout == $limit)
-				{
-					$this->haveNextPage = true;
-					array_pop($return);
-				}
-				unset($tempAuthor);
-				
-				if($this->haveCacher)
-				{
-					$this->cacher->writeCachedFile($query, $return);
-					$this->cacher->writeCachedFile(sprintf("%s%d", $query, 1), $this->haveNextPage);
+						array_push($return, $row);
+					}
+					$result->close();
+					
+					$return = $this->generateAuthors($return, $tempAuthor);
+					
+					$returnCout = count($return);
+					if($returnCout == $limit)
+					{
+						$this->haveNextPage = true;
+						array_pop($return);
+					}
+					unset($tempAuthor);
+					
+					if($this->haveCacher)
+					{
+						$this->cacher->writeCachedFile($nonEscapedQuery, $return);
+						$this->cacher->writeCachedFile(sprintf("%s%d", $nonEscapedQuery, 1), $this->haveNextPage);
+					}
 				}
 			}
 		}
@@ -649,8 +727,8 @@ class MysqliDatabase
 	public function checkCategoryOrTagName($name, $type)
 	{
 		$return = false;
-		
-		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, $this->databaseConnection->real_escape_string($name), $this->databaseConnection->real_escape_string($type));
+		$stockQuery = "SELECT * FROM %scatstags WHERE URIName='%s' AND Type='%s'";
+		$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $name, $type);
 		
 		if(F_MYSQLSTOREQUERIES)
 		{
@@ -659,7 +737,7 @@ class MysqliDatabase
 			
 		$this->queries++;
 		
-		if($this->haveCacher && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists($nonEscapedQuery))
 		{
 			$temp = $this->cacher->getCachedData();
 			
@@ -670,20 +748,25 @@ class MysqliDatabase
 			}
 			//$this->checkedCategoryOrTag = $this->cacher->getCachedData();
 		}
-		else if($result = $this->databaseConnection->query($query))
+		else if($this->lazyConnect())
 		{
-			if($row = $result->fetch_assoc())
+			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->databaseConnection->real_escape_string($name), $this->databaseConnection->real_escape_string($type));
+			
+			if($result = $this->databaseConnection->query($escapedQuery))
 			{
-				$return = true;
+				if($row = $result->fetch_assoc())
+				{
+					$return = true;
 				
-				$this->checkedCategoryOrTag = $row;
-			}
-			
-			$result->close();
-			
-			if($this->haveCacher)
-			{
-				$this->cacher->writeCachedFile($query, $this->checkedCategoryOrTag);
+					$this->checkedCategoryOrTag = $row;
+				}
+				
+				$result->close();
+				
+				if($this->haveCacher)
+				{
+					$this->cacher->writeCachedFile($nonEscapedQuery, $this->checkedCategoryOrTag);
+				}
 			}
 		}
 		
@@ -701,24 +784,30 @@ class MysqliDatabase
 	{
 		$return = array();
 		// can be rewritten possibly to use prepared statements
-		$query = sprintf("SELECT * FROM %scatstags WHERE Type='%s'", $this->tablePrefix, $this->databaseConnection->real_escape_string($type));
+		$stockQuery = "SELECT * FROM %scatstags WHERE Type='%s'";
+		$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $type);
 		
-		if($this->haveCacher && $this->cacher->checkExists($query))
+		if($this->haveCacher && $this->cacher->checkExists($nonEscapedQuery))
 		{
 			$return = $this->cacher->getCachedData();
 		}
-		else if($result = $this->databaseConnection->query($query))
+		else if($this->lazyConnect())
 		{
-			while($row = $result->fetch_assoc())
-			{
-				array_push($return, $row);
-			}
+			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->databaseConnection->real_escape_string($type));
 			
-			$result->close();
-			
-			if($this->haveCacher)
+			if($result = $this->databaseConnection->query($escapedQuery))
 			{
-				$this->cacher->writeCachedFile($query, $return);
+				while($row = $result->fetch_assoc())
+				{
+					array_push($return, $row);
+				}
+				
+				$result->close();
+				
+				if($this->haveCacher)
+				{
+					$this->cacher->writeCachedFile($nonEscapedQuery, $return);
+				}
 			}
 		}
 		
@@ -754,7 +843,7 @@ class MysqliDatabase
 		{
 			$return = $this->cacher->getCachedData();
 		}
-		else
+		else if($this->lazyConnect())
 		{
 			$query = $this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('s', $name);
@@ -800,7 +889,7 @@ class MysqliDatabase
 		{
 			$return = $this->cacher->getCachedData();
 		}
-		else
+		else if($this->lazyConnect())
 		{
 			$query = $this->databaseConnection->prepare($formattedQuery);
 			$query->bind_param('s', $name);

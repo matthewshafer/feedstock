@@ -59,6 +59,7 @@ class Feedstock
 			{
 				require_once("includes/CacheHandler.php");
 				$this->cacheHandler = new CacheHandler($this->router);
+				
 			
 				if(V_CACHE && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
 				{
