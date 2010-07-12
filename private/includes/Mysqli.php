@@ -415,166 +415,6 @@ class MysqliDatabase
 	 	return $return;
 	 }
 	 
-	 /*
-	public function getPostCategoryOrTag($idArray, $type)
-	{
-		$idCount = null;
-		static $arrayWithPostTax = null;
-		static $queryString = null;
-		$return = array();
-		
-		if($arrayWithPostTax == null)
-		{
-			$tempArray = array();
-			$arrayWithPostTax = array();
-			$query = null;
-		
-			if($idCount == null)
-			{
-				$idCount = count($idArray);
-			}
-		
-			for($i = 0; $i < $idCount; $i++)
-			{
-				$query .= sprintf("SELECT * FROM %sposts_tax WHERE PostID='%s';", $this->tablePrefix, $this->databaseConnection->real_escape_string($idArray[$i]));
-			}
-			
-			if(F_MYSQLSTOREQUERIES)
-			{
-				array_push($this->debugQueries, $query);
-			}
-			//echo $query;
-			$this->queries++;
-			
-			$query1 = sprintf("%s%d", $query, 1);
-			$query2 = sprintf("%s%d", $query, 2);
-			
-			if($this->haveCacher && $this->cacher->checkExists($query1) && $this->cacher->checkExists($query2))
-			{
-				//echo "cat or tag";
-				if($queryString == null)
-				{
-					$queryString = $this->cacher->getCachedData();
-				}
-				$arrayWithPostTax = $this->cacher->getCachedData();
-			}
-			else if($this->databaseConnection->multi_query($query))
-			{
-				do
-				{
-					if($result = $this->databaseConnection->store_result())
-					{
-						while($row = $result->fetch_assoc())
-						{
-							if(isset($arrayWithPostTax[$row["PostID"]]))
-							{
-								array_push($arrayWithPostTax[$row["PostID"]], $row["CatTagID"]);
-								
-								if(!isset($tempArray[$row["CatTagID"]]))
-								{
-									$tempArray[$row["CatTagID"]] = $row["CatTagID"];
-								}
-							}
-							else
-							{
-								$arrayWithPostTax[$row["PostID"]] = array();
-								array_push($arrayWithPostTax[$row["PostID"]], $row["CatTagID"]);
-								
-								if(!isset($tempArray[$row["CatTagID"]]))
-								{
-									$tempArray[$row["CatTagID"]] = $row["CatTagID"];
-								}
-							}
-						}
-						$result->close();
-					}
-				} while($this->databaseConnection->next_result());
-				
-				$queryString = implode(", ", $tempArray);
-				unset($tempArray);
-				
-				
-				if($this->haveCacher)
-				{	
-					//echo "write me";
-					$this->cacher->writeCachedFile($query2, $queryString);
-					$this->cacher->writeCachedFile($query1, $arrayWithPostTax);
-				}
-			}
-			
-			
-		}
-		
-		if($queryString != null)
-		{
-			$categoryTagResultArray = array();
-			$taxArray = $arrayWithPostTax;
-			
-			if($type == 'tag')
-			{
-				$query = sprintf("SELECT * FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString));
-				
-				if(F_MYSQLSTOREQUERIES)
-				{
-					array_push($this->debugQueries, $query);
-				}
-			
-				$this->queries++;
-			}
-			else
-			{
-				$query = sprintf("SELECT * FROM %scatstags WHERE Type='0' AND PrimaryKey IN (%s)", $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString));
-				
-				if(F_MYSQLSTOREQUERIES)
-				{
-					array_push($this->debugQueries, $query);
-				}
-			
-				$this->queries++;
-			}
-			
-			if($this->haveCacher && $this->cacher->checkExists($query))
-			{
-				$return = $this->cacher->getCachedData();
-			}
-			else if($result = $this->databaseConnection->query($query))
-			{
-				while($row = $result->fetch_assoc())
-				{
-					$categoryTagResultArray[$row["PrimaryKey"]] = $row;
-				}
-						
-				$result->close();
-			
-			
-				while($temp = each($taxArray))
-				{
-					$temp2 = array();
-					
-					while($temp3 = each($temp["value"]))
-					{
-						if(isset($categoryTagResultArray[$temp3["value"]]))
-						{
-							$temp2[$temp3["key"]] = $categoryTagResultArray[$temp3["value"]];
-						}
-					}
-					
-					$return[$temp["key"]] = $temp2;
-				}
-				
-				unset($categoryTagResultArray);
-				
-				if($this->haveCacher)
-				{
-					$this->cacher->writeCachedFile($query, $return);
-				}
-			}
-		}
-		
-		return $return;
-	}
-	
-	*/
 	
 	/**
 	 * getPostsInCategoryOrTag function.
@@ -597,7 +437,7 @@ class MysqliDatabase
 		
 		if(F_MYSQLSTOREQUERIES)
 		{
-			array_push($this->debugQueries, $query);
+			array_push($this->debugQueries, $nonEscapedQuery);
 		}
 			
 		$this->queries++;
@@ -633,35 +473,23 @@ class MysqliDatabase
 			}
 		}
 		
-		// this query needs rewriting
-		//
-		//
-		//
-		//
-		// so it doesnt use generate authors
-		//
-		//
-		//
-		//
-		//
-		//
-		// so rewrite me
+		
 		if($queryString != null)
 		{
 			if(!$draft)
 			{
-				$stockQuery = "SELECT * FROM %sposts WHERE Draft='0' AND PrimaryKey IN (%s) ORDER BY Date DESC LIMIT %s OFFSET %s";
-				$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $queryString, $limit, $offset);
+				$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE PrimaryKey IN (%s) AND Draft='0' ORDER BY Date DESC LIMIT %s OFFSET %s";
+				$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $queryString, $limit, $offset);
 			}
 			else
 			{
-				$stockQuery = "SELECT * FROM %sposts WHERE PrimaryKey IN (%s) ORDER BY Date DESC LIMIT %s OFFSET %s";
-				$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $queryString, $limit, $offset);
+				$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE PrimaryKey IN (%s) ORDER BY Date DESC LIMIT %s OFFSET %s";
+				$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $queryString, $limit, $offset);
 			}
 			
 			if(F_MYSQLSTOREQUERIES)
 			{
-				array_push($this->debugQueries, $query);
+				array_push($this->debugQueries, $nonEscapedQuery);
 			}
 	
 			$this->queries++;
@@ -674,23 +502,21 @@ class MysqliDatabase
 			}
 			else if($this->lazyConnect())
 			{
-				$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString), $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
-				$tempAuthor = array();
+				$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString), $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 				
 				if($result = $this->databaseConnection->query($escapedQuery))
 				{
 					while($row = $result->fetch_assoc())
 					{
-						if(!isset($tempAuthor[$row["Author"]]))
+						if($row["Author"] == null)
 						{
-							$tempAuthor[$row["Author"]] = $row["Author"];
+							$row["Author"] = "Unknown";
 						}
 					
 						array_push($return, $row);
 					}
 					$result->close();
 					
-					$return = $this->generateAuthors($return, $tempAuthor);
 					
 					$returnCout = count($return);
 					if($returnCout == $limit)
@@ -698,7 +524,6 @@ class MysqliDatabase
 						$this->haveNextPage = true;
 						array_pop($return);
 					}
-					unset($tempAuthor);
 					
 					if($this->haveCacher)
 					{
@@ -708,6 +533,7 @@ class MysqliDatabase
 				}
 			}
 		}
+		
 		return $return;
 	}
 	
@@ -732,7 +558,7 @@ class MysqliDatabase
 		
 		if(F_MYSQLSTOREQUERIES)
 		{
-			array_push($this->debugQueries, $query);
+			array_push($this->debugQueries, $nonEscapedQuery);
 		}
 			
 		$this->queries++;
