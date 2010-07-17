@@ -494,7 +494,7 @@ class MysqliDatabase
 	
 			$this->queries++;
 			
-			if($this->haveCacher && $this->cacher->checkExists($query) && $this->cacher->checkExists(sprintf("%s%d", $nonEscapedQuery, 1)))
+			if($this->haveCacher && $this->cacher->checkExists($nonEscapedQuery) && $this->cacher->checkExists(sprintf("%s%d", $nonEscapedQuery, 1)))
 			{
 				$return = $this->cacher->getCachedData();
 				$this->haveNextPage = $this->cacher->getCachedData();

@@ -118,6 +118,7 @@ class SitemapCreator
 	
 	private function writeSiteindex()
 	{
+		// this line needs to be fixed before this is finished
 		$fileLoc = sprintf("%s%s", $this->sitemapLoc, $name);
 		
 		$data = $this->siteindexTemplate->generateSiteindex($this->totalSitemaps);

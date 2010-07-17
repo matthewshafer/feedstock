@@ -109,11 +109,11 @@
  	 */
  	private function validIP()
  	{
- 		$ipArr = explode(".", $this->ipAddress);
+ 		$ipArray = explode(".", $this->ipAddress);
  		$return = false;
  		$keepSearching = true;
- 		$ct = count($ipArr);
- 		$ipFilterArr = array(
+ 		$ipArrayCount = count($ipArray);
+ 		$ipFilterArray = array(
  			array("0.0.0.0", "0.255.255.255"),
  			array("10.0.0.0", "10.255.255.255"),
  			array("127.0.0.0", "127.255.255.255"),
@@ -126,16 +126,16 @@
  			array("223.255.255.0", "223.255.255.255")
  		);
  		
- 		if($ct == 4)
+ 		if($ipArrayCount == 4)
  		{
- 			$filterCt = count($ipFilterArr);
+ 			$ipFilterCount = count($ipFilterArray);
  			$i = 0;
  			
  			if($this->classSearch($this->ipAddress, "0.0.0.0", "255.255.255.255"))
  			{
- 				while($keepSearching && $i < $filterCt)
+ 				while($keepSearching && $i < $ipFilterCount)
  				{
- 					if($this->classSearch($this->ipAddress, $ipFilterArr[$i][0], $ipFilterArr[$i][1]))
+ 					if($this->classSearch($this->ipAddress, $ipFilterArray[$i][0], $ipFilterArray[$i][1]))
  					{
  						$keepSearching = false;
  					}
