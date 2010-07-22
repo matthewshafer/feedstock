@@ -108,7 +108,10 @@ class MysqliDatabase
 	 */
 	public function closeConnection()
 	{
-		$this->databaseConnection->close();
+		if(is_resource($this->databaseConnection))
+		{
+			$this->databaseConnection->close();
+		}
 	}
 	
 	/**

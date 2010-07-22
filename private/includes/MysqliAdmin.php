@@ -23,7 +23,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase
 	 */
 	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix)
 	{
-		parent::__construct($username, $password, $serverAddress, $databaseName, $tablePrefix);
+		parent::__construct($username, $password, $serverAddress, $databaseName, $tablePrefix, null, false);
 	}
 	
 	/**
