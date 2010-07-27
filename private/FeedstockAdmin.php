@@ -726,8 +726,8 @@ class FeedstockAdmin
 	{
 		if(V_CACHE)
 		{
-			require_once("includes/cacheHandler.php");
-			$cacheHandler = new cacheHandler($this->router);
+			require_once("includes/CacheHandler.php");
+			$cacheHandler = new CacheHandler($this->router);
 			
 			if($cacheHandler->cacheWriteableLoc())
 			{
