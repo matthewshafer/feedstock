@@ -259,6 +259,11 @@ class FeedstockAdmin
 				//print_r($returned);
 				//echo "\n";
 			}
+			
+			if($this->sitemap != null)
+			{
+				$this->sitemap->generateSitemap();
+			}
 		}
 	}
 	
@@ -298,6 +303,11 @@ class FeedstockAdmin
 			}
 			
 			$this->purgeCache();
+		}
+		
+		if($this->sitemap != null)
+		{
+			$this->sitemap->generateSitemap();
 		}
 	}
 	
@@ -401,6 +411,11 @@ class FeedstockAdmin
 			
 			$this->purgeCache();
 		}
+		
+		if($this->sitemap != null)
+		{
+			$this->sitemap->generateSitemap();
+		}
 	}
 	
 	private function addCategory()
@@ -421,6 +436,11 @@ class FeedstockAdmin
 			}
 			
 			$this->purgeCache();
+		}
+		
+		if($this->sitemap != null)
+		{
+			$this->sitemap->generateSitemap();
 		}
 	}
 	

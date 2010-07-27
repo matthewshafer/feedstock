@@ -912,7 +912,7 @@ class TemplateEngine
 			
 			//print_r($tmpArr);
 			
-			$this->postTag = $this->database->getPostCategoryOrTag($tmpArr, "tag");
+			$this->postTag = $this->database->getPostCategoryOrTag($tmpArr, 1);
 		}
 	}
 	

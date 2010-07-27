@@ -46,7 +46,7 @@ $tableprefix = "fs_";
 /* Caching Settings */
 define("V_CACHE", false);
 // name of the cacher.  filecache does standard files.  xcache uses php xcache for caching
-define("F_CACHENAME", "XcacheDynamic");
+define("F_CACHENAME", "ApcDynamic");
 // This is in seconds. Should set to something like 1400.  Currently set low to help with testing.
 define("F_EXPIRECACHETIME", 120);
 // Xcache Setting
@@ -54,7 +54,7 @@ define("F_XCACHEPREFIX", "something_");
 
 
 /* Sitemap Settings */
-define("F_SITEMAPGENERATE", true);
+define("F_SITEMAPGENERATE", false);
 define("F_SITEMAPMAXITEMS", 30000);
 
 

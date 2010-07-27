@@ -33,8 +33,8 @@ class SitemapCreator
 		$indexArray = $this->makeIndexArray();
 		
 		$pages = $this->database->getAllPagesSitemap();
-		$pages = $this->formatAddData($pages, ".5", "monthly");
-		$this->totalLength = $this->totalLen + count($pages);
+		$pages = $this->formatAddData($pages, ".5", "monthly", "page");
+		$this->totalLength = count($pages);
 		
 		$this->sitemapDataSoFar = array_merge($indexArray, $pages);
 		
@@ -43,11 +43,11 @@ class SitemapCreator
 		$posts = $this->database->getAllPostsSitemap();
 		$posts = $this->formatAddData($posts, ".5", "monthly");
 		$postCt = count($posts);
-		$this->totalLen = $this->totalLen + $postCt;
+		$this->totalLength = $this->totalLength + $postCt;
 		$num = $postCt / F_POSTSPERPAGE;
 		$totalPostPages = ceil($num) - 1;
 		$postPage = $this->makePostPageLinks($totalPostPages);
-		$this->totalLen = $this->totalLen + count($postPage);
+		$this->totalLength = $this->totalLength + count($postPage);
 		
 		$this->sitemapDataSoFar = array_merge($this->sitemapDataSoFar, $posts, $postPage);
 		
@@ -57,8 +57,8 @@ class SitemapCreator
 		
 		// need to generate pages for categories and tags
 		$categories = $this->database->listCategoriesOrTags(0);
-		$categories = $this->formatAddData($categories, ".5", "monthly");
-		$this->totalLen = $this->totalLen + count($categories);
+		$categories = $this->formatAddData($categories, ".5", "monthly", "category");
+		$this->totalLength = $this->totalLength + count($categories);
 		
 		$this->sitemapDataSoFar = array_merge($this->sitemapDataSoFar, $categories);
 		// calling this after every block should allow us to use less memory as we can free the previous variables
@@ -67,8 +67,8 @@ class SitemapCreator
 		
 		
 		$tags = $this->database->listCategoriesOrTags(1);
-		$tags = $this->formatAddData($tags, ".5", "monthly");
-		$this->totalLen = $this->totalLen + count($tags);
+		$tags = $this->formatAddData($tags, ".5", "monthly", "tag");
+		$this->totalLength = $this->totalLength + count($tags);
 		
 		$this->sitemapDataSoFar = array_merge($this->sitemapDataSoFar, $tags);
 		
@@ -96,7 +96,7 @@ class SitemapCreator
 	
 	private function finalGenerateSitemapData()
 	{
-		$this->processGenerateSitemapData();
+		$this->processGeneratedSitemapData();
 		
 		if($this->totalSitemaps > 0)
 		{
@@ -139,7 +139,7 @@ class SitemapCreator
 		}
 	}
 	
-	private function formatAddData($data, $priority, $changeFreq)
+	private function formatAddData($data, $priority, $changeFreq, $type = null)
 	{
 			$dataLength = count($data);
 			$return = array();
@@ -149,10 +149,36 @@ class SitemapCreator
 				$return[$i] = array();
 				if(isset($data[$i]["URIName"]))
 				{
+					if($type == "tag")
+					{
+						$data[$i]['URIName'] = $this->addTagToUri($data[$i]['URIName']);
+					}
+					else if($type == "category")
+					{
+						$data[$i]['URIName'] = $this->addCategoryToUri($data[$i]['URIName']);
+					}
+					else if($type == "page")
+					{
+						$data[$i]['URIName'] = $this->checkPageUri($data[$i]['URIName']);
+					}
+					
 					$return[$i]['URL'] = $this->makeURL($data[$i]['URIName']);
 				}
 				else
 				{
+					if($type == "tag")
+					{
+						$data[$i]['URI'] = $this->addTagToUri($data[$i]['URI']);
+					}
+					else if($type == "category")
+					{
+						$data[$i]['URI'] = $this->addCategoryToUri($data[$i]['URI']);
+					}
+					else if($type == "page")
+					{
+						$data[$i]['URI'] = $this->checkPageUri($data[$i]['URI']);
+					}
+					
 					$return[$i]['URL'] = $this->makeURL($data[$i]['URI']);
 				}
 				
@@ -161,6 +187,26 @@ class SitemapCreator
 			}
 			
 			return $return;
+	}
+	
+	private function addTagToUri($uri)
+	{
+		return sprintf("/tag/%s", $uri);
+	}
+	
+	private function addCategoryToUri($uri)
+	{
+		return sprintf("/category/%s", $uri);
+	}
+	
+	private function checkPageUri($uri)
+	{
+		if($uri[0] != "/")
+		{
+			$uri = sprintf("/%s", $uri);
+		}
+		
+		return $uri;
 	}
 	
 	private function makeURL($uri)
