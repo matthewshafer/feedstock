@@ -259,7 +259,7 @@ class TemplateEngine
 					$limit = intval(F_POSTSPERPAGE);
 					$this->pageData = $this->database->getPosts($limit, 0);
 					$return = sprintf("%s/private/includes", V_BASELOC);
-					$file = "feed.php";
+					$file = "Feed.php";
 				}
 				else
 				{
