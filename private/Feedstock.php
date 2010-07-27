@@ -167,7 +167,7 @@ class Feedstock
 		
 		switch(V_DATABASE)
 		{
-			case "mysqli":
+			case "Mysqli":
 				if(V_CACHE && $this->cacheHandler->cacheType() == "dynamic")
 				{
 					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $this->cacheHandler->cacheMaker());
@@ -177,7 +177,7 @@ class Feedstock
 					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix);
 				}
 			break;
-			case "mysql":
+			case "Mysql":
 				$return = new MysqlDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix);
 			break;
 		}

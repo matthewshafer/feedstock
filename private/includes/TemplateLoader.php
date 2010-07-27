@@ -44,7 +44,7 @@ class TemplateLoader
 		}
 		else
 		{
-			echo $this->templateEngine->getThemeErrorText();
+			echo $this->templateEngine->getThemeError();
 		}
 		//return ob_get_clean();
 		return $this->outputHelper->stopStoreGetBuffer();
