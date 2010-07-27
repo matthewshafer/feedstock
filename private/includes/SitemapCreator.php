@@ -18,9 +18,9 @@ class SitemapCreator
 	public function __construct($db)
 	{
 		$this->database = $db;
-		$this->sitemapLoc = V_BASELOC . "/public/";
+		$this->sitemapLoc = V_BASELOC . F_PUBLICPATH;
 		
-		require_once("Sitemap/SitemapTemplate.php");
+		require_once("sitemap/SitemapTemplate.php");
 		$this->sitemapTemplate = new SitemapTemplate();
 		
 		//require_once("Sitemap/siteindexTemplate.php");
@@ -215,7 +215,10 @@ class SitemapCreator
 	
 		if(!V_HTACCESS)
 		{
-			$return = sprintf("%s%s%s%s", V_URL, V_HTTPBASE, "index.php", $uri);
+			if($uri != null || $uri == "")
+			{
+				$return = sprintf("%s%s%s%s", V_URL, V_HTTPBASE, "index.php", $uri);
+			}
 		}
 		else
 		{
@@ -226,7 +229,7 @@ class SitemapCreator
 				$httpBase = substr($httpBase, 0, -1);
 			}
 			
-			if($uri != null)
+			if($uri != null || $uri == "")
 			{
 				$return = sprintf("%s%s%s", V_URL, $httpBase, $uri);
 			}

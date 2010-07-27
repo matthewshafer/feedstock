@@ -57,8 +57,8 @@ class FeedstockAdmin
 		
 		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router);
 		
-		require_once("includes/outputHelper.php");
-		$outputHelper = new outputHelper();
+		require_once("includes/OutputHelper.php");
+		$outputHelper = new OutputHelper();
 		
 		require_once("includes/TemplateLoader.php");
 		$this->templateLoader = new TemplateLoader($this->templateEngine, $outputHelper);
@@ -251,9 +251,9 @@ class FeedstockAdmin
 			
 			if(F_PUBSUBHUBBUB)
 			{
-				require_once("includes/feed/pubsubhubbub.php");
+				require_once("includes/feed/PubSubHubBub.php");
 				
-				$hub = new pubsubhubbub(F_PUBSUBHUBBUBPUBLISH);
+				$hub = new PubSubHubBub(F_PUBSUBHUBBUBPUBLISH);
 				$returned = $hub->publish();
 				//echo "PubSub: ";
 				//print_r($returned);
@@ -711,10 +711,10 @@ class FeedstockAdmin
 		
 		switch(V_DATABASE)
 		{
-			case "mysqli":
+			case "Mysqli":
 				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 			break;
-			case "mysql":
+			case "Mysql":
 				$return = new mysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 			break;
 		}

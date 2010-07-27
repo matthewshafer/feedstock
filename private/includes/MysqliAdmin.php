@@ -1,5 +1,5 @@
 <?php
-require_once("mysqli.php");
+require_once("Mysqli.php");
 
 /**
  * @file

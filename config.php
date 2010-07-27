@@ -34,7 +34,7 @@ define("V_FILEDOWNLOADSPEED", 200);
 
 /* Database Information */
 // database type
-define("V_DATABASE", "mysqli");
+define("V_DATABASE", "Mysqli");
 // database connection info
 $username = "root";
 $password = "root";
@@ -56,6 +56,7 @@ define("F_XCACHEPREFIX", "something_");
 /* Sitemap Settings */
 define("F_SITEMAPGENERATE", false);
 define("F_SITEMAPMAXITEMS", 30000);
+define("F_PUBLICPATH", "/public/");
 
 
 /* Cookie Settings */
