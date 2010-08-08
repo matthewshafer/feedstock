@@ -9,13 +9,13 @@ if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["dis
 	require_once($loc . "config.php");
 	require_once($loc . "private/includes/" . V_DATABASE . "Admin.php");
 	
-	if(V_DATABASE == "mysql")
+	if(V_DATABASE == "Mysql")
 	{
 		$db = new mysqlDatabaseAdmin($username, $password, $address, $database, $tableprefix);
 	}
-	else if(V_DATABASE == "mysqli")
+	else if(V_DATABASE == "Mysqli")
 	{
-		$db = new mysqliDatabaseAdmin($username, $password, $address, $database, $tableprefix);
+		$db = new MysqliDatabaseAdmin($username, $password, $address, $database, $tableprefix);
 	}
 	//$db = new databaseAdmin($username, $password, $address, $database, $tableprefix);
 	$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()_+=-|}{[];:,./<>?\'\\';
