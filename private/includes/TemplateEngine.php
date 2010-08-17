@@ -835,13 +835,13 @@ class TemplateEngine
 		}
 		else
 		{
-			if($return[strlen($return) - 1] == "/" && $URI[0] == "/")
+			if($return[strlen($return) - 1] == "/" && $uri[0] == "/")
 			{
 				$return = substr($return, 0, strlen($return) - 1);
 			}
 		}
 		
-		$return = sprintf("%s%s", $return, $URI);
+		$return = sprintf("%s%s", $return, $uri);
 		
 		return $return;
 	}
@@ -1153,7 +1153,7 @@ class TemplateEngine
 	 * @param mixed $name
 	 * @return String containing the snippet data with HTML
 	 */
-	public function getSnippetByNameHtml($name)
+	public function getSnippetByNameHtml($name, $lineBreaks = true)
 	{
 		$return = null;
 		
@@ -1164,7 +1164,10 @@ class TemplateEngine
 			$return = $tmpArr["SnippetData"];
 			$return = stripslashes($return);
 			$return = html_entity_decode($return);
-			$return = nl2br($return);
+			if($lineBreaks)
+			{
+				$return = nl2br($return);
+			}
 		}
 		
 		return $return;
