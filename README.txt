@@ -5,6 +5,11 @@ As far as using these in a production environment, that is totally up to you.
 Bugs:
 If you encounter bugs you can email me the info, matt @ niftystopwatch.com
 
+License:
+This is released under the Apache License Version 2.0
+You can find all the info inside the LICENSE file
+Also be sure to check out the NOTICE file
+
 Requirements:
 PHP >= 5.2
 PHP Mcrypt (only required for the admin pages)
