@@ -134,6 +134,11 @@ class Feedstock
 				require_once("includes/FileServe.php");
 				$fileServe = new FileServe($this->database, $this->router);
 				$data = $fileServe->render();
+				
+				if($data != null)
+				{
+					echo $data;
+				}
 			}
 			else
 			{
