@@ -89,14 +89,12 @@ class Feedstock
 				}
 				else
 				{
-					//echo $this->heavyLift();
 					$this->heavyLift();
-					//echo "<br><br>Queries: " . $this->db->queries;
 					
 					if(F_MYSQLSTOREQUERIES)
 					{
 						echo "<br><br><br>";
-					//print_r($this->db->debugQueries);
+						//print_r($this->db->debugQueries);
 						foreach($this->database->debugQueries as $key)
 						{
 							echo $key . "<br>";
@@ -117,18 +115,12 @@ class Feedstock
 	 */
 	private function heavyLift()
 	{
-		//require_once("includes/" . V_DATABASE . ".php");
-		//$this->db = new database($this->username, $this->password, $this->address, $this->database, $this->tableprefix);
 		$this->database = $this->databaseMaker();
 		
 		if($this->database->haveConnectionError() == null)
-		{		
-			//if($this->router->pageType() == "feed")
-			//{
-				//require_once("includes/feed.php");
-				//$feed = new feed($this->db, $this->router);
-				//$data = $feed->render();
-			//}
+		{
+			
+			// ok so really we only need the database when it comes to keeping track of files, which we currently don't do. Decisions decisions.
 			if($this->router->pageType() == "file")
 			{
 				require_once("includes/FileServe.php");
