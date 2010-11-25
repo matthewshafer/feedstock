@@ -13,7 +13,6 @@ class Router
 	protected $htaccess = null;
 	protected $requestMethod = null;
 	protected $base = null;
-	protected $uriError = false;
 	
 	
 	/**
