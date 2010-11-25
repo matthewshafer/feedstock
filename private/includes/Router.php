@@ -13,6 +13,7 @@ class Router
 	protected $htaccess = null;
 	protected $requestMethod = null;
 	protected $base = null;
+	protected $uriError = false;
 	
 	
 	/**
@@ -82,15 +83,24 @@ class Router
 		}
 		else
 		{
-			$temp = explode("index.php/", $this->uri);
+			$temp = explode("index.php", $this->uri);
+			
 			if(count($this->uriArray) > 1)
 			{
 				$this->firstPart = $this->uriArray[1];
 				$this->uri = $temp[1];
 				
+				// this removes the trailing slash if one exists
 				if(substr($this->uri, (strlen($this->uri) - 1)) == '/')
 				{
 					$this->uri = substr($this->uri, 0, -1);
+				}
+				
+				// this removes the starting slash if it exists. useful because we are now exploding the string around index.php
+				// needed because when we look stuff up in the db we add the starting slash
+				if(substr($this->uri, 0, 1) == '/')
+				{
+					$this->uri = substr($this->uri, 1);
 				}
 				
 				$this->uriArray = explode("/", $this->uri);
