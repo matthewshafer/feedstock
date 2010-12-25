@@ -706,7 +706,7 @@ class FeedstockAdmin
 	
 	private function databaseMaker()
 	{
-		require_once("includes/" . V_DATABASE . "Admin.php");
+		require_once("includes/database/" . V_DATABASE . "DatabaseAdmin.php");
 		$return = null;
 		
 		switch(V_DATABASE)
@@ -715,7 +715,7 @@ class FeedstockAdmin
 				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 			break;
 			case "Mysql":
-				$return = new mysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
+				$return = new MysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 			break;
 		}
 		
