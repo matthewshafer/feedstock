@@ -36,39 +36,50 @@ class FileServe
 	 */
 	public function render()
 	{
-	
-		if(file_exists($this->fileLoc) && is_file($this->fileLoc))
-		{
+		$text = null;
 		
-			header('Content-Description: File Transfer');
-			header('Content-Type: ' . $this->getContentType());
-			header('Content-Length: ' . filesize($this->fileLoc));
-			
-			// possibly some checks to see if the file should be shown in the browser or downloaded
-			
-			// downloaded
-			header('Content-Disposition: attachment; filename=' . basename($this->fileLoc));
-			
-			// view in browser
-			//header('Content-Disposition: inline; filename=' . basename($file));
-			
-			// does the reading of the file
-			//readfile($this->fileLoc);
-			
-			$file = fopen($this->fileLoc, "r");
-			while(!feof($file))
+		
+		if(F_FILEDOWNLOAD)
+		{
+			if(file_exists($this->fileLoc) && is_file($this->fileLoc))
 			{
-				print fread($file, round(V_FILEDOWNLOADSPEED * 1024));
-				sleep(1);
+		
+				header('Content-Description: File Transfer');
+				header('Content-Type: ' . $this->getContentType());
+				header('Content-Length: ' . filesize($this->fileLoc));
+			
+				// possibly some checks to see if the file should be shown in the browser or downloaded
+			
+				// downloaded
+				header('Content-Disposition: attachment; filename=' . basename($this->fileLoc));
+			
+				// view in browser
+				//header('Content-Disposition: inline; filename=' . basename($file));
+			
+				// does the reading of the file
+				//readfile($this->fileLoc);
+			
+				$file = fopen($this->fileLoc, "r");
+				while(!feof($file))
+				{
+					print fread($file, round(V_FILEDOWNLOADSPEED * 1024));
+					sleep(1);
+				}
+				
+				fclose($file);
+			
 			}
-			
-			fclose($file);
-			
+			else
+			{
+				$text =  "File does not exist";
+			}
 		}
 		else
 		{
-			echo "File does not exist";
+			$text = "File serving is disabled";
 		}
+		
+		return $text;
 		
 	}
 	
