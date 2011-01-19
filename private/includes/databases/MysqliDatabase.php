@@ -20,6 +20,7 @@ class MysqliDatabase
 	protected $haveCacher = false;
 	public $debugQueries = array();
 	public $queries = 0;
+	protected $debugSwitch = false;
 	
 	/**
 	 * __construct function.
@@ -752,6 +753,12 @@ class MysqliDatabase
 		}
 		*/
 		return $return;
+	}
+	
+	
+	public function enableDebug()
+	{
+		$this->debugSwitch = true;
 	}
 
 }
