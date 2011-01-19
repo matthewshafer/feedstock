@@ -135,7 +135,7 @@ class MysqliDatabase
 			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $limit, $offset);
 			
 			
-			if(F_MYSQLSTOREQUERIES)
+			if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $nonEscapedQuery);
 			}
@@ -217,7 +217,7 @@ class MysqliDatabase
 			$stockQuery = "SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'";
 			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $uri);
 			
-			if(F_MYSQLSTOREQUERIES)
+			if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $nonEscapedQuery);
 			}
@@ -273,7 +273,7 @@ class MysqliDatabase
 			$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE URI='/%s' AND Draft='0'";
 			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $uri);
 			
-			if(F_MYSQLSTOREQUERIES)
+			if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $nonEscapedQuery);
 			}
@@ -345,7 +345,7 @@ class MysqliDatabase
 	 		
 	 		
 	 		
-	 		if(F_MYSQLSTOREQUERIES)
+	 		if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $nonEscapedQuery);
 			}
@@ -438,7 +438,7 @@ class MysqliDatabase
 		$stockQuery = "SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'";
 		$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->checkedCategoryOrTag["PrimaryKey"]);
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $nonEscapedQuery);
 		}
@@ -490,7 +490,7 @@ class MysqliDatabase
 				$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $queryString, $limit, $offset);
 			}
 			
-			if(F_MYSQLSTOREQUERIES)
+			if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $nonEscapedQuery);
 			}
@@ -559,7 +559,7 @@ class MysqliDatabase
 		$stockQuery = "SELECT * FROM %scatstags WHERE URIName='%s' AND Type='%s'";
 		$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $name, $type);
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $nonEscapedQuery);
 		}

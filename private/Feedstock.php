@@ -19,6 +19,7 @@ class Feedstock
 	private $router = null;
 	private $database = null;
 	private $cacheHandler = null;
+	private $databaseDebug = false;
 	
 	/**
 	 * __construct function.
@@ -35,6 +36,7 @@ class Feedstock
 		$this->username = $username;
 		$this->databaseName = $database;
 		$this->tablePrefix = $tableprefix;
+		$this->databaseDebug = $databaseDebug;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -91,7 +93,7 @@ class Feedstock
 				{
 					$this->heavyLift();
 					
-					if(F_MYSQLSTOREQUERIES)
+					if($this->databaseDebug)
 					{
 						echo "<br><br><br>";
 						//print_r($this->db->debugQueries);
@@ -177,6 +179,12 @@ class Feedstock
 			case "Mysql":
 				$return = new MysqlDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix);
 			break;
+		}
+		
+		// add some checking if the database name is set up wrong
+		if($this->databaseDebug)
+		{
+			$return->enableDebug();
 		}
 		
 		return $return;

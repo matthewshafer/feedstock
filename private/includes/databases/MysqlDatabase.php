@@ -12,6 +12,7 @@ class MysqlDatabase
 	protected $tablePrefix = null;
 	protected $connError = null;
 	public $debugQueries = array();
+	protected $debugSwitch = false;
 	public $queries = 0;
 	
 	/**
@@ -80,7 +81,7 @@ class MysqlDatabase
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT 11 OFFSET %s", $this->tablePrefix, mysql_real_escape_string($offset, $this->dbConn));
 			
-			if(F_MYSQLSTOREQUERIES)
+			if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $query);
 			}
@@ -108,7 +109,7 @@ class MysqlDatabase
 			else
 			{
 				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
-				if(F_MYSQLSTOREQUERIES)
+				if($this->debugSwitch)
 				{
 					array_push($this->debugQueries, $query);
 				}
@@ -152,7 +153,7 @@ class MysqlDatabase
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
-			if(F_MYSQLSTOREQUERIES)
+			if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $query);
 			}
@@ -186,7 +187,7 @@ class MysqlDatabase
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
-			if(F_MYSQLSTOREQUERIES)
+			if($this->debugSwitch)
 			{
 				array_push($this->debugQueries, $query);
 			}
@@ -211,7 +212,7 @@ class MysqlDatabase
 			else
 			{
 				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
-				if(F_MYSQLSTOREQUERIES)
+				if($this->debugSwitch)
 				{
 					array_push($this->debugQueries, $query);
 				}
@@ -248,7 +249,7 @@ class MysqlDatabase
 		$return = false;
 		$query = sprintf("SELECT * FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, mysql_real_escape_string($name, $this->dbConn), mysql_real_escape_string($type, $this->dbConn));
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $query);
 		}
@@ -269,7 +270,7 @@ class MysqlDatabase
 		//$query = "SELECT * FROM " . $this->tablePrefix . "tags LIMIT" . $number;
 		$query = sprintf("SELECT * FROM %scatstags WHERE Type='%s'", $this->tablePrefix, mysql_real_escape_string($type, $this->dbConn));
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $query);
 		}
@@ -303,7 +304,7 @@ class MysqlDatabase
 			{
 				$query = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID='%s'", $this->tablePrefix, mysql_real_escape_string($key, $this->dbConn));
 				
-				if(F_MYSQLSTOREQUERIES)
+				if($this->debugSwitch)
 				{
 					array_push($this->debugQueries, $query);
 				}
@@ -339,7 +340,7 @@ class MysqlDatabase
 			{
 				$query = sprintf("SELECT * FROM %scatstags WHERE Type='1' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
 				
-				if(F_MYSQLSTOREQUERIES)
+				if($this->debugSwitch)
 				{
 					array_push($this->debugQueries, $query);
 				}
@@ -350,7 +351,7 @@ class MysqlDatabase
 			{
 				$query = sprintf("SELECT * FROM %scatstags WHERE Type='0' AND PrimaryKey IN (%s)", $this->tablePrefix, mysql_real_escape_string($queryStr, $this->dbConn));
 				
-				if(F_MYSQLSTOREQUERIES)
+				if($this->debugSwitch)
 				{
 					array_push($this->debugQueries, $query);
 				}
@@ -391,7 +392,7 @@ class MysqlDatabase
 	{
 		$query = sprintf("SELECT PrimaryKey FROM %scatstags WHERE URIName='%s' AND Type='%s'", $this->tablePrefix, mysql_real_escape_string($URIName, $this->dbConn), mysql_real_escape_string($type, $this->dbConn));
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $query);
 		}
@@ -409,7 +410,7 @@ class MysqlDatabase
 		
 		$query2 = sprintf("SELECT PostID FROM %sposts_tax WHERE CatTagID='%s'", $this->tablePrefix, mysql_real_escape_string($temp["PrimaryKey"], $this->dbConn));
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $query2);
 		}
@@ -442,7 +443,7 @@ class MysqlDatabase
 			array_push($return, $temp);
 		}
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $query3);
 		}
@@ -458,7 +459,7 @@ class MysqlDatabase
 	{
 		$query = sprintf("SELECT * FROM %scatstags WHERE TYPE='%s' AND PrimaryKey='%s'", $this->tablePrefix, mysql_real_escape_string($type, $this->dbConn), mysql_real_escape_string($ID, $this->dbConn));
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $query);
 		}
@@ -480,7 +481,7 @@ class MysqlDatabase
 	{
 		$query = sprintf("SELECT * FROM %spages WHERE Corral='%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($ID, $this->dbConn));
 		
-		if(F_MYSQLSTOREQUERIES)
+		if($this->debugSwitch)
 		{
 			array_push($this->debugQueries, $query);
 		}
@@ -497,6 +498,11 @@ class MysqlDatabase
 		}
 		
 		return $return;
+	}
+	
+	public function enableDebug()
+	{
+		$this->debugSwitch = true;
 	}
 	
 }
