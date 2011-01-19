@@ -107,9 +107,9 @@
  	 * @access private
  	 * @return Boolean. True if valid, false if not valid
  	 */
- 	private function validIP()
+ 	private function validIP($ipAddress)
  	{
- 		$ipArray = explode(".", $this->ipAddress);
+ 		$ipArray = explode(".", $ipAddress);
  		$return = false;
  		$keepSearching = true;
  		$ipArrayCount = count($ipArray);
@@ -131,7 +131,7 @@
  			$ipFilterCount = count($ipFilterArray);
  			$i = 0;
  			
- 			if($this->classSearch($this->ipAddress, "0.0.0.0", "255.255.255.255"))
+ 			if($this->classSearch($ipAddress, "0.0.0.0", "255.255.255.255"))
  			{
  				while($keepSearching && $i < $ipFilterCount)
  				{
@@ -177,7 +177,7 @@
  			{
  				if($ipArr[2] >= $startArr[2] && $ipArr[2] <= $finishArr[2])
  				{
- 					if($ipArr[3] >= $startArr[3] && $ipArr[4] <= $finishArr[3])
+ 					if($ipArr[3] >= $startArr[3] && $ipArr[3] <= $finishArr[3])
  					{
  						$return = true;
  					}

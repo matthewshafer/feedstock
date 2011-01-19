@@ -22,6 +22,7 @@ class Feedstock
 	private $databaseDebug = false;
 	private $enableFileDownload = false;
 	private $fileDownloadSpeed = 0;
+	private $maintenanceAddresses = null;
 	
 	/**
 	 * __construct function.
@@ -41,6 +42,7 @@ class Feedstock
 		$this->databaseDebug = $databaseDebug;
 		$this->enableFileDownload = $fileDownload;
 		$this->fileDownloadSpeed = $fileDownloadSpeed;
+		$this->maintenanceAddresses = $maintenancePassthrough;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -48,14 +50,14 @@ class Feedstock
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();
 		
-		$this->handleRequest();
+		$this->handleRequest($enableMaintenance);
 	}
 	
-	private function handleRequest()
+	private function handleRequest($enableMaintenance)
 	{
 		if($this->router->requestMethod() == "GET")
 		{
-			if($this->maintenanceMode())
+			if($this->maintenanceMode($enableMaintenance, $this->maintenanceAddresses))
 			{
 				require_once("includes/Maintenance.php");
 				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", V_BASELOC, V_THEME), $this->outputHelper);
@@ -200,19 +202,21 @@ class Feedstock
 	 * 
 	 * @brief Allows us to check if theres maintenance mode enabled and if the current person accessing the site can bypass maintenance mode
 	 * @access private
+	 * @param boolean $enabled
+	 * @param mixed $allowThese
 	 * @return True if we are in maintenance mode, false if not or the user can bypass it;
 	 */
-	private function maintenanceMode()
+	private function maintenanceMode($enabled, $allowThese)
 	{
 		$return = false;
 		
-		if(F_MAINTENANCE)
+		if($enabled)
 		{
 			require_once("includes/IpChecker.php");
 			
 			$ipChecker = new IpChecker();
 			
-			if(!$ipChecker->checkIP(F_MAINTENANCEPASS))
+			if(!$ipChecker->checkIP($allowThese))
 			{
 				$return = true;
 			}
