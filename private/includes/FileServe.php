@@ -10,6 +10,7 @@ class FileServe
 	protected $database;
 	protected $router;
 	protected $fileLoc;
+	protected $downloadEnabled;
 	
 	/**
 	 * __construct function.
@@ -19,10 +20,11 @@ class FileServe
 	 * @param mixed $router
 	 * @return void
 	 */
-	public function __construct($database, $router)
+	public function __construct($database, $router, $enabled)
 	{
 		$this->database = $database;
 		$this->router = $router;
+		$this->downloadEnabled = $enabled;
 		
 		$this->fileLoc = V_BASELOC . "/private/files/" . $this->router->getUriPosition(2);
 	}
@@ -39,7 +41,7 @@ class FileServe
 		$text = null;
 		
 		
-		if(F_FILEDOWNLOAD)
+		if($this->downloadEnabled)
 		{
 			if(file_exists($this->fileLoc) && is_file($this->fileLoc))
 			{

@@ -20,6 +20,7 @@ class Feedstock
 	private $database = null;
 	private $cacheHandler = null;
 	private $databaseDebug = false;
+	private $enableFileDownload = false;
 	
 	/**
 	 * __construct function.
@@ -37,6 +38,7 @@ class Feedstock
 		$this->databaseName = $database;
 		$this->tablePrefix = $tableprefix;
 		$this->databaseDebug = $databaseDebug;
+		$this->enableFileDownload = $fileDownload;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -126,7 +128,7 @@ class Feedstock
 			if($this->router->pageType() == "file")
 			{
 				require_once("includes/FileServe.php");
-				$fileServe = new FileServe($this->database, $this->router);
+				$fileServe = new FileServe($this->database, $this->router, $this->enableFileDownload);
 				$data = $fileServe->render();
 				
 				if($data != null)
