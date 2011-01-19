@@ -21,6 +21,7 @@ class Feedstock
 	private $cacheHandler = null;
 	private $databaseDebug = false;
 	private $enableFileDownload = false;
+	private $fileDownloadSpeed = 0;
 	
 	/**
 	 * __construct function.
@@ -39,6 +40,7 @@ class Feedstock
 		$this->tablePrefix = $tableprefix;
 		$this->databaseDebug = $databaseDebug;
 		$this->enableFileDownload = $fileDownload;
+		$this->fileDownloadSpeed = $fileDownloadSpeed;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -129,6 +131,7 @@ class Feedstock
 			{
 				require_once("includes/FileServe.php");
 				$fileServe = new FileServe($this->database, $this->router, $this->enableFileDownload);
+				$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
 				$data = $fileServe->render();
 				
 				if($data != null)

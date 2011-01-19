@@ -11,6 +11,7 @@ class FileServe
 	protected $router;
 	protected $fileLoc;
 	protected $downloadEnabled;
+	protected $fileDownloadSpeed = -1;
 	
 	/**
 	 * __construct function.
@@ -62,10 +63,18 @@ class FileServe
 				//readfile($this->fileLoc);
 			
 				$file = fopen($this->fileLoc, "r");
+				
 				while(!feof($file))
 				{
-					print fread($file, round(V_FILEDOWNLOADSPEED * 1024));
-					sleep(1);
+					if($this->fileDownloadSpeed <= 0)
+					{
+						print fread($file, round($this->fileDownloadSpeed * 1024));
+						sleep(1);
+					}
+					else
+					{
+						print fread($file, 2048);
+					}
 				}
 				
 				fclose($file);
@@ -201,6 +210,11 @@ class FileServe
 		
 		return $return;
 		
+	}
+	
+	public function setDownloadSpeed($speed)
+	{
+		$this->fileDownloadSpeed = intval($speed);
 	}
 
 }
