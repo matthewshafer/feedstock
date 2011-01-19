@@ -51,7 +51,7 @@ class FeedstockAdmin
 		
 		require_once("includes/CookieMonster.php");
 		
-		$this->cookieMonster = new CookieMonster($this->databaseAdmin);
+		$this->cookieMonster = new CookieMonster($this->databaseAdmin, $cookieName);
 		
 		require_once("includes/TemplateEngineAdmin.php");
 		
