@@ -182,6 +182,7 @@ class Feedstock
 	 */
 	private function databaseMaker()
 	{
+		require_once("includes/interfaces/GenericDatabase.php");
 		require_once("includes/databases/" . V_DATABASE . "Database.php");
 		$return = null;
 		

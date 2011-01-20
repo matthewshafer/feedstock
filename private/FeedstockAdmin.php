@@ -712,6 +712,8 @@ class FeedstockAdmin
 	
 	private function databaseMaker()
 	{
+		require_once("includes/interfaces/GenericDatabase.php");
+		require_once("includes/interfaces/GenericDatabaseAdmin.php");
 		require_once("includes/databases/" . V_DATABASE . "DatabaseAdmin.php");
 		$return = null;
 		

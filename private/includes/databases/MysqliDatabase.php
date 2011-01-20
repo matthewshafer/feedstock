@@ -5,7 +5,7 @@
  * @brief using mysqli which is a part of php5.  Uses things like multi_query.
  * 
  */
-class MysqliDatabase
+class MysqliDatabase implements GenericDatabase
 {
 	private $username = null;
 	private $password = null;
@@ -541,6 +541,7 @@ class MysqliDatabase
 		return $return;
 	}
 	
+	// need to see if this needs to be removed
 	public function getCategoryOrTag($ID, $type)
 	{
 		

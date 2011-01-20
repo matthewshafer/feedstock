@@ -7,7 +7,7 @@ require_once(V_DATABASE . "Database.php");
  * @brief the database class for the admin section.  It houses a bunch of functions which is why we keep it seperate from the frontend database.
  * @extends database
  */
-class MysqliDatabaseAdmin extends MysqliDatabase
+class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 {
 	/**
 	 * __construct function.
@@ -21,7 +21,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase
 	 * @param mixed $tablePrefix
 	 * @return void
 	 */
-	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix)
+	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null, $lazy = true)
 	{
 		parent::__construct($username, $password, $serverAddress, $databaseName, $tablePrefix, null, false);
 	}
