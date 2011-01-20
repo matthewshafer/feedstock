@@ -19,6 +19,7 @@ class FeedstockAdmin
 	private $cookieMonster = null;
 	private $router = null;
 	private $sitemap = null;
+	private $cacheEnable = false;
 	
 	/**
 	 * __construct function.
@@ -34,6 +35,7 @@ class FeedstockAdmin
 		$this->username = $username;
 		$this->database = $database;
 		$this->tablePrefix = $tableprefix;
+		$this->cacheEnable = $cacheEnable;
 		
 		require_once("includes/Router.php");
 		
@@ -724,7 +726,7 @@ class FeedstockAdmin
 	
 	private function purgeCache()
 	{
-		if(V_CACHE)
+		if($this->cacheEnable)
 		{
 			require_once("includes/CacheHandler.php");
 			$cacheHandler = new CacheHandler($this->router);

@@ -23,6 +23,7 @@ class Feedstock
 	private $enableFileDownload = false;
 	private $fileDownloadSpeed = 0;
 	private $maintenanceAddresses = null;
+	private $cacheEnable = false;
 	
 	/**
 	 * __construct function.
@@ -43,6 +44,7 @@ class Feedstock
 		$this->enableFileDownload = $fileDownload;
 		$this->fileDownloadSpeed = $fileDownloadSpeed;
 		$this->maintenanceAddresses = $maintenancePassthrough;
+		$this->cacheEnable = $cacheEnable;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -69,7 +71,7 @@ class Feedstock
 				$this->cacheHandler = new CacheHandler($this->router);
 				
 			
-				if(V_CACHE && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
+				if($this->cacheEnable && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
 				{
 					// Should create the cacher first so that we can check if a file exists before we even create a database
 					// for example if the database goes down we can still serve up pages, until they "expire" which would give us
@@ -174,7 +176,7 @@ class Feedstock
 		switch(V_DATABASE)
 		{
 			case "Mysqli":
-				if(V_CACHE && $this->cacheHandler->cacheType() == "dynamic")
+				if($this->cacheEnable && $this->cacheHandler->cacheType() == "dynamic")
 				{
 					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $this->cacheHandler->cacheMaker());
 				}
