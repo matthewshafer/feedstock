@@ -65,10 +65,10 @@ class FeedstockAdmin
 		require_once("includes/TemplateLoader.php");
 		$this->templateLoader = new TemplateLoader($this->templateEngine, $outputHelper);
 		
-		if(F_SITEMAPGENERATE)
+		if($generateSitemap)
 		{
 			require_once("includes/SitemapCreator.php");
-			$this->sitemap = new SitemapCreator($this->databaseAdmin);
+			$this->sitemap = new SitemapCreator($this->databaseAdmin, V_BASELOC . $sitemapPath, $maxSitemapItems);
 		}
 		
 		$this->handleRequest();
@@ -708,7 +708,7 @@ class FeedstockAdmin
 	
 	private function databaseMaker()
 	{
-		require_once("includes/database/" . V_DATABASE . "DatabaseAdmin.php");
+		require_once("includes/databases/" . V_DATABASE . "DatabaseAdmin.php");
 		$return = null;
 		
 		switch(V_DATABASE)

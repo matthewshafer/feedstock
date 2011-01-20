@@ -14,11 +14,13 @@ class SitemapCreator
 	private $sitemapDataSoFar;
 	private $sitemapTemplate;
 	private $siteindexTemplate;
+	private $maxItems = 0;
 	
-	public function __construct($db)
+	public function __construct($db, $path, $max)
 	{
 		$this->database = $db;
-		$this->sitemapLoc = V_BASELOC . F_PUBLICPATH;
+		$this->sitemapLoc = $path;
+		$this->maxItems = intval($max);
 		
 		require_once("sitemap/SitemapTemplate.php");
 		$this->sitemapTemplate = new SitemapTemplate();
@@ -80,14 +82,14 @@ class SitemapCreator
 	
 	private function processGeneratedSitemapData()
 	{
-		if($this->totalLength >= intval(F_SITEMAPMAXITEMS))
+		if($this->totalLength >= $this->maxItems)
 		{
 			$fileName = sprintf("sitemap%i.xml", $this->totalSitemaps);
 			
-			$maxSitemapData = array_splice($this->sitemapDataSoFar, 0, F_SITEMAPMAXITEMS);
+			$maxSitemapData = array_splice($this->sitemapDataSoFar, 0, $this->maxItems);
 			$this->writeFile($fileName, $this->sitemapTemplate->generateSitemap($maxSitemapData));
 			
-			$this->totalLength = $this->totalLength - F_SITEMAPMAXITEMS;
+			$this->totalLength = $this->totalLength - $this->maxItems;
 			$this->totalSitemaps++;
 			
 			$this->processGeneratedSitemapData();
