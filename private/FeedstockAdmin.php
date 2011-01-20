@@ -20,6 +20,8 @@ class FeedstockAdmin
 	private $router = null;
 	private $sitemap = null;
 	private $cacheEnable = false;
+	private $feedPubSubHubBub = "";
+	private $feedPubSubHubBubPublishUrl = "";
 	
 	/**
 	 * __construct function.
@@ -36,6 +38,8 @@ class FeedstockAdmin
 		$this->database = $database;
 		$this->tablePrefix = $tableprefix;
 		$this->cacheEnable = $cacheEnable;
+		$this->feedPubSubHubBub = $feedPubSubHubBub;
+		$this->feedPubSubHubBubPublishUrl = $feedPubSubHubBubPublishUrl;
 		
 		require_once("includes/Router.php");
 		
@@ -251,11 +255,11 @@ class FeedstockAdmin
 			
 			$this->purgeCache();
 			
-			if(F_PUBSUBHUBBUB)
+			if($this->feedPubSubHubBub)
 			{
 				require_once("includes/feed/PubSubHubBub.php");
 				
-				$hub = new PubSubHubBub(F_PUBSUBHUBBUBPUBLISH);
+				$hub = new PubSubHubBub($this->feedPubSubHubBubPublishUrl);
 				$returned = $hub->publish();
 				//echo "PubSub: ";
 				//print_r($returned);

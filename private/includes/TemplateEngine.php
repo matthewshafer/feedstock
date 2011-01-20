@@ -17,6 +17,11 @@ class TemplateEngine
 	private $errorText = null;
 	private $themeValidError = false;
 	private $pageDataCt = null;
+	// feeds are handled by the template engine.  Could possibly seperate it out later to be its own thing
+	private $feedAuthor = "";
+	private $feedAuthorEmail = "";
+	private $feedPubSubHubBub = "";
+	private $feedPubSubHubBubSubscribe = "";
 	
 	/**
 	 * __construct function.
@@ -1327,6 +1332,41 @@ class TemplateEngine
 	public function getThemeError()
 	{
 		return $this->themeValidError;
+	}
+	
+	
+	// functions for getting and setting feed info
+	
+	public function setFeedAuthorInfo($name, $email = "")
+	{
+		$this->feedAuthor = $name;
+		$this->feedAuthorEmail = $email;
+	}
+	
+	public function setPubSubHubBub($enabled, $subscribeUrl = "")
+	{
+		$this->feedPubSubHubBub = $enabled;
+		$this->feedPubSubHubBubSubscribe = $subscribeUrl;
+	}
+	
+	public function getFeedAuthor()
+	{
+		return $this->feedAuthor;
+	}
+	
+	public function getFeedEmail()
+	{
+		return $this->feedAuthorEmail;
+	}
+	
+	public function pubSubHubBubEnabled()
+	{
+		return $this->feedPubSubHubBub;
+	}
+	
+	public function pubSubHubBubSubscribeUrl()
+	{
+		return $this->feedPubSubHubBubSubscribe;
 	}
 }
 ?>

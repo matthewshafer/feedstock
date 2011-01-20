@@ -24,6 +24,10 @@ class Feedstock
 	private $fileDownloadSpeed = 0;
 	private $maintenanceAddresses = null;
 	private $cacheEnable = false;
+	private $feedAuthor = "";
+	private $feedAuthorEmail = "";
+	private $feedPubSubHubBub = "";
+	private $feedPubSubHubBubSubscribe = "";
 	
 	/**
 	 * __construct function.
@@ -45,6 +49,11 @@ class Feedstock
 		$this->fileDownloadSpeed = $fileDownloadSpeed;
 		$this->maintenanceAddresses = $maintenancePassthrough;
 		$this->cacheEnable = $cacheEnable;
+		$this->feedAuthor = $feedAuthor;
+		$this->feedAuthorEmail = $feedAuthorEmail;
+		$this->feedPubSubHubBub = $feedPubSubHubBub;
+		$this->feedPubSubHubBubPublishUrl = $feedPubSubHubBubPublishUrl;
+		$this->feedPubSubHubBubSubscribe = $feedPubSubHubBubSubscribe;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -147,6 +156,9 @@ class Feedstock
 			{
 				require_once("includes/TemplateEngine.php");
 				$this->templateEngine = new TemplateEngine($this->database, $this->router);
+				$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
+				$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
+				
 				require_once("includes/TemplateLoader.php");
 				$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
 				$data = $this->templateLoader->render();
