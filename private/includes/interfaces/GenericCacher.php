@@ -4,7 +4,7 @@ interface GenericCacher
 {
 	
 	// $location is only used for specific types of caches, ex. FileCache
-	public function __construct($prefix, $location = "");
+	public function __construct($prefix, $expireTime, $location = "");
 	
 	public function checkExists($lookup);
 	
@@ -16,7 +16,7 @@ interface GenericCacher
 	
 	public function purgeCache();
 	
-	public function cacheWriteable();
+	public function cacheWritable();
 
 }
 

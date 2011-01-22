@@ -18,7 +18,7 @@ class Feedstock
 	private $templateLoader = null;
 	private $router = null;
 	private $database = null;
-	private $cacheHandler = null;
+	private $cacherCreator = null;
 	private $databaseDebug = false;
 	private $enableFileDownload = false;
 	private $fileDownloadSpeed = 0;
@@ -28,6 +28,10 @@ class Feedstock
 	private $feedAuthorEmail = "";
 	private $feedPubSubHubBub = "";
 	private $feedPubSubHubBubSubscribe = "";
+	private $cacheName = "";
+	private $cachePrefix = "";
+	private $cacheType = "";
+	private $cacheExpireTime = 0;
 	
 	/**
 	 * __construct function.
@@ -54,6 +58,10 @@ class Feedstock
 		$this->feedPubSubHubBub = $feedPubSubHubBub;
 		$this->feedPubSubHubBubPublishUrl = $feedPubSubHubBubPublishUrl;
 		$this->feedPubSubHubBubSubscribe = $feedPubSubHubBubSubscribe;
+		$this->cacheName = $cacheName;
+		$this->cachePrefix = $cachePrefix;
+		$this->cacheType = $cacheType;
+		$this->cacheExpireTime = $cacheExpireTime;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router(V_HTACCESS);
@@ -76,20 +84,20 @@ class Feedstock
 			}
 			else
 			{
-				require_once("includes/CacheHandler.php");
-				$this->cacheHandler = new CacheHandler($this->router);
+				require_once("includes/CacherCreator.php");
+				$this->cacherCreator = new CacherCreator($this->cacheName, $this->cachePrefix, $this->cacheExpireTime, V_BASELOC);
 				
 			
-				if($this->cacheEnable && $this->cacheHandler->cacheType() == "static" && $this->cacheHandler->cacheWriteableLoc())
+				if($this->cacheEnable && $this->cacheType == "static" && $this->cacherCreator->createCacher())
 				{
 					// Should create the cacher first so that we can check if a file exists before we even create a database
 					// for example if the database goes down we can still serve up pages, until they "expire" which would give us
 					// a little bit of time to get the DB back up and running
 					//require_once("includes/" . F_CACHENAME . ".php");
 					//$this->cacher = new cache($this->router->fullURI());
-					$this->cacher = $this->cacheHandler->cacheMaker();
+					$this->cacher = $this->cacherCreator->getCacher();
 				
-					if($this->cacher->checkExists())
+					if($this->cacher->checkExists($this->router->fullUri()))
 					{
 						echo $this->cacher->getCachedData();
 					}
@@ -101,7 +109,7 @@ class Feedstock
 					
 						if($this->router->pageType() != "file")
 						{
-							$this->cacher->writeCachedFile($themeData);
+							$this->cacher->writeCachedFile($this->router->fullUri(), $themeData);
 						}
 						//echo $themeData;
 					}
@@ -189,9 +197,9 @@ class Feedstock
 		switch(V_DATABASE)
 		{
 			case "Mysqli":
-				if($this->cacheEnable && $this->cacheHandler->cacheType() == "dynamic")
+				if($this->cacheEnable && $this->cacheType == "dynamic" && $this->cacherCreator->createCacher())
 				{
-					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $this->cacheHandler->cacheMaker());
+					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $this->cacherCreator->getCacher());
 				}
 				else
 				{

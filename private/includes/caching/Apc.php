@@ -6,12 +6,13 @@
  * 
  */
  
-class Apc
+class Apc implements GenericCacher
 {
 	private $prefix = null;
 	private $prefixArr = null;
 	private $store = array();
 	private $storePos = -1;
+	private $expireTime;
 	
 	/**
 	 * __construct function.
@@ -19,9 +20,10 @@ class Apc
 	 * @access public
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct($prefix, $expireTime, $location = "")
 	{
-		$this->prefix = F_XCACHEPREFIX;
+		$this->prefix = $prefix;
+		$this->expireTime = $expireTime;
 		$this->prefixArr = sprintf("%s%s", $this->prefix, "array");
 	}
 	
@@ -94,7 +96,7 @@ class Apc
 		
 		//if($data != null)
 		//{
-			apc_store($toHash, $data, F_EXPIRECACHETIME);
+			apc_store($toHash, $data, $this->expireTime);
 			
 			$store = apc_fetch($this->prefixArr, $success);
 			
@@ -106,7 +108,7 @@ class Apc
 			if(!isset($tmp[$toHash]))
 			{
 				$tmp[$toHash] = $toHash;
-				apc_store($this->prefixArr, $tmp, F_EXPIRECACHETIME);
+				apc_store($this->prefixArr, $tmp, $this->expireTime);
 			}
 		//}
 	}
@@ -133,6 +135,19 @@ class Apc
 			
 			apc_delete($this->prefixArr);
 		}		
+	}
+	
+	
+	public function cacheWritable()
+	{
+		$ret = false;
+		
+		if(function_exists("apc_add"))
+		{
+			$ret = true;
+		}
+		
+		return $ret;
 	}
 }
 
