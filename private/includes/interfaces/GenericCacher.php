@@ -2,8 +2,9 @@
 
 interface GenericCacher
 {
-
-	public function __construct($prefix, $uri);
+	
+	// $location is only used for specific types of caches, ex. FileCache
+	public function __construct($prefix, $location = "");
 	
 	public function checkExists($lookup);
 	
@@ -11,11 +12,11 @@ interface GenericCacher
 	
 	// might need to switch the order and give one generic data
 	// the static caches currently don't use $toHash
-	public function writeCachedFile($toHash, $data);
+	public function writeCachedFile($name, $data);
 	
 	public function purgeCache();
 	
-	public function cacheType();
+	public function cacheWriteable();
 
 }
 
