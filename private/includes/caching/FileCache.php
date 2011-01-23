@@ -5,13 +5,19 @@
  * @brief Handles writing responses to the disk for fast retrival
  *
  */
-class FileCache
+class FileCache implements GenericCacher
 {
 	private $cacheLoc = null;
 	private $uri = null;
 	private $urimd5 = null;
-	private $fileloc = null;
 	private $tmp = null;
+	
+	
+	// new vars
+	private $prefix = null;
+	private $store = array();
+	private $storePos = -1;
+	private $expireTime;
 	
 	/**
 	 * __construct function.
@@ -21,18 +27,13 @@ class FileCache
 	 * @param mixed $uri
 	 * @return void
 	 */
-	public function __construct($uri)
+	public function __construct($prefix, $expireTime, $location = "")
 	{
 		// setting up the variables
-		$this->cacheLoc = V_BASELOC . "/private/cache/";
-		//echo $this->cacheloc;
-		$this->uri = $uri;
-		// magic quotes?
-		// im going to remove this soon because i never even checked for them in anything else
-		if(get_magic_quotes_gpc())
-			$this->uri = stripcslashes($this->uri);
-		$this->urimd5 = md5($this->uri);
-		$this->fileloc = $this->cacheLoc . "/" . $this->urimd5;
+		// location should end in a /
+		$this->cacheLoc = $location;
+		$this->prefix = $prefix;
+		$this->expireTime = $expireTime;
 
 	}
 	
@@ -47,26 +48,28 @@ class FileCache
 	 * @access public
 	 * @return Boolean
 	 */
-	public function checkExists()
+	public function checkExists($lookup)
 	{	
 		$return = null;
 		
-		if(file_exists($this->fileloc))
+		$lookup = $this->cacheLoc . $lookup;
+		
+		if(file_exists($lookup))
 		{
-			$this->tmp = $this->getCachedDataPrivate();
+			$tmp = $this->getCachedDataPrivate($lookup);
 			//going to want to get file access date
-			$filetime = filemtime($this->fileloc);
+			$filetime = filemtime($lookup);
 			// going to check to see if the file was last modified longer than the expire time
-			if((time() - $filetime) > F_EXPIRECACHETIME)
+			if((time() - $filetime) > $this->expireTime)
 			{
 				// I could always not delete the file, i could overwrite the data in the file with new data
 				// that might yield higher performance from the filesystem
-				$this->deleteCachedFile();
+				$this->deleteCachedFile($lookup);
 				$return = false;
 			}
 			else
 			{
-				if($this->tmp == null)
+				if($tmp == null)
 				{
 					$return = false;
 				}
@@ -91,11 +94,11 @@ class FileCache
 	 * @access private
 	 * @return void
 	 */
-	private function deleteCachedFile()
+	private function deleteCachedFile($lookup)
 	{
-		if(file_exists($this->fileloc))
+		if(file_exists($lookup))
 		{
-			unlink($this->fileloc);
+			unlink($lookup);
 		}
 	}
 	
@@ -143,14 +146,15 @@ class FileCache
 		return $this->tmp;
 	}
 	
-	private function getCachedDataPrivate()
+	private function getCachedDataPrivate($lookup)
 	{
-			$file = @fopen($this->fileloc, 'r') or die("Somehow the cached file doesn't exist now");
+		// switch this to throw an exception
+			$file = @fopen($lookup, 'r') or die("Somehow the cached file doesn't exist now");
 			flock($file, LOCK_SH);
-			$size = filesize($this->fileloc);
+			$size = filesize($lookup);
 			if($size != 0)
 			{
-				$fileData = fread($file, filesize($this->fileloc));
+				$fileData = fread($file, filesize($lookup));
 			}
 			else
 			{

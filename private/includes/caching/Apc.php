@@ -63,13 +63,11 @@ class Apc implements GenericCacher
 	 */
 	public function getCachedData()
 	{
-		//$tmp = $this->currentData;
-		//$this->currentData = null;
+	
 		if($this->storePos > -1)
 		{
 			$tmp = array_pop($this->store);
 			$this->storePos--;
-			//print_r($tmp);
 		}
 		else
 		{
@@ -142,7 +140,7 @@ class Apc implements GenericCacher
 	{
 		$ret = false;
 		
-		if(function_exists("apc_add"))
+		if(function_exists("apc_store"))
 		{
 			$ret = true;
 		}
