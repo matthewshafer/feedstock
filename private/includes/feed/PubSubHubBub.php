@@ -6,20 +6,14 @@ class PubSubHubBub
 	private $errorText = null;
 	private $feedLoc = array();
 	
-	/**
-	 * __construct function.
-	 * 
-	 * @access public
-	 * @param mixed $hubUrl
-	 * @return void
-	 */
-	public function __construct($hubUrl)
+	
+	public function __construct($hubUrl, $htaccess)
 	{
 		$this->hubURL = $hubUrl;
 		echo $hubUrl;
 		
 		$siteLoc = sprintf("%s%s", V_URL, V_HTTPBASE);
-		if(!V_HTACCESS)
+		if(!$htaccess)
 		{
 			$siteLoc = sprintf("%s%s", $siteLoc, "index.php/");
 		}

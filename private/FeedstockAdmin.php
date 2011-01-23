@@ -22,6 +22,7 @@ class FeedstockAdmin
 	private $cacheEnable = false;
 	private $feedPubSubHubBub = "";
 	private $feedPubSubHubBubPublishUrl = "";
+	private $htaccess = false;
 	
 	/**
 	 * __construct function.
@@ -40,6 +41,7 @@ class FeedstockAdmin
 		$this->cacheEnable = $cacheEnable;
 		$this->feedPubSubHubBub = $feedPubSubHubBub;
 		$this->feedPubSubHubBubPublishUrl = $feedPubSubHubBubPublishUrl;
+		$this->htaccess = $htaccess
 		
 		require_once("includes/Router.php");
 		
@@ -72,7 +74,7 @@ class FeedstockAdmin
 		if($generateSitemap)
 		{
 			require_once("includes/SitemapCreator.php");
-			$this->sitemap = new SitemapCreator($this->databaseAdmin, V_BASELOC . $sitemapPath, $maxSitemapItems);
+			$this->sitemap = new SitemapCreator($this->databaseAdmin, V_BASELOC . $sitemapPath, $maxSitemapItems, $this->htaccess);
 		}
 		
 		$this->handleRequest();
@@ -259,7 +261,7 @@ class FeedstockAdmin
 			{
 				require_once("includes/feed/PubSubHubBub.php");
 				
-				$hub = new PubSubHubBub($this->feedPubSubHubBubPublishUrl);
+				$hub = new PubSubHubBub($this->feedPubSubHubBubPublishUrl, $this->htaccess);
 				$returned = $hub->publish();
 				//echo "PubSub: ";
 				//print_r($returned);

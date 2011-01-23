@@ -32,6 +32,7 @@ class Feedstock
 	private $cachePrefix = "";
 	private $cacheType = "";
 	private $cacheExpireTime = 0;
+	private $htaccess = false;
 	
 	/**
 	 * __construct function.
@@ -62,9 +63,10 @@ class Feedstock
 		$this->cachePrefix = $cachePrefix;
 		$this->cacheType = $cacheType;
 		$this->cacheExpireTime = $cacheExpireTime;
+		$this->htaccess = $htaccess;
 		
 		require_once("includes/Router.php");
-		$this->router = new Router(V_HTACCESS);
+		$this->router = new Router($this->htaccess);
 		
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();
@@ -163,7 +165,7 @@ class Feedstock
 			else
 			{
 				require_once("includes/TemplateEngine.php");
-				$this->templateEngine = new TemplateEngine($this->database, $this->router);
+				$this->templateEngine = new TemplateEngine($this->database, $this->router, $this->htaccess);
 				$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
 				$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
 				

@@ -15,12 +15,14 @@ class SitemapCreator
 	private $sitemapTemplate;
 	private $siteindexTemplate;
 	private $maxItems = 0;
+	private $htaccess = false;
 	
-	public function __construct($db, $path, $max)
+	public function __construct($db, $path, $max, $htaccess)
 	{
 		$this->database = $db;
 		$this->sitemapLoc = $path;
 		$this->maxItems = intval($max);
+		$this->htaccess = $htaccess;
 		
 		require_once("sitemap/SitemapTemplate.php");
 		$this->sitemapTemplate = new SitemapTemplate();
@@ -215,7 +217,7 @@ class SitemapCreator
 	{
 		$return = null;
 	
-		if(!V_HTACCESS)
+		if(!$this->htaccess)
 		{
 			if($uri != null || $uri == "")
 			{

@@ -22,6 +22,7 @@ class TemplateEngine
 	private $feedAuthorEmail = "";
 	private $feedPubSubHubBub = "";
 	private $feedPubSubHubBubSubscribe = "";
+	private $htaccess = false;
 	
 	/**
 	 * __construct function.
@@ -32,10 +33,11 @@ class TemplateEngine
 	 * @param mixed $router
 	 * @return void
 	 */
-	public function __construct($database, $router)
+	public function __construct($database, $router, $htaccess)
 	{
 		$this->database = $database;
 		$this->router = $router;
+		$this->htaccess = $htaccess;
 	}
 	
 	/**
@@ -481,7 +483,7 @@ class TemplateEngine
 	 */
 	public function getPostUrl()
 	{
-		if(!V_HTACCESS)
+		if(!$this->htaccess)
 		{
 			$return = sprintf("%s%s%s%s", V_URL, V_HTTPBASE, "index.php", $this->pageData[$this->arrayPosition]["URI"]);
 		}
@@ -649,7 +651,7 @@ class TemplateEngine
 			foreach($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
 			{
 				$return .= '<a href="' . V_URL .V_HTTPBASE;
-				if(!V_HTACCESS)
+				if(!$this->htaccess)
 				{
 					$return .= 'index.php/';
 				}
@@ -702,7 +704,7 @@ class TemplateEngine
 			{
 				//print_r($key);
 				$tmp = V_URL . V_HTTPBASE;
-				if(!V_HTACCESS)
+				if(!$this->htaccess)
 				{
 					$tmp .= 'index.php/';
 				}
@@ -834,7 +836,7 @@ class TemplateEngine
 		// need to remove slashes from the begining of the URI if we are using htaccess
 		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
 		
-		if(V_HTACCESS)
+		if($this->htaccess)
 		{
 			$return = sprintf("%s%s", $return, "index.php/");
 		}
@@ -980,7 +982,7 @@ class TemplateEngine
 		for($i=0; $i < $count; $i++)
 		{
 			$tmpURL = sprintf("%s%s", V_URL, V_HTTPBASE);
-			if(!V_HTACCESS)
+			if(!$this->htaccess)
 			{
 				$tmpURL .= "index.php";
 			}
@@ -1068,7 +1070,7 @@ class TemplateEngine
 		{
 			$offset = (int)$this->router->getPageOffset() + 2;
 			
-			if(!V_HTACCESS)
+			if(!$this->htaccess)
 			{
 				$tmpStr = sprintf("%s%s%s%d", V_URL, V_HTTPBASE, "index.php/page/", $offset);
 			}
@@ -1105,7 +1107,7 @@ class TemplateEngine
 		{
 			$offset = (int)$this->router->getPageOffset();
 			
-			if(!V_HTACCESS)
+			if(!$this->htaccess)
 			{
 				$tmpStr = sprintf("%s%s%s%d", V_URL, V_HTTPBASE, "index.php/page/", $offset);
 			}
@@ -1261,7 +1263,7 @@ class TemplateEngine
 	{
 		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
 		
-		if(!V_HTACCESS)
+		if(!$this->htaccess)
 		{
 			$return = sprintf("%s%s", $return, "index.php/");
 		}
