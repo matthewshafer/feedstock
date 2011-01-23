@@ -92,23 +92,20 @@ class Apc implements GenericCacher
 		$success = false;
 		$store = null;
 		
-		//if($data != null)
-		//{
-			apc_store($toHash, $data, $this->expireTime);
-			
-			$store = apc_fetch($this->prefixArr, $success);
-			
-			if($success)
-			{
-				$tmp = $store;
-			}
-			
-			if(!isset($tmp[$toHash]))
-			{
-				$tmp[$toHash] = $toHash;
-				apc_store($this->prefixArr, $tmp, $this->expireTime);
-			}
-		//}
+		apc_store($toHash, $data, $this->expireTime);
+		
+		$store = apc_fetch($this->prefixArr, $success);
+		
+		if($success)
+		{
+			$tmp = $store;
+		}
+		
+		if(!isset($tmp[$toHash]))
+		{
+			$tmp[$toHash] = $toHash;
+			apc_store($this->prefixArr, $tmp, $this->expireTime);
+		}
 	}
 	
 	/**

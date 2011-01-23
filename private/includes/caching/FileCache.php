@@ -8,12 +8,6 @@
 class FileCache implements GenericCacher
 {
 	private $cacheLoc = null;
-	private $uri = null;
-	private $urimd5 = null;
-	private $tmp = null;
-	
-	
-	// new vars
 	private $prefix = null;
 	private $store = array();
 	private $storePos = -1;
@@ -33,58 +27,66 @@ class FileCache implements GenericCacher
 		// location should end in a /
 		$this->cacheLoc = $location;
 		$this->prefix = $prefix;
-		$this->expireTime = $expireTime;
+		$this->expireTime = intval($expireTime);
 
 	}
 	
 	
-	// returns true if the current file is valid and not expired
-	// returns false if no cache exists or it is expired
-	/**
-	 * checkExists function.
-	 * 
-	 * @brief Returns true if the current file exists and is not expired.
-	 * @brief Returns false if no cache exists or is expired (this is saved in a var locally just in case the database is down, this way we can still serve content).
-	 * @access public
-	 * @return Boolean
-	 */
 	public function checkExists($lookup)
-	{	
-		$return = null;
-		
-		$lookup = $this->cacheLoc . $lookup;
+	{
+		$return = false;
+		$lookup = sprintf("%s%s%s", $this->cacheLoc, $this->prefix, sha1($lookup));
+		$tmp = "";
 		
 		if(file_exists($lookup))
 		{
-			$tmp = $this->getCachedDataPrivate($lookup);
-			//going to want to get file access date
-			$filetime = filemtime($lookup);
-			// going to check to see if the file was last modified longer than the expire time
-			if((time() - $filetime) > $this->expireTime)
+			$tmp = $this->loadFile($lookup, $return);
+			
+			if($return)
 			{
-				// I could always not delete the file, i could overwrite the data in the file with new data
-				// that might yield higher performance from the filesystem
-				$this->deleteCachedFile($lookup);
-				$return = false;
+				array_push($this->store, $tmp);
+				$this->storePos++;
 			}
-			else
-			{
-				if($tmp == null)
-				{
-					$return = false;
-				}
-				else
-				{
-					$return = true;
-				}
-			}
-		}
-		else
-		{
-			$return = false;
 		}
 		
 		return $return;
+	}
+	
+	private function loadFile($lookup, &$return)
+	{
+		$data = "";
+		
+		if($this->expireTime > 0 && ((time() - filemtime($lookup)) > $this->expireTime))
+		{
+			$this->deleteCachedFile($lookup);
+			$return = false;
+		}
+		else
+		{
+			if(($file = @fopen($lookup, 'r')) != false)
+			{
+				flock($file, LOCK_SH);
+				$size = filesize($lookup);
+				
+				if($size != 0)
+				{
+					$data = fread($file, $size);
+					$data = unserialize($data);
+					$return = true;
+					
+				}
+				else
+				{
+					// this like probably never gets hit.  I'll look into it in the future and see if its really needed
+					$this->deleteCachedFile($lookup);
+				}
+				
+				flock($file, LOCK_UN);
+				fclose($file);
+			}
+		}
+		
+		return $data;
 	}
 	
 	/**
@@ -102,31 +104,16 @@ class FileCache implements GenericCacher
 		}
 	}
 	
-	/**
-	 * writeCachedFile function.
-	 * 
-	 * @brief writes the cached file with the data passed in.  If the database happen's to be down we are going to use the previous cache file if we have that saved.
-	 * @access public
-	 * @param mixed $data
-	 * @return void
-	 */
-	public function writeCachedFile($data)
+	public function writeCachedFile($toHash, $data)
 	{
-		if($data != null)
+		$toHash = sprintf("%s%s%s", $this->cacheLoc, $this->prefix, sha1($toHash));
+		
+		if($data != null && ($file = fopen($toHash, 'w')) != false)
 		{
-			$file = fopen($this->fileloc, 'w') or die("Can not write cached file");
-			
 			if(flock($file, LOCK_EX))
-			{	
-				if($data == "Unable to connect to the Database Server" or $data == "Unable to connect to the database" and $this->tmp != null)
-				{
-					fwrite($file, $this->tmp);
-				}
-				else
-				{
-					fwrite($file, $data);
-					$this->tmp = $data;
-				}
+			{
+				$data = serialize($data);
+				fwrite($file, $data);
 				
 				flock($file, LOCK_UN);
 			}
@@ -143,28 +130,17 @@ class FileCache implements GenericCacher
 	 */
 	public function getCachedData()
 	{
-		return $this->tmp;
+		$tmp = null;
+		
+		if($this->storePos > -1)
+		{
+			$tmp = array_pop($this->store);
+			$this->storePos--;
+		}
+		
+		return $tmp;
 	}
 	
-	private function getCachedDataPrivate($lookup)
-	{
-		// switch this to throw an exception
-			$file = @fopen($lookup, 'r') or die("Somehow the cached file doesn't exist now");
-			flock($file, LOCK_SH);
-			$size = filesize($lookup);
-			if($size != 0)
-			{
-				$fileData = fread($file, filesize($lookup));
-			}
-			else
-			{
-				$fileData = null;
-			}
-			flock($file, LOCK_UN);
-			fclose($file);
-			
-			return $fileData;
-	}
 	
 	/**
 	 * purgeCache function.
@@ -185,6 +161,18 @@ class FileCache implements GenericCacher
 			}
 		}
 		closedir($dir);
+	}
+	
+	public function cacheWritable()
+	{
+		$return = false;
+		
+		if(is_dir($this->cacheLoc) && is_writable($this->cacheLoc))
+		{
+			$return = true;
+		}
+		
+		return $return;
 	}
 }
 ?>

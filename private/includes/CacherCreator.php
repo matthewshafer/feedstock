@@ -35,7 +35,7 @@ class CacherCreator
 		require_once("interfaces/GenericCacher.php");
 		require_once("caching/" . $this->cacheName . ".php");
 		
-		$this->cacheObj = new $this->cacheName($this->prefix, $this->expireTime, $this->baseLocation . "/private/cache");
+		$this->cacheObj = new $this->cacheName($this->prefix, $this->expireTime, $this->baseLocation . "/private/cache/");
 		
 		if($this->cacheObj instanceof GenericCacher && $this->cacheObj->cacheWritable())
 		{
