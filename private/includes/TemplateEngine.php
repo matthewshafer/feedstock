@@ -36,7 +36,7 @@ class TemplateEngine
 	 * @brief you need at least a 404.php for the theme to be valid
 	 * @access public
 	 */
-	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $siteUrlBase, $postFormat, $postsPerPage, $htaccess)
+	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postFormat, $postsPerPage)
 	{
 		$this->database = $database;
 		$this->router = $router;
@@ -47,53 +47,7 @@ class TemplateEngine
 		$this->postsPerPage = intval($postsPerPage);
 		
 		// site Url creating stuff;
-		$this->siteUrl = $this->generateSiteUrl($siteUrl, $siteUrlBase, $htaccess);
-	}
-	
-	private function generateSiteUrl($url, $baseAddress, $htaccess)
-	{
-		$urlLen = strlen($url);
-		$baseLen = strlen($baseAddress);
-		
-		
-		if($baseLen > 0 && $baseAddress[$baseLen - 1] == "/")
-		{
-			$baseAddress = substr($baseAddress, 0 , -1);
-			$baseLen--;
-		}
-		
-		if($baseLen > 0 && $baseAddress[0] == "/")
-		{
-			$baseAddress = substr($baseAddress, 1);
-			$baseLen--;
-		}
-		
-		if($urlLen > 0)
-		{
-			if($baseLen > 0 && $url[$urlLen - 1] == "/")
-			{
-				$url .= $baseAddress;
-			}
-			else if($baseLen > 0)
-			{
-				$url = sprintf("%s/%s", $url, $baseAddress);
-			}
-			else if($url[$urlLen - 1] == "/")
-			{
-				$url = substr($url, 0, -1);
-			}
-		}
-		else
-		{
-			throw error("Invalid website URL");
-		}
-		
-		if(!$htaccess)
-		{
-			$url = sprintf("%s/index.php", $url);
-		}
-		
-		return $url;
+		$this->siteUrl = $siteUrl;
 	}
 	
 	/**

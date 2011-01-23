@@ -15,14 +15,14 @@ class SitemapCreator
 	private $sitemapTemplate;
 	private $siteindexTemplate;
 	private $maxItems = 0;
-	private $htaccess = false;
+	private $siteUrl = "";
 	
-	public function __construct($db, $path, $max, $htaccess)
+	public function __construct($db, $path, $max, $siteUrl)
 	{
 		$this->database = $db;
 		$this->sitemapLoc = $path;
 		$this->maxItems = intval($max);
-		$this->htaccess = $htaccess;
+		$this->siteUrl = $siteUrl;
 		
 		require_once("sitemap/SitemapTemplate.php");
 		$this->sitemapTemplate = new SitemapTemplate();
@@ -195,19 +195,19 @@ class SitemapCreator
 	
 	private function addTagToUri($uri)
 	{
-		return sprintf("/tag/%s", $uri);
+		return sprintf("tag/%s", $uri);
 	}
 	
 	private function addCategoryToUri($uri)
 	{
-		return sprintf("/category/%s", $uri);
+		return sprintf("category/%s", $uri);
 	}
 	
 	private function checkPageUri($uri)
 	{
-		if($uri[0] != "/")
+		if($uri[0] == "/")
 		{
-			$uri = sprintf("/%s", $uri);
+			$uri = substr($uri, 1);
 		}
 		
 		return $uri;
@@ -216,28 +216,8 @@ class SitemapCreator
 	private function makeURL($uri)
 	{
 		$return = null;
-	
-		if(!$this->htaccess)
-		{
-			if($uri != null || $uri == "")
-			{
-				$return = sprintf("%s%s%s%s", V_URL, V_HTTPBASE, "index.php", $uri);
-			}
-		}
-		else
-		{
-			$httpBase = V_HTTPBASE;
-			$httpBaseLength = strlen($httpBase);
-			if($httpBaseLength > 0 && $httpBase[$httpBaseLength-1] == "/")
-			{
-				$httpBase = substr($httpBase, 0, -1);
-			}
-			
-			if($uri != null || $uri == "")
-			{
-				$return = sprintf("%s%s%s", V_URL, $httpBase, $uri);
-			}
-		}
+		
+		$return = sprintf("%s/%s", $this->siteUrl, $uri);
 		
 		return $return;
 	}
@@ -249,7 +229,7 @@ class SitemapCreator
 		for($i = 0; $i < $pages; $i++)
 		{
 			$tempArray[$i] = array();
-			$tempArray[$i]['URL'] = $this->makeURL(sprintf("%s%s", "/page/", $i + 1));
+			$tempArray[$i]['URL'] = $this->makeURL(sprintf("%s%s", "page/", $i + 1));
 			$tempArray[$i]['priority'] = ".5";
 			$tempArray[$i]['changeFreq'] = "daily";
 		}

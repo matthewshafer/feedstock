@@ -25,6 +25,7 @@ class FeedstockAdmin
 	private $htaccess = false;
 	private $siteUrl = "";
 	private $siteUrlBase = "";
+	private $siteUrlGenerator = null;
 	private $siteTitle = "";
 	private $siteDescription = "";
 	
@@ -65,12 +66,16 @@ class FeedstockAdmin
 		
 		$this->databaseAdmin = $this->databaseMaker();
 		
+		require_once("includes/SiteUrlGenerator.php");
+		$this->siteUrlGenerator = new SiteUrlGenerator($this->siteUrl, $this->siteUrlBase, $this->htaccess);
+		
 		require_once("includes/CookieMonster.php");
 		
 		$this->cookieMonster = new CookieMonster($this->databaseAdmin, $cookieName, $this->siteUrl);
 		
 		require_once("includes/TemplateEngineAdmin.php");
 		
+		// need to fix this to now support the new SiteUrlGenerator
 		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->siteUrl, $this->siteUrlBase, $this->siteTitle, $this->siteDescription);
 		
 		require_once("includes/OutputHelper.php");
@@ -82,7 +87,7 @@ class FeedstockAdmin
 		if($generateSitemap)
 		{
 			require_once("includes/SitemapCreator.php");
-			$this->sitemap = new SitemapCreator($this->databaseAdmin, V_BASELOC . $sitemapPath, $maxSitemapItems, $this->htaccess);
+			$this->sitemap = new SitemapCreator($this->databaseAdmin, V_BASELOC . $sitemapPath, $maxSitemapItems, $this->siteUrlGenerator->generateSiteUrl());
 		}
 		
 		$this->handleRequest();
@@ -269,7 +274,7 @@ class FeedstockAdmin
 			{
 				require_once("includes/feed/PubSubHubBub.php");
 				
-				$hub = new PubSubHubBub($this->feedPubSubHubBubPublishUrl, $this->htaccess);
+				$hub = new PubSubHubBub($this->feedPubSubHubBubPublishUrl, $this->siteUrlGenerator->generateSiteUrl());
 				$returned = $hub->publish();
 				//echo "PubSub: ";
 				//print_r($returned);

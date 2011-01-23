@@ -178,6 +178,8 @@ class Feedstock
 			}
 			else
 			{
+				require_once("includes/SiteUrlGenerator.php");
+				$siteUrlGenerator = new SiteUrlGenerator($this->siteUrl, $this->siteUrlBase, $this->htaccess);
 				require_once("includes/TemplateEngine.php");
 				try
 				{
@@ -186,11 +188,9 @@ class Feedstock
 																$this->siteTitle, 
 																$this->siteDescription, 
 																$this->themeName, 
-																$this->siteUrl, 
-																$this->siteUrlBase, 
+																$siteUrlGenerator->generateSiteUrl(), 
 																$this->postFormat, 
-																$this->postsPerPage, 
-																$this->htaccess);
+																$this->postsPerPage);
 																
 					$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
 					$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);

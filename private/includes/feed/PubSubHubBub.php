@@ -7,18 +7,13 @@ class PubSubHubBub
 	private $feedLoc = array();
 	
 	
-	public function __construct($hubUrl, $htaccess)
+	public function __construct($hubUrl, $siteUrl)
 	{
 		$this->hubURL = $hubUrl;
 		echo $hubUrl;
 		
-		$siteLoc = sprintf("%s%s", V_URL, V_HTTPBASE);
-		if(!$htaccess)
-		{
-			$siteLoc = sprintf("%s%s", $siteLoc, "index.php/");
-		}
-		$rss = sprintf("%s%s", $siteLoc, "feed/");
-		$atom = sprintf("%s%s", $siteLoc, "feed/atom/");
+		$rss = sprintf("%s/feed/", $siteUrl);
+		$atom = sprintf("%s/feed/atom/", $siteUrl);
 		
 		if($this->checkValidURL($rss))
 		{
