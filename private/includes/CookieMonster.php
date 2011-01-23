@@ -10,16 +10,18 @@ class CookieMonster
 	protected $database = null;
 	protected $userID = null;
 	protected $cookieName;
+	protected $siteUrl;
 	
 	/**
 	* Constructor which grabs the client cookie and stores what it has locally
 	* 
 	* @param database that was created, this is used to invalidate the info from the database
 	*/
-	public function __construct($database, $cookieName)
+	public function __construct($database, $cookieName, $siteUrl)
 	{
 		$this->database = $database;
 		$this->cookieName = $cookieName;
+		$this->siteUrl = $siteUrl;
 	}
 	
 	/**
@@ -37,7 +39,7 @@ class CookieMonster
 		$this->userID = $userID;
 		//echo $userID;
 		// need to generate the value for the cookie
-		$val = sprintf("%s%d%s", $userID, time(), V_URL);
+		$val = sprintf("%s%d%s", $userID, time(), $this->siteUrl);
 		
 		// we could always use mcrypt but for now I should just get crypt working
 		$val = crypt($val);

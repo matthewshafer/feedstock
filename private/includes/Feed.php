@@ -23,9 +23,9 @@
 			{
 				echo "\t\t\t" . sprintf("%s%s%s", '<atom:link rel="hub" href="', $this->templateEngine->pubSubHubBubSubscribeUrl(), '"/>') . "\n";
 			}
-			echo "\t\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
+			echo "\t\t\t" . '<title>' . $this->templateEngine->getHtmlTitle() . '</title>' . "\n";
 			echo "\t\t\t" . '<link>' . $this->templateEngine->siteUrl() . '</link>' . "\n";
-			echo "\t\t\t" . '<description>' . V_DESCRIPTION . '</description>' . "\n";
+			echo "\t\t\t" . '<description>' . $this->templateEngine->getSiteDescription() . '</description>' . "\n";
 			echo "\t\t\t" . '<lastBuildDate>' . $this->templateEngine->lastUpdatedTime("r") . '</lastBuildDate>' . "\n";
 			echo "\t\t\t" . '<language>en-us</language>' . "\n";
 				
@@ -49,7 +49,7 @@
 			echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
 			echo "\t" . '<feed xmlns="http://www.w3.org/2005/Atom">' . "\n";
 			
-			echo "\t\t" . '<title>' . V_SITETITLE . '</title>' . "\n";
+			echo "\t\t" . '<title>' . $this->templateEngine->getHtmlTitle() . '</title>' . "\n";
 			echo "\t\t" . '<link href="' . $this->templateEngine->siteUrl() . '" />' . "\n";
 			echo "\t\t" . '<link  rel="self" href="' . $this->templateEngine->siteUrl("feed/atom/") . '" type="application/atom+xml" />' . "\n";
 			if($this->templateEngine->pubSubHubBubEnabled())

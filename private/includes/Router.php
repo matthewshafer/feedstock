@@ -24,7 +24,7 @@ class Router
 	 * @param mixed $base (default = V_HTTPBASE)
 	 * @return void
 	 */
-	public function __construct($htaccess, $base = V_HTTPBASE)
+	public function __construct($htaccess, $base)
 	{
 		$this->htaccess = $htaccess;
 		$this->uri = $_SERVER['REQUEST_URI'];
@@ -87,7 +87,15 @@ class Router
 			if(count($this->uriArray) > 1)
 			{
 				$this->firstPart = $this->uriArray[1];
-				$this->uri = $temp[1];
+				
+				if(isset($temp[1]))
+				{
+					$this->uri = $temp[1];
+				}
+				else
+				{
+					$this->uri = "/";
+				}
 				
 				// this removes the trailing slash if one exists
 				if(substr($this->uri, (strlen($this->uri) - 1)) == '/')

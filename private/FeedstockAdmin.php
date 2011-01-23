@@ -23,6 +23,10 @@ class FeedstockAdmin
 	private $feedPubSubHubBub = "";
 	private $feedPubSubHubBubPublishUrl = "";
 	private $htaccess = false;
+	private $siteUrl = "";
+	private $siteUrlBase = "";
+	private $siteTitle = "";
+	private $siteDescription = "";
 	
 	/**
 	 * __construct function.
@@ -41,7 +45,11 @@ class FeedstockAdmin
 		$this->cacheEnable = $cacheEnable;
 		$this->feedPubSubHubBub = $feedPubSubHubBub;
 		$this->feedPubSubHubBubPublishUrl = $feedPubSubHubBubPublishUrl;
-		$this->htaccess = $htaccess
+		$this->htaccess = $htaccess;
+		$this->siteUrl = $siteUrl;
+		$this->siteUrlBase = $siteUrlBase;
+		$this->siteTitle = $siteTitle;
+		$this->siteDescription = $siteDescription;
 		
 		require_once("includes/Router.php");
 		
@@ -59,11 +67,11 @@ class FeedstockAdmin
 		
 		require_once("includes/CookieMonster.php");
 		
-		$this->cookieMonster = new CookieMonster($this->databaseAdmin, $cookieName);
+		$this->cookieMonster = new CookieMonster($this->databaseAdmin, $cookieName, $this->siteUrl);
 		
 		require_once("includes/TemplateEngineAdmin.php");
 		
-		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router);
+		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->siteUrl, $this->siteUrlBase, $this->siteTitle, $this->siteDescription);
 		
 		require_once("includes/OutputHelper.php");
 		$outputHelper = new OutputHelper();
@@ -584,6 +592,17 @@ class FeedstockAdmin
 		$return = null;
 		if($title != null)
 		{
+			$ct = strlen($title);
+			if($ct > 0 && $title[0] != "/")
+			{
+				$title = sprintf("/%s", $title);
+			}
+			
+			$ct = strlen($title);
+			if($ct > 0 && $title[$ct - 1] == "/")
+			{
+				$title = substr($title, 0, -1);
+			}
 			//echo $title;
 			// slightly modified from http://cubiq.org/the-perfect-php-clean-url-generator/12
 			$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $title);

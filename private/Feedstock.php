@@ -33,6 +33,13 @@ class Feedstock
 	private $cacheType = "";
 	private $cacheExpireTime = 0;
 	private $htaccess = false;
+	private $siteTitle = "";
+	private $siteDescription = "";
+	private $themeName = "";
+	private $siteUrl = "";
+	private $siteUrlBase = "";
+	private $postFormat = "";
+	private $postsPerPage = 0;
 	
 	/**
 	 * __construct function.
@@ -64,9 +71,16 @@ class Feedstock
 		$this->cacheType = $cacheType;
 		$this->cacheExpireTime = $cacheExpireTime;
 		$this->htaccess = $htaccess;
+		$this->siteTitle = $siteTitle;
+		$this->siteDescription = $siteDescription;
+		$this->themeName = $themeName;
+		$this->postFormat = $postFormat;
+		$this->postsPerPage = $postsPerPage;
+		$this->siteUrl = $siteUrl;
+		$this->siteUrlBase = $siteUrlBase;
 		
 		require_once("includes/Router.php");
-		$this->router = new Router($this->htaccess);
+		$this->router = new Router($this->htaccess, $this->siteUrlBase);
 		
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();
@@ -81,7 +95,7 @@ class Feedstock
 			if($this->maintenanceMode($enableMaintenance, $this->maintenanceAddresses))
 			{
 				require_once("includes/Maintenance.php");
-				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", V_BASELOC, V_THEME), $this->outputHelper);
+				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", V_BASELOC, $this->themeName), $this->outputHelper);
 				$maintenance->render();
 			}
 			else
@@ -165,13 +179,30 @@ class Feedstock
 			else
 			{
 				require_once("includes/TemplateEngine.php");
-				$this->templateEngine = new TemplateEngine($this->database, $this->router, $this->htaccess);
-				$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
-				$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
-				
-				require_once("includes/TemplateLoader.php");
-				$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
-				$data = $this->templateLoader->render();
+				try
+				{
+					$this->templateEngine = new TemplateEngine($this->database, 
+																$this->router, 
+																$this->siteTitle, 
+																$this->siteDescription, 
+																$this->themeName, 
+																$this->siteUrl, 
+																$this->siteUrlBase, 
+																$this->postFormat, 
+																$this->postsPerPage, 
+																$this->htaccess);
+																
+					$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
+					$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
+					
+					require_once("includes/TemplateLoader.php");
+					$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
+					$data = $this->templateLoader->render();
+				}
+				catch(Exception $e)
+				{
+					echo $e;
+				}
 			}
 			
 			$this->database->closeConnection();

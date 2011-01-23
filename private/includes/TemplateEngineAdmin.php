@@ -16,6 +16,10 @@ class TemplateEngineAdmin
 	protected $htmlPageTitle = null;
 	private $haveNextPage = false;
 	private $count = -1;
+	private $siteUrl = "";
+	private $siteUrlBase = "";
+	private $siteTitle = "";
+	private $siteDescription = "";
 	
 	/**
 	 * __construct function.
@@ -25,10 +29,14 @@ class TemplateEngineAdmin
 	 * @param mixed $router
 	 * @return void
 	 */
-	public function __construct($database, $router)
+	public function __construct($database, $router, $siteUrl, $siteUrlBase, $siteTitle, $siteDescription)
 	{
 		$this->db = $database;
 		$this->router = $router;
+		$this->siteUrl = $siteUrl;
+		$this->siteUrlBase = $siteUrlBase;
+		$this->siteTitle = $siteTitle;
+		$this->siteDescription = $siteDescription;
 	}
 	
 	public function loggedIn($areWe)
@@ -773,17 +781,17 @@ class TemplateEngineAdmin
 	
 	public function siteName()
 	{
-		return V_SITETITLE;
+		return $this->siteTitle;
 	}
 	
 	public function siteDescription()
 	{
-		return V_DESCRIPTION;
+		return $this->siteDescription;
 	}
 	
 	public function siteNameLink()
 	{
-		return sprintf('<a href="%s%s">%s</a>', V_URL, V_HTTPBASE, $this->siteName());
+		return sprintf('<a href="%s%s">%s</a>', $this->siteUrl, $this->siteUrlBase, $this->siteName());
 	}
 	
 	public function getHtmlTitle()

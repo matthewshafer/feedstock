@@ -22,22 +22,78 @@ class TemplateEngine
 	private $feedAuthorEmail = "";
 	private $feedPubSubHubBub = "";
 	private $feedPubSubHubBubSubscribe = "";
-	private $htaccess = false;
+	private $siteTitle = "";
+	private $siteDescription = "";
+	private $themeName = "";
+	private $siteUrl = "";
+	private $postFormat = "";
+	private $postsPerPage = 0;
+	
 	
 	/**
 	 * __construct function.
 	 * 
 	 * @brief you need at least a 404.php for the theme to be valid
 	 * @access public
-	 * @param mixed $database
-	 * @param mixed $router
-	 * @return void
 	 */
-	public function __construct($database, $router, $htaccess)
+	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $siteUrlBase, $postFormat, $postsPerPage, $htaccess)
 	{
 		$this->database = $database;
 		$this->router = $router;
-		$this->htaccess = $htaccess;
+		$this->siteTitle = $siteTitle;
+		$this->siteDescription = $siteDescription;
+		$this->themeName = $themeName;
+		$this->postFormat = $postFormat;
+		$this->postsPerPage = intval($postsPerPage);
+		
+		// site Url creating stuff;
+		$this->siteUrl = $this->generateSiteUrl($siteUrl, $siteUrlBase, $htaccess);
+	}
+	
+	private function generateSiteUrl($url, $baseAddress, $htaccess)
+	{
+		$urlLen = strlen($url);
+		$baseLen = strlen($baseAddress);
+		
+		
+		if($baseLen > 0 && $baseAddress[$baseLen - 1] == "/")
+		{
+			$baseAddress = substr($baseAddress, 0 , -1);
+			$baseLen--;
+		}
+		
+		if($baseLen > 0 && $baseAddress[0] == "/")
+		{
+			$baseAddress = substr($baseAddress, 1);
+			$baseLen--;
+		}
+		
+		if($urlLen > 0)
+		{
+			if($baseLen > 0 && $url[$urlLen - 1] == "/")
+			{
+				$url .= $baseAddress;
+			}
+			else if($baseLen > 0)
+			{
+				$url = sprintf("%s/%s", $url, $baseAddress);
+			}
+			else if($url[$urlLen - 1] == "/")
+			{
+				$url = substr($url, 0, -1);
+			}
+		}
+		else
+		{
+			throw error("Invalid website URL");
+		}
+		
+		if(!$htaccess)
+		{
+			$url = sprintf("%s/index.php", $url);
+		}
+		
+		return $url;
 	}
 	
 	/**
@@ -66,7 +122,7 @@ class TemplateEngine
 		
 		if($location == null)
 		{
-			$location = sprintf("%s/private/themes/%s", V_BASELOC, V_THEME);
+			$location = sprintf("%s/private/themes/%s", V_BASELOC, $this->themeName);
 		}
 		
 		$fileLoc = sprintf("%s/%s", $location, $file);
@@ -92,7 +148,7 @@ class TemplateEngine
 	 */	
 	private function request()
 	{
-		$return = sprintf("%s/private/themes/%s", V_BASELOC, V_THEME);
+		$return = sprintf("%s/private/themes/%s", V_BASELOC, $this->themeName);
 		$file = null;
 		
 		if(strtolower($this->router->pageType()) == "")
@@ -101,9 +157,8 @@ class TemplateEngine
 		}
 		else if(strtolower($this->router->pageType()) == "page")
 		{
-			$limit = intval(F_POSTSPERPAGE);
-			$offset = $this->router->getPageOffset() * $limit;
-			$this->pageData = $this->database->getPosts($limit, $offset);
+			$offset = $this->router->getPageOffset() * $this->postsPerPage;
+			$this->pageData = $this->database->getPosts($this->postsPerPage, $offset);
 			$file = "postList.php";
 		}
 		else
@@ -150,7 +205,6 @@ class TemplateEngine
 					{
 						
 						$pageOffset = $this->router->searchURI("page");
-						$limit = intval(F_POSTSPERPAGE);
 						
 						if($pageOffset != -1)
 						{
@@ -165,7 +219,7 @@ class TemplateEngine
 							
 							if($pageID >= 0)
 							{
-								$this->pageData = $this->database->getPostsInCategoryOrTag(0, $limit, $pageID);
+								$this->pageData = $this->database->getPostsInCategoryOrTag(0, $this->postsPerPage, $pageID);
 							}
 							else
 							{
@@ -175,7 +229,7 @@ class TemplateEngine
 						}
 						else
 						{
-							$this->pageData = $this->database->getPostsInCategoryOrTag(0, $limit, 0);
+							$this->pageData = $this->database->getPostsInCategoryOrTag(0, $this->postsPerPage, 0);
 						}
 					}
 					// need some error checking for null pagedata
@@ -209,7 +263,6 @@ class TemplateEngine
 					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryOrTagName($tagName, 1))
 					{
 						$pageOffset = $this->router->searchURI("page");
-						$limit = intval(F_POSTSPERPAGE);
 						
 						if($pageOffset != -1)
 						{
@@ -224,7 +277,7 @@ class TemplateEngine
 							if($pageID >= 0)
 							{
 								echo $pageID;
-								$this->pageData = $this->database->getPostsInCategoryOrTag(1, $limit, $pageID);
+								$this->pageData = $this->database->getPostsInCategoryOrTag(1, $this->postsPerPage, $pageID);
 							}
 							else
 							{
@@ -234,7 +287,7 @@ class TemplateEngine
 						}
 						else
 						{
-							$this->pageData = $this->database->getPostsInCategoryOrTag(1, $limit, 0);
+							$this->pageData = $this->database->getPostsInCategoryOrTag(1, $this->postsPerPage, 0);
 						}
 					}
 					
@@ -263,8 +316,7 @@ class TemplateEngine
 				// need to rewrite the feed to use template engine over doing stuff on it's own
 				else if($this->router->pageType() == "feed")
 				{
-					$limit = intval(F_POSTSPERPAGE);
-					$this->pageData = $this->database->getPosts($limit, 0);
+					$this->pageData = $this->database->getPosts($this->postsPerPage, 0);
 					$return = sprintf("%s/private/includes", V_BASELOC);
 					$file = "Feed.php";
 				}
@@ -338,7 +390,7 @@ class TemplateEngine
 	// dont use %CATEGORY% yet it doesnt work!
 	private function checkUriPost()
 	{
-		$temp = explode("/", V_POSTFORMAT);
+		$temp = explode("/", $this->postFormat);
 		
 		$isBad = false;
 		$return = true;
@@ -483,27 +535,14 @@ class TemplateEngine
 	 */
 	public function getPostUrl()
 	{
-		if(!$this->htaccess)
+
+		if(isset($this->pageData[$this->arrayPosition]["URI"]))
 		{
-			$return = sprintf("%s%s%s%s", V_URL, V_HTTPBASE, "index.php", $this->pageData[$this->arrayPosition]["URI"]);
+			$return = sprintf("%s%s", $this->siteUrl, $this->pageData[$this->arrayPosition]["URI"]);
 		}
 		else
 		{
-			$tmp = V_HTTPBASE;
-			$len = strlen($tmp);
-			if($len > 0 && $tmp[$len-1] == "/")
-			{
-				$tmp = substr($tmp, 0, -1);
-			}
-			
-			if(isset($this->pageData[$this->arrayPosition]["URI"]))
-			{
-				$return = sprintf("%s%s%s", V_URL, $tmp, $this->pageData[$this->arrayPosition]["URI"]);
-			}
-			else
-			{
-				$return = null;
-			}
+			$return = null;
 		}
 		
 		return $return;
@@ -523,11 +562,11 @@ class TemplateEngine
 		
 		if(isset($this->pageData[$this->arrayPosition]["Title"]))
 		{
-			$return = sprintf('%s%s%s', $this->pageData[$this->arrayPosition]["Title"], " :: ", V_SITETITLE);
+			$return = sprintf('%s%s%s', $this->pageData[$this->arrayPosition]["Title"], " :: ", $this->siteTitle);
 		}
 		else
 		{
-			$return = V_SITETITLE;
+			$return = $this->siteTitle;
 		}
 		
 		return $return;
@@ -649,14 +688,15 @@ class TemplateEngine
 		if(isset($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
 			foreach($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
-			{
-				$return .= '<a href="' . V_URL .V_HTTPBASE;
-				if(!$this->htaccess)
+			{				
+				// for some reason I feel like its good to set a null to a string before I use it
+				if($return == null)
 				{
-					$return .= 'index.php/';
+					$return = "";
 				}
-			
-				$return .= 'tag/' . $this->generateSubTagUri($key) . '">' . $key["Name"] . '</a>, ';
+				
+				// might want to make sure $key["Name"] is valid before using it.
+				$return .= sprintf('<a href="%s/tag/%s">%s</a>, ', $this->siteUrl, $this->generateSubTagUri($key), $key["Name"]);
 			}
 			$return = substr($return, 0, -2);
 		}
@@ -702,15 +742,14 @@ class TemplateEngine
 		{
 			foreach($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
 			{
-				//print_r($key);
-				$tmp = V_URL . V_HTTPBASE;
-				if(!$this->htaccess)
+				// feels like a good idea to make the null a string before I use it
+				if($return == null)
 				{
-					$tmp .= 'index.php/';
+					$return = "";
 				}
-				$tmp .= 'category/' .  $this->generateSubCategoryUri($key);
-			
-				$return .= sprintf('<a href="%s">%s</a>, ', $tmp, $key["Name"]);
+				
+				// might want to make sure $key["Name"] is valid before using it.
+				$return .= sprintf('<a href="%s/category/%s">%s</a>, ', $this->siteUrl, $this->generateSubCategoryUri($key), $key["Name"]);
 			}
 			
 			$return = substr($return, 0, -2);
@@ -833,22 +872,15 @@ class TemplateEngine
 	
 	private function generateUrlFromUri($uri)
 	{
-		// need to remove slashes from the begining of the URI if we are using htaccess
-		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
+		$return = $this->siteUrl;
+		$uriLen = strlen($uri);
 		
-		if($this->htaccess)
+		if($uriLen > 0 && $uri[0] == "/")
 		{
-			$return = sprintf("%s%s", $return, "index.php/");
-		}
-		else
-		{
-			if($return[strlen($return) - 1] == "/" && $uri[0] == "/")
-			{
-				$return = substr($return, 0, strlen($return) - 1);
-			}
+			$uri = substr($uri, 1);
 		}
 		
-		$return = sprintf("%s%s", $return, $uri);
+		$return = sprintf("%s/%s", $return, $uri);
 		
 		return $return;
 	}
@@ -956,8 +988,7 @@ class TemplateEngine
 	 */
 	public function getPostsIndex()
 	{
-		$limit = intval(F_POSTSPERPAGE);
-		$this->pageData = $this->database->getPosts($limit, 0);
+		$this->pageData = $this->database->getPosts($this->postsPerPage, 0);
 		
 		if(!empty($this->pageData))
 		{
@@ -980,18 +1011,8 @@ class TemplateEngine
 		$count = count($tmpArr);
 		
 		for($i=0; $i < $count; $i++)
-		{
-			$tmpURL = sprintf("%s%s", V_URL, V_HTTPBASE);
-			if(!$this->htaccess)
-			{
-				$tmpURL .= "index.php";
-			}
-			
-			if(substr($tmpURL, -1) == "/")
-			{
-				$tmpURL = substr($tmpURL, 0, -1);
-			}
-			$tmpURL .= sprintf("%s", $tmpArr[$i]["URI"]);
+		{	
+			$tmpURL = sprintf("%s%s", $this->siteUrl, $tmpArr[$i]["URI"]);
 			$tmpArr[$i]["URL"] = $tmpURL;
 		}
 		
@@ -1070,22 +1091,7 @@ class TemplateEngine
 		{
 			$offset = (int)$this->router->getPageOffset() + 2;
 			
-			if(!$this->htaccess)
-			{
-				$tmpStr = sprintf("%s%s%s%d", V_URL, V_HTTPBASE, "index.php/page/", $offset);
-			}
-			else
-			{
-				$tmpStr = V_HTTPBASE;
-				$len = strlen($tmpStr);
-				if($len > 0 && $tmpStr[$len-1] == "/")
-				{
-					$tmpStr = substr($tmp, 0, -1);
-				}
-				
-				$tmpStr = sprintf("%s%s%d", $tmpStr, "page/", $offset);
-			}
-			$return = sprintf('<a href="%s">%s</a>', $tmpStr, $title);
+			$return = sprintf('<a href="%s/page/%d">%s</a>', $this->siteUrl, $offset, $title);
 		}
 		
 		return $return;
@@ -1107,22 +1113,14 @@ class TemplateEngine
 		{
 			$offset = (int)$this->router->getPageOffset();
 			
-			if(!$this->htaccess)
+			if($offset === 1)
 			{
-				$tmpStr = sprintf("%s%s%s%d", V_URL, V_HTTPBASE, "index.php/page/", $offset);
+				$return = sprintf('<a href="%s">%s</a>', $this->siteUrl, $title);
 			}
 			else
 			{
-				$tmpStr = V_HTTPBASE;
-				$len = strlen($tmpStr);
-				if($len > 0 && $tmpStr[$len-1] == "/")
-				{
-					$tmpStr = substr($tmp, 0, -1);
-				}
-				
-				$tmpStr = sprintf("%s%s%d", $tmpStr, "page/", $offset);
+				$return = sprintf('<a href="%s/page/%d">%s</a>', $this->siteUrl, $offset, $title);
 			}
-			$return = sprintf('<a href="%s">%s</a>', $tmpStr, $title);
 		}
 		
 		return $return;
@@ -1193,7 +1191,7 @@ class TemplateEngine
 		
 		if($return == null)
 		{
-			$return = sprintf("%s%sthemes/%s/", V_URL, V_HTTPBASE, V_THEME);
+			$return = sprintf("%s/themes/%s/", $this->siteUrl, $this->themeName);
 		}
 		
 		return $return;
@@ -1249,23 +1247,11 @@ class TemplateEngine
 		
 		if($uri == null)
 		{
-			$return = $this->generateSiteUrl();
+			$return = $this->siteUrl;
 		}
 		else
 		{
 			$return = $this->generateUrlFromUri($uri);
-		}
-		
-		return $return;
-	}
-	
-	private function generateSiteUrl()
-	{
-		$return = sprintf("%s%s", V_URL, V_HTTPBASE);
-		
-		if(!$this->htaccess)
-		{
-			$return = sprintf("%s%s", $return, "index.php/");
 		}
 		
 		return $return;
@@ -1369,6 +1355,11 @@ class TemplateEngine
 	public function pubSubHubBubSubscribeUrl()
 	{
 		return $this->feedPubSubHubBubSubscribe;
+	}
+	
+	public function getSiteDescription()
+	{
+		return $this->siteDescription;
 	}
 }
 ?>
