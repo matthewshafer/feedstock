@@ -20,6 +20,7 @@ class TemplateEngineAdmin
 	private $siteUrlBase = "";
 	private $siteTitle = "";
 	private $siteDescription = "";
+	private $adminAddress = "";
 	
 	/**
 	 * __construct function.
@@ -29,7 +30,7 @@ class TemplateEngineAdmin
 	 * @param mixed $router
 	 * @return void
 	 */
-	public function __construct($database, $router, $siteUrl, $siteUrlBase, $siteTitle, $siteDescription)
+	public function __construct($database, $router, $siteUrl, $siteUrlBase, $siteTitle, $siteDescription, $adminAddress)
 	{
 		$this->db = $database;
 		$this->router = $router;
@@ -37,6 +38,7 @@ class TemplateEngineAdmin
 		$this->siteUrlBase = $siteUrlBase;
 		$this->siteTitle = $siteTitle;
 		$this->siteDescription = $siteDescription;
+		$this->adminAddress = $adminAddress;
 	}
 	
 	public function loggedIn($areWe)
@@ -335,17 +337,14 @@ class TemplateEngineAdmin
 		
 		if($this->haveNextPage)
 		{
-			if(!F_ADMINHTACCESS)
+			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
+				
+			if($pageNumber == 1)
 			{
-				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
-				
-				if($pageNumber == 1)
-				{
-					$pageNumber = 2;
-				}
-				
-				$return = sprintf('<a href="%sindex.php/pages/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
+				$pageNumber = 2;
 			}
+				
+				$return = sprintf('<a href="%s/pages/%d">%s</a>', $this->adminAddress, $pageNumber, $title);
 		}
 		
 		return $return;
@@ -357,17 +356,14 @@ class TemplateEngineAdmin
 		
 		if($this->haveNextPage)
 		{
-			if(!F_ADMINHTACCESS)
+			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
+			
+			if($pageNumber == 1)
 			{
-				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
-				
-				if($pageNumber == 1)
-				{
-					$pageNumber = 2;
-				}
-				
-				$return = sprintf('<a href="%sindex.php/posts/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
+				$pageNumber = 2;
 			}
+				
+			$return = sprintf('<a href="%s/posts/%d">%s</a>', $this->adminAddress, $pageNumber, $title);
 		}
 		
 		return $return;
@@ -395,12 +391,9 @@ class TemplateEngineAdmin
 		
 		if($this->theData != null && is_int((int)$tempVal) && intval($tempVal) > 1)
 		{
-			if(!F_ADMINHTACCESS)
-			{
-				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
-				
-				$return = sprintf('<a href="%sindex.php/pages/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
-			}
+			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
+			
+			$return = sprintf('<a href="%s/pages/%d">%s</a>', $this->adminAddress, $pageNumber, $title);
 		}
 		
 		return $return;
@@ -414,12 +407,9 @@ class TemplateEngineAdmin
 		
 		if($this->theData != null && is_int((int)$tempVal) && intval($tempVal) > 1)
 		{
-			if(!F_ADMINHTACCESS)
-			{
-				$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
-				
-				$return = sprintf('<a href="%sindex.php/posts/%d">%s</a>', F_ADMINADDRESS, $pageNumber, $title);
-			}
+			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
+			
+			$return = sprintf('<a href="%s/posts/%d">%s</a>', $this->adminAddress, $pageNumber, $title);
 		}
 		
 		return $return;
@@ -762,21 +752,21 @@ class TemplateEngineAdmin
 	
 	public function getAdminUrl()
 	{
-		static $address = null;
+		static $url = null;
 		
-		if($address == null)
+		if($url == null)
 		{
-			if(substr(F_ADMINADDRESS, -1) == '/')
+			if(($i = strpos($this->adminAddress, "/index.php")) != false)
 			{
-				$address = substr(F_ADMINADDRESS, 0, (strlen(F_ADMINADDRESS) - 1));
+				$url = substr($this->adminAddress, 0, $i);
 			}
 			else
 			{
-				$address = F_ADMINADDRESS;
+				$url = $this->adminAddress;
 			}
 		}
 		
-		return $address;
+		return $url;
 	}
 	
 	public function siteName()

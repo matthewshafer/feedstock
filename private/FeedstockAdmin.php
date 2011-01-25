@@ -58,7 +58,7 @@ class FeedstockAdmin
 		
 		require_once("includes/Router.php");
 		
-		$this->router = new Router(F_ADMINHTACCESS, F_ADMINBASE);
+		$this->router = new Router($adminHtaccess, $adminBase);
 		
 		require_once("includes/PostManager.php");
 		
@@ -75,10 +75,14 @@ class FeedstockAdmin
 		
 		$this->cookieMonster = new CookieMonster($this->databaseAdmin, $cookieName, $this->siteUrl);
 		
+		require_once("includes/SiteUrlGenerator.php");
+		
+		$siteUrlGenerator = new SiteUrlGenerator($adminAddress, $adminBase, $adminHtaccess);
+		
 		require_once("includes/TemplateEngineAdmin.php");
 		
 		// need to fix this to now support the new SiteUrlGenerator
-		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->siteUrl, $this->siteUrlBase, $this->siteTitle, $this->siteDescription);
+		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->siteUrl, $this->siteUrlBase, $this->siteTitle, $this->siteDescription, $siteUrlGenerator->generateSiteUrl());
 		
 		require_once("includes/OutputHelper.php");
 		$outputHelper = new OutputHelper();
