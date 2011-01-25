@@ -29,6 +29,7 @@ class FeedstockAdmin
 	private $siteTitle = "";
 	private $siteDescription = "";
 	private $databaseName = "";
+	private $salt = "";
 	
 	/**
 	 * __construct function.
@@ -53,6 +54,7 @@ class FeedstockAdmin
 		$this->siteTitle = $siteTitle;
 		$this->siteDescription = $siteDescription;
 		$this->databaseName = $databaseName;
+		$this->salt = $passSalt;
 		
 		require_once("includes/Router.php");
 		
@@ -104,7 +106,7 @@ class FeedstockAdmin
 				//print_r($userArray);
 				
 				// this should be true if the person supplied the correct information
-				if($userArray["PasswordHash"] == $this->makePasswordHash($this->postManager->getPostByName("password"), $userArray["Salt"]))
+				if($userArray["PasswordHash"] == $this->makePasswordHash($this->postManager->getPostByName("password"), $userArray["Salt"], $this->salt))
 				{
 					//echo "hit";
 					$this->cookieMonster->createCookie($userArray["id"]);
@@ -688,10 +690,9 @@ class FeedstockAdmin
 	 * @param mixed $s
 	 * @return String that is the hash of the password
 	 */
-	private function makePasswordHash($p, $s)
+	private function makePasswordHash($p, $s, $s2)
 	{	
 		// create some var's we need for later
-		$s2 = F_PSALT;
 		$preSalt = null;
 		$s2len = strlen($s2);
 		$slen = strlen($s);

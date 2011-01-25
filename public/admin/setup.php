@@ -29,13 +29,12 @@ if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["dis
 		$randomized .= $str[rand(0, $len)];
 	}
 	
-	$db->addUser($_POST["username"], $_POST["displayname"], makePasswordHash($_POST["password"], $randomized), $randomized, 0, 1);
+	$db->addUser($_POST["username"], $_POST["displayname"], makePasswordHash($_POST["password"], $randomized, $passSalt), $randomized, 0, 1);
 }
 
-function makePasswordHash($p, $s)
+function makePasswordHash($p, $s, $s2)
 {	
 	// create some var's we need for later
-	$s2 = F_PSALT;
 	$preSalt = null;
 	$s2len = strlen($s2);
 	$slen = strlen($s);
