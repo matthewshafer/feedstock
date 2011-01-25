@@ -54,6 +54,27 @@ class OutputHelper
 	}
 	
 	/**
+	 * stopStoreFlushGetBuffer function.
+	 * 
+	 * @ 
+	 * @access public
+	 * @return String containing all the data from the buffer
+	 */
+	public function stopStoreFlushGetBuffer()
+	{
+		$tmp = ob_get_contents();
+		
+		ob_end_flush();
+		
+		if($tmp != false)
+		{
+			$this->pageStore = sprintf("%s%s", $this->pageStore, $tmp);
+		}
+				
+		return $this->pageStore;
+	}
+	
+	/**
 	 * stopStoreGetBuffer function.
 	 * 
 	 * @ 
@@ -62,9 +83,8 @@ class OutputHelper
 	 */
 	public function stopStoreGetBuffer()
 	{
-		$tmp = ob_get_contents();
+		$tmp = ob_end_clean();
 		
-		ob_end_flush();
 		
 		if($tmp != false)
 		{

@@ -75,6 +75,10 @@ class FileServe
 					{
 						print fread($file, 2048);
 					}
+					
+					// flushes the stuff from output buffer but doesnt allow output buffer to save the data
+					ob_flush();
+					flush();
 				}
 				
 				fclose($file);

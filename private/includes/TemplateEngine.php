@@ -297,14 +297,14 @@ class TemplateEngine
 		if($file == null)
 		{
 			// we have some error which we need to figure out what to do.  for now we will just die
-			//die("Invalid theme file");
+			
 			if($this->isThemeFileValid("404.php"))
 			{
 				$file = "404.php";
 			}
 			else
 			{
-				$this->themeValidError = "Missing major components required for themes";
+				throw new Exception("Missing major components required for themes");
 			}
 		}
 		// need to check for the theme file being valid here
@@ -312,7 +312,7 @@ class TemplateEngine
 		{
 			if(!$this->isThemeFileValid($file, $return))
 			{
-				$this->themeValidError = "Theme file does not exist";
+				 throw new Exception("Theme file does not exist");
 			}
 		}
 		

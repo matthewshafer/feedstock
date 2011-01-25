@@ -36,8 +36,7 @@ class TemplateLoader
 	public function render()
 	{
 		$this->themeLoc = $this->templateEngine->getThemeLocation();
-		//echo $this->themeLoc;
-		//ob_start();
+		
 		if(!$this->templateEngine->haveThemeError())
 		{
 			include $this->themeLoc;
@@ -46,8 +45,8 @@ class TemplateLoader
 		{
 			echo $this->templateEngine->getThemeError();
 		}
-		//return ob_get_clean();
-		return $this->outputHelper->stopStoreGetBuffer();
+		
+		return $this->outputHelper->stopStoreFlushGetBuffer();
 	}
 
 

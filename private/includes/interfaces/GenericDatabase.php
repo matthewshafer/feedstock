@@ -4,8 +4,6 @@ interface GenericDatabase
 {
 	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null, $lazy = true);
 	
-	public function haveConnectionError();
-	
 	public function closeConnection();
 	
 	public function getPosts($limit, $offset, $draft = false);

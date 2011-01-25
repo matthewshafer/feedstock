@@ -89,7 +89,16 @@ class Feedstock
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();
 		
-		$this->handleRequest($enableMaintenance);
+		
+		try
+		{
+			$this->handleRequest($enableMaintenance);
+		}
+		catch(Exception $e)
+		{
+			$this->outputHelper->stopStoreGetBuffer();
+			echo $e->getMessage();
+		}
 	}
 	
 	private function handleRequest($enableMaintenance)
@@ -113,8 +122,7 @@ class Feedstock
 					// Should create the cacher first so that we can check if a file exists before we even create a database
 					// for example if the database goes down we can still serve up pages, until they "expire" which would give us
 					// a little bit of time to get the DB back up and running
-					//require_once("includes/" . F_CACHENAME . ".php");
-					//$this->cacher = new cache($this->router->fullURI());
+					
 					$this->cacher = $this->cacherCreator->getCacher();
 				
 					if($this->cacher->checkExists($this->router->fullUri()))
@@ -127,7 +135,7 @@ class Feedstock
 						$themeData = $this->heavyLift();
 						//echo $themeData;
 					
-						if($this->router->pageType() != "file")
+						if($themeData != null)
 						{
 							$this->cacher->writeCachedFile($this->router->fullUri(), $themeData);
 						}
@@ -161,61 +169,46 @@ class Feedstock
 	 * @return html data
 	 */
 	private function heavyLift()
-	{
+	{		
 		$this->database = $this->databaseMaker();
+		$data = null;
 		
-		if($this->database->haveConnectionError() == null)
+
+		// ok so really we only need the database when it comes to keeping track of files, which we currently don't do. Decisions decisions.
+		if($this->router->pageType() == "file")
 		{
-			
-			// ok so really we only need the database when it comes to keeping track of files, which we currently don't do. Decisions decisions.
-			if($this->router->pageType() == "file")
-			{
-				require_once("includes/FileServe.php");
-				$fileServe = new FileServe($this->database, $this->router, $this->baseLocation, $this->enableFileDownload);
-				$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
-				$data = $fileServe->render();
-				
-				if($data != null)
-				{
-					echo $data;
-				}
-			}
-			else
-			{
-				require_once("includes/SiteUrlGenerator.php");
-				$siteUrlGenerator = new SiteUrlGenerator($this->siteUrl, $this->siteUrlBase, $this->htaccess);
-				require_once("includes/TemplateEngine.php");
-				try
-				{
-					$this->templateEngine = new TemplateEngine($this->database, 
-																$this->router, 
-																$this->siteTitle, 
-																$this->siteDescription, 
-																$this->themeName, 
-																$siteUrlGenerator->generateSiteUrl(), 
-																$this->postFormat, 
-																$this->postsPerPage, 
-																$this->baseLocation);
-																
-					$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
-					$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
-					
-					require_once("includes/TemplateLoader.php");
-					$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
-					$data = $this->templateLoader->render();
-				}
-				catch(Exception $e)
-				{
-					echo $e;
-				}
-			}
-			
-			$this->database->closeConnection();
+			require_once("includes/FileServe.php");
+			$fileServe = new FileServe($this->database, $this->router, $this->baseLocation, $this->enableFileDownload);
+			$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
+			$data = $fileServe->render();
 		}
 		else
 		{
-			$data = $this->database->haveConnError();
+			require_once("includes/SiteUrlGenerator.php");
+			$siteUrlGenerator = new SiteUrlGenerator($this->siteUrl, $this->siteUrlBase, $this->htaccess);
+			require_once("includes/TemplateEngine.php");
+			
+			$this->templateEngine = new TemplateEngine($this->database, 
+														$this->router, 
+														$this->siteTitle, 
+														$this->siteDescription, 
+														$this->themeName, 
+														$siteUrlGenerator->generateSiteUrl(), 
+														$this->postFormat, 
+														$this->postsPerPage, 
+														$this->baseLocation);
+																
+			$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
+			$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
+			
+			require_once("includes/TemplateLoader.php");
+			$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
+			$data = $this->templateLoader->render();
 		}
+		
+		$this->database->closeConnection();
+
+		
 		return $data;
 	}
 	
@@ -231,24 +224,16 @@ class Feedstock
 		require_once("includes/interfaces/GenericDatabase.php");
 		require_once("includes/databases/" . $this->databaseType . "Database.php");
 		$return = null;
+		$cacher = null;
+		$type = $this->databaseType . "Database";
 		
-		// not going to need this line once I finish implementing the interfaces
-		switch($this->databaseType)
+		if($this->cacheEnable && $this->cacheType == "dynamic" && $this->cacherCreator->createCacher())
 		{
-			case "Mysqli":
-				if($this->cacheEnable && $this->cacheType == "dynamic" && $this->cacherCreator->createCacher())
-				{
-					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $this->cacherCreator->getCacher());
-				}
-				else
-				{
-					$return = new MysqliDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix);
-				}
-			break;
-			case "Mysql":
-				$return = new MysqlDatabase($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix);
-			break;
+			$cacher = $this->cacheCreator->getCacher();
 		}
+		
+		
+		$return = new $type($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $cacher);
 		
 		// add some checking if the database name is set up wrong
 		if($this->databaseDebug)

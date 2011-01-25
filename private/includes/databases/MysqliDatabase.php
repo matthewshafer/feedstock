@@ -73,9 +73,10 @@ class MysqliDatabase implements GenericDatabase
 		
 		if(!is_resource($this->databaseConnection))
 		{
-			if(!$this->databaseConnection = new mysqli($this->serverAddress, $this->username, $this->password, $this->databaseName))
+			$this->databaseConnection = new mysqli($this->serverAddress, $this->username, $this->password, $this->databaseName);
+			if($this->databaseConnection->connect_errno)
 			{
-				trigger_error(sprintf("Cannot connect to server: %s", mysql_error()), E_USER_ERROR);
+				throw new Exception(sprintf("Cannot connect to server: %s", $this->databaseConnection->connect_errno));
 				$return = false;
 			}
 		}
@@ -83,16 +84,6 @@ class MysqliDatabase implements GenericDatabase
 		return $return;
 	}
 	
-	/**
-	 * haveConnectionError function.
-	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function haveConnectionError()
-	{
-		return $this->connectionError;
-	}
 	
 	/*
 	public function queryError()

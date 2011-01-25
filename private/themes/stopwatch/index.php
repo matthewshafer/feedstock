@@ -31,6 +31,8 @@ while($this->templateEngine->haveNextPost())
 
 	
 }
+
+
 echo $this->templateEngine->haveNextPostPageHtml();
 echo "<br><br><br>";
 echo $this->templateEngine->getFormattedCorralByName("test1234");
