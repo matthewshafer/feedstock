@@ -28,6 +28,7 @@ class FeedstockAdmin
 	private $siteUrlGenerator = null;
 	private $siteTitle = "";
 	private $siteDescription = "";
+	private $databaseName = "";
 	
 	/**
 	 * __construct function.
@@ -51,6 +52,7 @@ class FeedstockAdmin
 		$this->siteUrlBase = $siteUrlBase;
 		$this->siteTitle = $siteTitle;
 		$this->siteDescription = $siteDescription;
+		$this->databaseName = $databaseName;
 		
 		require_once("includes/Router.php");
 		
@@ -60,9 +62,7 @@ class FeedstockAdmin
 		
 		$this->postManager = new PostManager();
 		
-		//require_once("includes/" . V_DATABASE . "Admin.php");
 		
-		//$this->databaseAdmin = new databaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
 		
 		$this->databaseAdmin = $this->databaseMaker();
 		
@@ -740,10 +740,10 @@ class FeedstockAdmin
 	{
 		require_once("includes/interfaces/GenericDatabase.php");
 		require_once("includes/interfaces/GenericDatabaseAdmin.php");
-		require_once("includes/databases/" . V_DATABASE . "DatabaseAdmin.php");
+		require_once("includes/databases/" . $this->databaseName . "DatabaseAdmin.php");
 		$return = null;
 		
-		switch(V_DATABASE)
+		switch($this->databaseName)
 		{
 			case "Mysqli":
 				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);

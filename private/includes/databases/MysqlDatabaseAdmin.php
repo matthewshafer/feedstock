@@ -1,5 +1,5 @@
 <?php
-require_once(V_DATABASE . "Database.php");
+require_once("MysqlDatabase.php");
 
 /**
  * @file

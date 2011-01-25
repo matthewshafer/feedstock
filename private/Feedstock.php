@@ -40,6 +40,7 @@ class Feedstock
 	private $siteUrlBase = "";
 	private $postFormat = "";
 	private $postsPerPage = 0;
+	private $databaseName = "";
 	
 	/**
 	 * __construct function.
@@ -78,6 +79,7 @@ class Feedstock
 		$this->postsPerPage = $postsPerPage;
 		$this->siteUrl = $siteUrl;
 		$this->siteUrlBase = $siteUrlBase;
+		$this->databaseName = $databaseName;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router($this->htaccess, $this->siteUrlBase);
@@ -224,10 +226,11 @@ class Feedstock
 	private function databaseMaker()
 	{
 		require_once("includes/interfaces/GenericDatabase.php");
-		require_once("includes/databases/" . V_DATABASE . "Database.php");
+		require_once("includes/databases/" . $this->databaseName . "Database.php");
 		$return = null;
 		
-		switch(V_DATABASE)
+		// not going to need this line once I finish implementing the interfaces
+		switch($this->databaseName)
 		{
 			case "Mysqli":
 				if($this->cacheEnable && $this->cacheType == "dynamic" && $this->cacherCreator->createCacher())

@@ -7,13 +7,13 @@ $loc = "../../";
 if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["displayname"]))
 {
 	require_once($loc . "config.php");
-	require_once($loc . "private/includes/" . V_DATABASE . "Admin.php");
+	require_once($loc . "private/includes/" . $databaseName . "Admin.php");
 	
-	if(V_DATABASE == "Mysql")
+	if($databaseName == "Mysql")
 	{
 		$db = new mysqlDatabaseAdmin($username, $password, $address, $database, $tableprefix);
 	}
-	else if(V_DATABASE == "Mysqli")
+	else if($databaseName == "Mysqli")
 	{
 		$db = new MysqliDatabaseAdmin($username, $password, $address, $database, $tableprefix);
 	}
