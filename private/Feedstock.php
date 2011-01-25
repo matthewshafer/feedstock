@@ -40,7 +40,8 @@ class Feedstock
 	private $siteUrlBase = "";
 	private $postFormat = "";
 	private $postsPerPage = 0;
-	private $databaseName = "";
+	private $databaseType = "";
+	private $baseLocation = "";
 	
 	/**
 	 * __construct function.
@@ -79,7 +80,8 @@ class Feedstock
 		$this->postsPerPage = $postsPerPage;
 		$this->siteUrl = $siteUrl;
 		$this->siteUrlBase = $siteUrlBase;
-		$this->databaseName = $databaseName;
+		$this->databaseType = $databaseType;
+		$this->baseLocation = $baseLocation;
 		
 		require_once("includes/Router.php");
 		$this->router = new Router($this->htaccess, $this->siteUrlBase);
@@ -97,13 +99,13 @@ class Feedstock
 			if($this->maintenanceMode($enableMaintenance, $this->maintenanceAddresses))
 			{
 				require_once("includes/Maintenance.php");
-				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", V_BASELOC, $this->themeName), $this->outputHelper);
+				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", $this->baseLocation, $this->themeName), $this->outputHelper);
 				$maintenance->render();
 			}
 			else
 			{
 				require_once("includes/CacherCreator.php");
-				$this->cacherCreator = new CacherCreator($this->cacheName, $this->cachePrefix, $this->cacheExpireTime, V_BASELOC);
+				$this->cacherCreator = new CacherCreator($this->cacheName, $this->cachePrefix, $this->cacheExpireTime, $this->baseLocation);
 				
 			
 				if($this->cacheEnable && $this->cacheType == "static" && $this->cacherCreator->createCacher())
@@ -169,7 +171,7 @@ class Feedstock
 			if($this->router->pageType() == "file")
 			{
 				require_once("includes/FileServe.php");
-				$fileServe = new FileServe($this->database, $this->router, $this->enableFileDownload);
+				$fileServe = new FileServe($this->database, $this->router, $this->baseLocation, $this->enableFileDownload);
 				$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
 				$data = $fileServe->render();
 				
@@ -192,7 +194,8 @@ class Feedstock
 																$this->themeName, 
 																$siteUrlGenerator->generateSiteUrl(), 
 																$this->postFormat, 
-																$this->postsPerPage);
+																$this->postsPerPage, 
+																$this->baseLocation);
 																
 					$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
 					$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
@@ -226,11 +229,11 @@ class Feedstock
 	private function databaseMaker()
 	{
 		require_once("includes/interfaces/GenericDatabase.php");
-		require_once("includes/databases/" . $this->databaseName . "Database.php");
+		require_once("includes/databases/" . $this->databaseType . "Database.php");
 		$return = null;
 		
 		// not going to need this line once I finish implementing the interfaces
-		switch($this->databaseName)
+		switch($this->databaseType)
 		{
 			case "Mysqli":
 				if($this->cacheEnable && $this->cacheType == "dynamic" && $this->cacherCreator->createCacher())

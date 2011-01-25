@@ -21,13 +21,13 @@ class FileServe
 	 * @param mixed $router
 	 * @return void
 	 */
-	public function __construct($database, $router, $enabled)
+	public function __construct($database, $router, $baseLocation, $enabled)
 	{
 		$this->database = $database;
 		$this->router = $router;
 		$this->downloadEnabled = $enabled;
 		
-		$this->fileLoc = V_BASELOC . "/private/files/" . $this->router->getUriPosition(2);
+		$this->fileLoc = $baseLocation . "/private/files/" . $this->router->getUriPosition(2);
 	}
 	
 	/**

@@ -28,6 +28,7 @@ class TemplateEngine
 	private $siteUrl = "";
 	private $postFormat = "";
 	private $postsPerPage = 0;
+	private $baseLocation = "";
 	
 	
 	/**
@@ -36,7 +37,7 @@ class TemplateEngine
 	 * @brief you need at least a 404.php for the theme to be valid
 	 * @access public
 	 */
-	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postFormat, $postsPerPage)
+	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postFormat, $postsPerPage, $baseLocation)
 	{
 		$this->database = $database;
 		$this->router = $router;
@@ -45,8 +46,7 @@ class TemplateEngine
 		$this->themeName = $themeName;
 		$this->postFormat = $postFormat;
 		$this->postsPerPage = intval($postsPerPage);
-		
-		// site Url creating stuff;
+		$this->baseLocation = $baseLocation;
 		$this->siteUrl = $siteUrl;
 	}
 	
@@ -76,7 +76,7 @@ class TemplateEngine
 		
 		if($location == null)
 		{
-			$location = sprintf("%s/private/themes/%s", V_BASELOC, $this->themeName);
+			$location = sprintf("%s/private/themes/%s", $this->baseLocation, $this->themeName);
 		}
 		
 		$fileLoc = sprintf("%s/%s", $location, $file);
@@ -102,7 +102,7 @@ class TemplateEngine
 	 */	
 	private function request()
 	{
-		$return = sprintf("%s/private/themes/%s", V_BASELOC, $this->themeName);
+		$return = sprintf("%s/private/themes/%s", $this->baseLocation, $this->themeName);
 		$file = null;
 		
 		if(strtolower($this->router->pageType()) == "")
@@ -271,7 +271,7 @@ class TemplateEngine
 				else if($this->router->pageType() == "feed")
 				{
 					$this->pageData = $this->database->getPosts($this->postsPerPage, 0);
-					$return = sprintf("%s/private/includes", V_BASELOC);
+					$return = sprintf("%s/private/includes", $this->baseLocation);
 					$file = "Feed.php";
 				}
 				else

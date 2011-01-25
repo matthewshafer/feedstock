@@ -21,6 +21,7 @@ class TemplateEngineAdmin
 	private $siteTitle = "";
 	private $siteDescription = "";
 	private $adminAddress = "";
+	private $baseLocation = "";
 	
 	/**
 	 * __construct function.
@@ -30,7 +31,7 @@ class TemplateEngineAdmin
 	 * @param mixed $router
 	 * @return void
 	 */
-	public function __construct($database, $router, $siteUrl, $siteUrlBase, $siteTitle, $siteDescription, $adminAddress)
+	public function __construct($database, $router, $siteUrl, $siteUrlBase, $siteTitle, $siteDescription, $adminAddress, $baseLocation)
 	{
 		$this->db = $database;
 		$this->router = $router;
@@ -39,6 +40,7 @@ class TemplateEngineAdmin
 		$this->siteTitle = $siteTitle;
 		$this->siteDescription = $siteDescription;
 		$this->adminAddress = $adminAddress;
+		$this->baseLocation = $baseLocation;
 	}
 	
 	public function loggedIn($areWe)
@@ -69,7 +71,7 @@ class TemplateEngineAdmin
 	private function isThemeFileValid($file)
 	{
 		// need to fix the part that says stock because what if you were using a different theme.
-		$loc = V_BASELOC . "/private/themesAdmin/" . "stock";
+		$loc = $this->baseLocation . "/private/themesAdmin/" . "stock";
 		$return = null;
 		
 		if(file_exists($loc . "/" . $file) && is_readable($loc . "/" . $file))
@@ -92,7 +94,7 @@ class TemplateEngineAdmin
 	 */
 	private function request()
 	{
-		$return = V_BASELOC . "/private/themesAdmin/" . "stock";
+		$return = $this->baseLocation . "/private/themesAdmin/" . "stock";
 		
 		if($this->isLoggedIn)
 		{

@@ -28,7 +28,7 @@ class FeedstockAdmin
 	private $siteUrlGenerator = null;
 	private $siteTitle = "";
 	private $siteDescription = "";
-	private $databaseName = "";
+	private $databaseType = "";
 	private $salt = "";
 	
 	/**
@@ -53,7 +53,7 @@ class FeedstockAdmin
 		$this->siteUrlBase = $siteUrlBase;
 		$this->siteTitle = $siteTitle;
 		$this->siteDescription = $siteDescription;
-		$this->databaseName = $databaseName;
+		$this->databaseType = $databaseType;
 		$this->salt = $passSalt;
 		
 		require_once("includes/Router.php");
@@ -82,7 +82,7 @@ class FeedstockAdmin
 		require_once("includes/TemplateEngineAdmin.php");
 		
 		// need to fix this to now support the new SiteUrlGenerator
-		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->siteUrl, $this->siteUrlBase, $this->siteTitle, $this->siteDescription, $siteUrlGenerator->generateSiteUrl());
+		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->siteUrl, $this->siteUrlBase, $this->siteTitle, $this->siteDescription, $siteUrlGenerator->generateSiteUrl(), $baseLocation);
 		
 		require_once("includes/OutputHelper.php");
 		$outputHelper = new OutputHelper();
@@ -93,7 +93,7 @@ class FeedstockAdmin
 		if($generateSitemap)
 		{
 			require_once("includes/SitemapCreator.php");
-			$this->sitemap = new SitemapCreator($this->databaseAdmin, V_BASELOC . $sitemapPath, $maxSitemapItems, $this->siteUrlGenerator->generateSiteUrl());
+			$this->sitemap = new SitemapCreator($this->databaseAdmin, $baseLocation . $sitemapPath, $maxSitemapItems, $this->siteUrlGenerator->generateSiteUrl());
 		}
 		
 		$this->handleRequest();
@@ -745,10 +745,10 @@ class FeedstockAdmin
 	{
 		require_once("includes/interfaces/GenericDatabase.php");
 		require_once("includes/interfaces/GenericDatabaseAdmin.php");
-		require_once("includes/databases/" . $this->databaseName . "DatabaseAdmin.php");
+		require_once("includes/databases/" . $this->databaseType . "DatabaseAdmin.php");
 		$return = null;
 		
-		switch($this->databaseName)
+		switch($this->databaseType)
 		{
 			case "Mysqli":
 				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
