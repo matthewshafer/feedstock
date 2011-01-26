@@ -39,7 +39,7 @@ class CookieMonster
 		$this->userID = $userID;
 		//echo $userID;
 		// need to generate the value for the cookie
-		$val = sprintf("%s%d%s", $userID, time(), $this->siteUrl);
+		$val = sprintf("%s%d%s", $userID, $_SERVER['REQUEST_TIME'], $this->siteUrl);
 		
 		// we could always use mcrypt but for now I should just get crypt working
 		$val = crypt($val);

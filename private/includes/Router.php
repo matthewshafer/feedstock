@@ -54,7 +54,7 @@ class Router
 		// we end up having the database put the / back on when it is needed in things like URI
 		else
 		{
-			$this->uri = substr($this->uri, 1, strlen($this->uri));
+			$this->uri = substr($this->uri, 1);
 		}
 		
 		$this->uriArray = explode("/", $this->uri);
@@ -98,14 +98,15 @@ class Router
 				}
 				
 				// this removes the trailing slash if one exists
-				if(substr($this->uri, (strlen($this->uri) - 1)) == '/')
+				//if($this->uri[strlen($this->uri) - 1] === '/')
+				if(substr_compare($this->uri, "/", -1) === 0)
 				{
 					$this->uri = substr($this->uri, 0, -1);
 				}
 				
 				// this removes the starting slash if it exists. useful because we are now exploding the string around index.php
 				// needed because when we look stuff up in the db we add the starting slash
-				if(substr($this->uri, 0, 1) == '/')
+				if($this->uri[0] === '/')
 				{
 					$this->uri = substr($this->uri, 1);
 				}
@@ -151,7 +152,9 @@ class Router
 	{
 		$return = $this->uri;
 		
-		if(substr($return, -1) == "/")
+		// I wonder which is faster, substr($return, -1) or $return[strlen($return) - 1]
+		//if(substr($return, -1) === "/")
+		if(substr_compare($return, '/', -1) === 0)
 		{
 			$return = substr($return, 0, -1);
 		}
@@ -258,7 +261,6 @@ class Router
 	public function getPageOffset()
 	{
 		$page = 0;
-		$position = null;
 		$found = false;
 		// could toss in a break if we want it to stop after finding the first "page"
 		foreach($this->uriArray as $key)

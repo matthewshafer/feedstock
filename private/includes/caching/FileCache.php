@@ -56,14 +56,16 @@ class FileCache implements GenericCacher
 	{
 		$data = "";
 		
-		if($this->expireTime > 0 && ((time() - filemtime($lookup)) > $this->expireTime))
+		if($this->expireTime > 0 && (($_SERVER['REQUEST_TIME'] - filemtime($lookup)) > $this->expireTime))
 		{
 			$this->deleteCachedFile($lookup);
 			$return = false;
 		}
 		else
 		{
-			if(($file = @fopen($lookup, 'r')) != false)
+			// file_exists is checked just before this function is called
+			// calling it twice lowers the performance by a bit.
+			if(($file = fopen($lookup, 'r')) != false)
 			{
 				flock($file, LOCK_SH);
 				$size = filesize($lookup);

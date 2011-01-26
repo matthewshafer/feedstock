@@ -7,41 +7,13 @@
  */
 class Feedstock
 {
-	private $username = null;
-	private $password = null;
-	private $address = null;
-	private $databaseName = null;
-	private $tablePrefix = null;
-	private $cacher = null;
 	private $templateEngine = null;
 	private $outputHelper = null;
 	private $templateLoader = null;
-	private $router = null;
-	private $database = null;
 	private $cacherCreator = null;
-	private $databaseDebug = false;
-	private $enableFileDownload = false;
-	private $fileDownloadSpeed = 0;
-	private $maintenanceAddresses = null;
-	private $cacheEnable = false;
-	private $feedAuthor = "";
-	private $feedAuthorEmail = "";
-	private $feedPubSubHubBub = "";
-	private $feedPubSubHubBubSubscribe = "";
-	private $cacheName = "";
-	private $cachePrefix = "";
-	private $cacheType = "";
-	private $cacheExpireTime = 0;
-	private $htaccess = false;
-	private $siteTitle = "";
-	private $siteDescription = "";
-	private $themeName = "";
-	private $siteUrl = "";
-	private $siteUrlBase = "";
-	private $postFormat = "";
-	private $postsPerPage = 0;
-	private $databaseType = "";
-	private $baseLocation = "";
+	
+	// config data array
+	private $config = array();
 	
 	/**
 	 * __construct function.
@@ -51,40 +23,11 @@ class Feedstock
 	 */
 	public function __construct()
 	{
-		require_once("../config.php");
+		require("../config.php");
 		// We need to set these because they are used in another function in this class. If we didn't they would be in the wrong scope (that wouldn't be a good thing)
-		$this->address = $address;
-		$this->password = $password;
-		$this->username = $username;
-		$this->databaseName = $database;
-		$this->tablePrefix = $tableprefix;
-		$this->databaseDebug = $databaseDebug;
-		$this->enableFileDownload = $fileDownload;
-		$this->fileDownloadSpeed = $fileDownloadSpeed;
-		$this->maintenanceAddresses = $maintenancePassthrough;
-		$this->cacheEnable = $cacheEnable;
-		$this->feedAuthor = $feedAuthor;
-		$this->feedAuthorEmail = $feedAuthorEmail;
-		$this->feedPubSubHubBub = $feedPubSubHubBub;
-		$this->feedPubSubHubBubPublishUrl = $feedPubSubHubBubPublishUrl;
-		$this->feedPubSubHubBubSubscribe = $feedPubSubHubBubSubscribe;
-		$this->cacheName = $cacheName;
-		$this->cachePrefix = $cachePrefix;
-		$this->cacheType = $cacheType;
-		$this->cacheExpireTime = $cacheExpireTime;
-		$this->htaccess = $htaccess;
-		$this->siteTitle = $siteTitle;
-		$this->siteDescription = $siteDescription;
-		$this->themeName = $themeName;
-		$this->postFormat = $postFormat;
-		$this->postsPerPage = $postsPerPage;
-		$this->siteUrl = $siteUrl;
-		$this->siteUrlBase = $siteUrlBase;
-		$this->databaseType = $databaseType;
-		$this->baseLocation = $baseLocation;
 		
 		require_once("includes/Router.php");
-		$this->router = new Router($this->htaccess, $this->siteUrlBase);
+		$this->router = new Router($this->config['htaccess'], $this->config['siteUrlBase']);
 		
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();
@@ -92,7 +35,7 @@ class Feedstock
 		
 		try
 		{
-			$this->handleRequest($enableMaintenance);
+			$this->handleRequest();
 		}
 		catch(Exception $e)
 		{
@@ -101,23 +44,23 @@ class Feedstock
 		}
 	}
 	
-	private function handleRequest($enableMaintenance)
+	private function handleRequest()
 	{
 		if($this->router->requestMethod() == "GET")
 		{
-			if($this->maintenanceMode($enableMaintenance, $this->maintenanceAddresses))
+			if($this->maintenanceMode($this->config['enableMaintenance'], $this->config['maintenancePassthru']))
 			{
 				require_once("includes/Maintenance.php");
-				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", $this->baseLocation, $this->themeName), $this->outputHelper);
+				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", $this->config['baseLocation'], $this->config['themeName']), $this->outputHelper);
 				$maintenance->render();
 			}
 			else
 			{
 				require_once("includes/CacherCreator.php");
-				$this->cacherCreator = new CacherCreator($this->cacheName, $this->cachePrefix, $this->cacheExpireTime, $this->baseLocation);
+				$this->cacherCreator = new CacherCreator($this->config['cacheName'], $this->config['cachePrefix'], $this->config['cacheExpireTime'], $this->config['baseLocation']);
 				
 			
-				if($this->cacheEnable && $this->cacheType == "static" && $this->cacherCreator->createCacher())
+				if($this->config['cacheEnable'] && $this->config['cacheType'] === "static" && $this->cacherCreator->createCacher())
 				{
 					// Should create the cacher first so that we can check if a file exists before we even create a database
 					// for example if the database goes down we can still serve up pages, until they "expire" which would give us
@@ -146,7 +89,7 @@ class Feedstock
 				{
 					$this->heavyLift();
 					
-					if($this->databaseDebug)
+					if($this->config['databaseDebug'])
 					{
 						echo "<br><br><br>";
 						//print_r($this->db->debugQueries);
@@ -178,28 +121,28 @@ class Feedstock
 		if($this->router->pageType() == "file")
 		{
 			require_once("includes/FileServe.php");
-			$fileServe = new FileServe($this->database, $this->router, $this->baseLocation, $this->enableFileDownload);
+			$fileServe = new FileServe($this->database, $this->router, $this->config['baseLocation'], $this->config['enableFileDownload']);
 			$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
 			$data = $fileServe->render();
 		}
 		else
 		{
 			require_once("includes/SiteUrlGenerator.php");
-			$siteUrlGenerator = new SiteUrlGenerator($this->siteUrl, $this->siteUrlBase, $this->htaccess);
+			$siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess']);
 			require_once("includes/TemplateEngine.php");
 			
 			$this->templateEngine = new TemplateEngine($this->database, 
 														$this->router, 
-														$this->siteTitle, 
-														$this->siteDescription, 
-														$this->themeName, 
+														$this->config['siteTitle'], 
+														$this->config['siteDescription'], 
+														$this->config['themeName'], 
 														$siteUrlGenerator->generateSiteUrl(), 
-														$this->postFormat, 
-														$this->postsPerPage, 
-														$this->baseLocation);
+														$this->config['postFormat'], 
+														$this->config['postsPerPage'], 
+														$this->config['baseLocation']);
 																
-			$this->templateEngine->setFeedAuthorInfo($this->feedAuthor, $this->feedAuthorEmail);
-			$this->templateEngine->setPubSubHubBub($this->feedPubSubHubBub, $this->feedPubSubHubBubSubscribe);
+			$this->templateEngine->setFeedAuthorInfo($this->config['feedAuthor'], $this->config['feedAuthorEmail']);
+			$this->templateEngine->setPubSubHubBub($this->config['feedPubSubHubBub'], $this->config['feedPubSubHubBubSubscribe']);
 			
 			require_once("includes/TemplateLoader.php");
 			$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
@@ -222,21 +165,21 @@ class Feedstock
 	private function databaseMaker()
 	{
 		require_once("includes/interfaces/GenericDatabase.php");
-		require_once("includes/databases/" . $this->databaseType . "Database.php");
+		require_once("includes/databases/" . $this->config['databaseType'] . "Database.php");
 		$return = null;
 		$cacher = null;
-		$type = $this->databaseType . "Database";
+		$type = $this->config['databaseType'] . "Database";
 		
-		if($this->cacheEnable && $this->cacheType == "dynamic" && $this->cacherCreator->createCacher())
+		if($this->config['cacheEnable'] && $this->config['cacheType'] === "dynamic" && $this->cacherCreator->createCacher())
 		{
 			$cacher = $this->cacheCreator->getCacher();
 		}
 		
 		
-		$return = new $type($this->username, $this->password, $this->address, $this->databaseName, $this->tablePrefix, $cacher);
+		$return = new $type($this->config['databaseUsername'], $this->config['databasePassword'], $this->config['databaseAddress'], $this->config['databaseName'], $this->config['databaseTablePrefix'], $cacher);
 		
 		// add some checking if the database name is set up wrong
-		if($this->databaseDebug)
+		if($this->config['databaseDebug'])
 		{
 			$return->enableDebug();
 		}

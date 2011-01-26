@@ -7,29 +7,16 @@
 */
 class FeedstockAdmin
 {
-	private $username = null;
-	private $password = null;
-	private $address = null;
-	private $database = null;
-	private $tablePrefix = null;
 	private $templateEngine = null;
 	private $templateLoader = null;
 	private $postManager = null;
 	private $databaseAdmin = null;
 	private $cookieMonster = null;
 	private $router = null;
-	private $sitemap = null;
-	private $cacheEnable = false;
-	private $feedPubSubHubBub = "";
-	private $feedPubSubHubBubPublishUrl = "";
-	private $htaccess = false;
-	private $siteUrl = "";
-	private $siteUrlBase = "";
-	private $siteUrlGenerator = null;
-	private $siteTitle = "";
-	private $siteDescription = "";
-	private $databaseType = "";
-	private $salt = "";
+	private $sitemapCreator = null;
+	
+	// config data array
+	private $config = array();
 	
 	/**
 	 * __construct function.
@@ -40,25 +27,10 @@ class FeedstockAdmin
 	public function __construct()
 	{
 		require_once("../../config.php");
-		$this->address = $address;
-		$this->password = $password;
-		$this->username = $username;
-		$this->database = $database;
-		$this->tablePrefix = $tableprefix;
-		$this->cacheEnable = $cacheEnable;
-		$this->feedPubSubHubBub = $feedPubSubHubBub;
-		$this->feedPubSubHubBubPublishUrl = $feedPubSubHubBubPublishUrl;
-		$this->htaccess = $htaccess;
-		$this->siteUrl = $siteUrl;
-		$this->siteUrlBase = $siteUrlBase;
-		$this->siteTitle = $siteTitle;
-		$this->siteDescription = $siteDescription;
-		$this->databaseType = $databaseType;
-		$this->salt = $passSalt;
 		
 		require_once("includes/Router.php");
 		
-		$this->router = new Router($adminHtaccess, $adminBase);
+		$this->router = new Router($this->config['adminHtaccess'], $this->config['adminBase']);
 		
 		require_once("includes/PostManager.php");
 		
@@ -69,20 +41,20 @@ class FeedstockAdmin
 		$this->databaseAdmin = $this->databaseMaker();
 		
 		require_once("includes/SiteUrlGenerator.php");
-		$this->siteUrlGenerator = new SiteUrlGenerator($this->siteUrl, $this->siteUrlBase, $this->htaccess);
+		$this->siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess']);
 		
 		require_once("includes/CookieMonster.php");
 		
-		$this->cookieMonster = new CookieMonster($this->databaseAdmin, $cookieName, $this->siteUrl);
+		$this->cookieMonster = new CookieMonster($this->databaseAdmin, $this->config['cookieName'], $this->config['siteUrl']);
 		
 		require_once("includes/SiteUrlGenerator.php");
 		
-		$siteUrlGenerator = new SiteUrlGenerator($adminAddress, $adminBase, $adminHtaccess);
+		$siteUrlGenerator = new SiteUrlGenerator($this->config['adminAddress'], $this->config['adminBase'], $this->config['adminHtaccess']);
 		
 		require_once("includes/TemplateEngineAdmin.php");
 		
 		// need to fix this to now support the new SiteUrlGenerator
-		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->siteUrl, $this->siteUrlBase, $this->siteTitle, $this->siteDescription, $siteUrlGenerator->generateSiteUrl(), $baseLocation);
+		$this->templateEngine = new TemplateEngineAdmin($this->databaseAdmin, $this->router, $this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['siteTitle'], $this->config['siteDescription'], $siteUrlGenerator->generateSiteUrl(), $this->config['baseLocation']);
 		
 		require_once("includes/OutputHelper.php");
 		$outputHelper = new OutputHelper();
@@ -90,10 +62,10 @@ class FeedstockAdmin
 		require_once("includes/TemplateLoader.php");
 		$this->templateLoader = new TemplateLoader($this->templateEngine, $outputHelper);
 		
-		if($generateSitemap)
+		if($this->config['generateSitemap'])
 		{
 			require_once("includes/SitemapCreator.php");
-			$this->sitemap = new SitemapCreator($this->databaseAdmin, $baseLocation . $sitemapPath, $maxSitemapItems, $this->siteUrlGenerator->generateSiteUrl());
+			$this->sitemapCreator = new SitemapCreator($this->databaseAdmin, $this->config['baseLocation'] . $this->config['sitemapPath'], $this->config['maxSitemapItems'], $this->siteUrlGenerator->generateSiteUrl());
 		}
 		
 		$this->handleRequest();
@@ -110,7 +82,7 @@ class FeedstockAdmin
 				//print_r($userArray);
 				
 				// this should be true if the person supplied the correct information
-				if($userArray["PasswordHash"] == $this->makePasswordHash($this->postManager->getPostByName("password"), $userArray["Salt"], $this->salt))
+				if($userArray["PasswordHash"] == $this->makePasswordHash($this->postManager->getPostByName("password"), $userArray["Salt"], $this->config['passSalt']))
 				{
 					//echo "hit";
 					$this->cookieMonster->createCookie($userArray["id"]);
@@ -224,7 +196,7 @@ class FeedstockAdmin
 				
 				if($this->postManager->getPostByName("useCurrentDate") == 1)
 				{
-					$date = date("Y-m-d H:i:s", time());
+					$date = date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']);
 				}
 				else
 				{
@@ -262,7 +234,7 @@ class FeedstockAdmin
 					$niceCheckedTitle, 
 					$goodUri, 
 					$this->cookieMonster->getUserID(), 
-					date("Y-m-d H:i:s", time()), 
+					date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']), 
 					$this->postManager->getPostByName("draft")
 				);
 				
@@ -276,20 +248,21 @@ class FeedstockAdmin
 			
 			$this->purgeCache();
 			
-			if($this->feedPubSubHubBub)
+			if($this->config['feedPubSubHubBub'])
 			{
 				require_once("includes/feed/PubSubHubBub.php");
 				
-				$hub = new PubSubHubBub($this->feedPubSubHubBubPublishUrl, $this->siteUrlGenerator->generateSiteUrl());
-				$returned = $hub->publish();
+				$hub = new PubSubHubBub($this->config['feedPubSubHubBubPublishUrl'], $this->siteUrlGenerator->generateSiteUrl());
+				$hub->publish();
+				//$returned = $hub->publish();
 				//echo "PubSub: ";
 				//print_r($returned);
 				//echo "\n";
 			}
 			
-			if($this->sitemap != null)
+			if($this->sitemapCreator != null)
 			{
-				$this->sitemap->generateSitemap();
+				$this->sitemapCreator->generateSitemap();
 			}
 		}
 	}
@@ -332,9 +305,9 @@ class FeedstockAdmin
 			$this->purgeCache();
 		}
 		
-		if($this->sitemap != null)
+		if($this->sitemapCreator != null)
 		{
-			$this->sitemap->generateSitemap();
+			$this->sitemapCreator->generateSitemap();
 		}
 	}
 	
@@ -409,7 +382,7 @@ class FeedstockAdmin
 				$niceCheckedTitle, 
 				$goodUri, 
 				$this->cookieMonster->getUserID(), 
-				date("Y-m-d H:i:s", time()), 
+				date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']), 
 				$this->postManager->getPostByName("draft"),
 				$corral
 				);
@@ -418,9 +391,9 @@ class FeedstockAdmin
 			$this->purgeCache();
 		}
 		
-		if($this->sitemap != null)
+		if($this->sitemapCreator != null)
 		{
-			$this->sitemap->generateSitemap();
+			$this->sitemapCreator->generateSitemap();
 		}
 	}
 	
@@ -439,9 +412,9 @@ class FeedstockAdmin
 			$this->purgeCache();
 		}
 		
-		if($this->sitemap != null)
+		if($this->sitemapCreator != null)
 		{
-			$this->sitemap->generateSitemap();
+			$this->sitemapCreator->generateSitemap();
 		}
 	}
 	
@@ -465,9 +438,9 @@ class FeedstockAdmin
 			$this->purgeCache();
 		}
 		
-		if($this->sitemap != null)
+		if($this->sitemapCreator != null)
 		{
-			$this->sitemap->generateSitemap();
+			$this->sitemapCreator->generateSitemap();
 		}
 	}
 	
@@ -502,7 +475,7 @@ class FeedstockAdmin
 	{
 		$i = 1;
 		$moreThanOne = true;
-		$temp = null;
+		$tmp = null;
 		
 		$moreThanOne = $this->databaseAdmin->checkDuplicateTitle($type, $niceTitle, $id);
 		
@@ -643,13 +616,13 @@ class FeedstockAdmin
 	 */
 	private function generatePostUri($nice, $date = null)
 	{
-		$temp = explode("/", V_POSTFORMAT);
+		$temp = explode("/", $this->config['postFormat']);
 		//print_r($temp);
 		$tmpStr = "/";
 		
 		if($date == null)
 		{
-			$date = time();
+			$date = $_SERVER['REQUEST_TIME'];
 		}
 		
 		$tmpCt = count($temp);
@@ -676,7 +649,8 @@ class FeedstockAdmin
 			}
 		}
 		
-		if($tmpStr[strlen($tmpStr) - 1] == "/")
+		//if($tmpStr[strlen($tmpStr) - 1] == "/")
+		if(substr_compare($tmpStr, '/', -1) === 0)
 		{
 			$tmpStr = substr($tmpStr, 0, -1);
 		}
@@ -745,25 +719,20 @@ class FeedstockAdmin
 	{
 		require_once("includes/interfaces/GenericDatabase.php");
 		require_once("includes/interfaces/GenericDatabaseAdmin.php");
-		require_once("includes/databases/" . $this->databaseType . "DatabaseAdmin.php");
+		require_once("includes/databases/" . $this->config['databaseType'] . "DatabaseAdmin.php");
 		$return = null;
+		$type = $this->config['databaseType'] . "DatabaseAdmin";
 		
-		switch($this->databaseType)
-		{
-			case "Mysqli":
-				$return = new MysqliDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
-			break;
-			case "Mysql":
-				$return = new MysqlDatabaseAdmin($this->username, $this->password, $this->address, $this->database, $this->tablePrefix);
-			break;
-		}
+
+		$return = new $type($this->config['databaseUsername'], $this->config['databasePassword'], $this->config['databaseAddress'], $this->config['databaseName'], $this->config['databaseTablePrefix']);
+
 		
 		return $return;
 	}
 	
 	private function purgeCache()
 	{
-		if($this->cacheEnable)
+		if($this->config['cacheEnable'])
 		{
 			require_once("includes/CacheHandler.php");
 			$cacheHandler = new CacheHandler($this->router);

@@ -205,7 +205,7 @@ class SitemapCreator
 	
 	private function checkPageUri($uri)
 	{
-		if($uri[0] == "/")
+		if($uri[0] === "/")
 		{
 			$uri = substr($uri, 1);
 		}

@@ -795,7 +795,8 @@ class TemplateEngineAdmin
 	{
 		$return = null;
 		
-		if(substr($this->htmlPageTitle, -3) == "Tag")
+		//if(substr($this->htmlPageTitle, -3) === "Tag")
+		if(substr_compare($this->htmlPageTitle, "Tag", -3) === 0)
 		{
 			$return = substr($this->htmlPageTitle, 0, -7);
 		}
