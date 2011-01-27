@@ -448,7 +448,7 @@ class TemplateEngineAdmin
 				
 				$key["Checked"] = ($found == true ? 1 : 0);
 				
-				array_push($tmpArr3, $key);
+				$tmpArr3[] = $key;
 			}
 			
 			//print_r($tmpArr3);

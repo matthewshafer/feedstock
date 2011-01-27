@@ -42,7 +42,7 @@ class Xcache implements GenericCacher
 		if(xcache_isset($lookup))
 		{
 			
-			array_push($this->store, xcache_get($lookup));
+			$this->store[] = xcache_get($lookup);
 			$this->storePos++;
 			
 			$return = true;

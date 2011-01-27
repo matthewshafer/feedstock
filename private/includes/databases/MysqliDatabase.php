@@ -130,7 +130,7 @@ class MysqliDatabase implements GenericDatabase
 			
 			if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $nonEscapedQuery);
+				$this->debugQueries[] = $nonEscapedQuery;
 			}
 			
 			$this->queries++;
@@ -165,9 +165,10 @@ class MysqliDatabase implements GenericDatabase
 				{
 					if($row["Author"] == null)
 					{
-					$row["Author"] = "Unknown";
+						$row["Author"] = "Unknown";
 					}
-					array_push($tempArray, $row);
+					
+					$tempArray[] = $row;
 				}
 				$result->close();
 			
@@ -212,7 +213,7 @@ class MysqliDatabase implements GenericDatabase
 			
 			if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $nonEscapedQuery);
+				$this->debugQueries[] = $nonEscapedQuery;
 			}
 			
 			$this->queries++;
@@ -235,7 +236,7 @@ class MysqliDatabase implements GenericDatabase
 				$tmp = $result->fetch_assoc();
 				if(!empty($tmp))
 				{
-					array_push($return, $tmp);
+					$return[] = $tmp;
 				}
 			
 				if($this->haveCacher)
@@ -268,7 +269,7 @@ class MysqliDatabase implements GenericDatabase
 			
 			if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $nonEscapedQuery);
+				$this->debugQueries[] = $nonEscapedQuery;
 			}
 			$this->queries++;
 		}
@@ -296,7 +297,7 @@ class MysqliDatabase implements GenericDatabase
 					$row["Author"] = "Unknown";
 				}
 			
-				array_push($tempArray, $row);
+				$tempArray[] = $row;
 			
 				$result->close();
 			
@@ -340,7 +341,7 @@ class MysqliDatabase implements GenericDatabase
 	 		
 	 		if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $nonEscapedQuery);
+				$this->debugQueries[] = $nonEscapedQuery;
 			}
 			$this->queries++;
 			
@@ -358,7 +359,7 @@ class MysqliDatabase implements GenericDatabase
 	 			
 	 				while($row = $result->fetch_assoc())
 	 				{
-	 					array_push($arrayWithCatsAndTags, $row);
+	 					$arrayWithCatsAndTags[] = $row;
 	 				}
 	 			
 	 				if($this->haveCacher)
@@ -381,7 +382,7 @@ class MysqliDatabase implements GenericDatabase
 	 					$tagArray[$arrayWithCatsAndTags[$i]["PostID"]] = array();
 	 				}
 	 				
-	 				array_push($tagArray[$arrayWithCatsAndTags[$i]["PostID"]], $arrayWithCatsAndTags[$i]);
+	 				$tagArray[$arrayWithCatsAndTags[$i]["PostID"]][] = $arrayWithCatsAndTags[$i];
 	 			}
 	 			else
 	 			{
@@ -391,7 +392,7 @@ class MysqliDatabase implements GenericDatabase
 	 					$categoryArray[$arrayWithCatsAndTags[$i]["PostID"]] = array();
 	 				}
 	 				
-	 				array_push($categoryArray[$arrayWithCatsAndTags[$i]["PostID"]], $arrayWithCatsAndTags[$i]);
+	 				$categoryArray[$arrayWithCatsAndTags[$i]["PostID"]][] = $arrayWithCatsAndTags[$i];
 	 			}
 	 		}
 	 		
@@ -433,7 +434,7 @@ class MysqliDatabase implements GenericDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $nonEscapedQuery);
+			$this->debugQueries[] = $nonEscapedQuery;
 		}
 			
 		$this->queries++;
@@ -454,7 +455,7 @@ class MysqliDatabase implements GenericDatabase
 			
 			while($row = $result->fetch_assoc())
 			{
-				array_push($tempArray, $row["PostID"]);
+				$tempArray[] = $row["PostID"];
 			}
 			
 				$result->close();
@@ -485,7 +486,7 @@ class MysqliDatabase implements GenericDatabase
 			
 			if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $nonEscapedQuery);
+				$this->debugQueries[] = $nonEscapedQuery;
 			}
 	
 			$this->queries++;
@@ -509,7 +510,7 @@ class MysqliDatabase implements GenericDatabase
 							$row["Author"] = "Unknown";
 						}
 					
-						array_push($return, $row);
+						$return[] = $row;
 					}
 					$result->close();
 					
@@ -555,7 +556,7 @@ class MysqliDatabase implements GenericDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $nonEscapedQuery);
+			$this->debugQueries[] = $nonEscapedQuery;
 		}
 			
 		$this->queries++;
@@ -622,7 +623,7 @@ class MysqliDatabase implements GenericDatabase
 			{
 				while($row = $result->fetch_assoc())
 				{
-					array_push($return, $row);
+					$return[] = $row;
 				}
 				
 				$result->close();

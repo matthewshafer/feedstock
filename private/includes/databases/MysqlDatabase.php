@@ -83,7 +83,7 @@ class MysqlDatabase
 			
 			if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $query);
+				$this->debugQueries[] = $query;
 			}
 			
 			$this->queries++;
@@ -109,9 +109,10 @@ class MysqlDatabase
 			else
 			{
 				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
+				
 				if($this->debugSwitch)
 				{
-					array_push($this->debugQueries, $query);
+					$this->debugQueries[] = $query;
 				}
 				
 				$this->queries++;
@@ -135,7 +136,7 @@ class MysqlDatabase
 				$temp["PostData"] = stripslashes($temp["PostData"]);
 			}
 			
-			array_push($return, $temp);
+			$return[] = $temp;
 		}
 		
 			if(count($return) == 11)
@@ -153,9 +154,10 @@ class MysqlDatabase
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %spages WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			
 			if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $query);
+				$this->debugQueries[] = $query;
 			}
 			
 			$this->queries++;
@@ -172,7 +174,7 @@ class MysqlDatabase
 		
 		while($temp = mysql_fetch_assoc($result))
 		{
-			array_push($return, $temp);
+			$return[] = $temp;
 		}
 
 		
@@ -187,9 +189,10 @@ class MysqlDatabase
 		if(!$draft)
 		{
 			$query = sprintf("SELECT * FROM %sposts WHERE URI='/%s' AND Draft='0'", $this->tablePrefix, mysql_real_escape_string($URI, $this->dbConn));
+			
 			if($this->debugSwitch)
 			{
-				array_push($this->debugQueries, $query);
+				$this->debugQueries[] = $query;
 			}
 			$this->queries++;
 		}
@@ -212,9 +215,10 @@ class MysqlDatabase
 			else
 			{
 				$query = sprintf("SELECT DisplayName FROM %susers WHERE id='%s' LIMIT 1", $this->tablePrefix, mysql_real_escape_string($temp["Author"], $this->dbConn));
+				
 				if($this->debugSwitch)
 				{
-					array_push($this->debugQueries, $query);
+					$this->debugQueries[] = $query;
 				}
 			
 				$this->queries++;
@@ -238,7 +242,7 @@ class MysqlDatabase
 				$temp["PostData"] = stripslashes($temp["PostData"]);
 			}
 			
-			array_push($return, $temp);
+			$return[] = $temp;
 		}
 		
 		return $return;
@@ -251,7 +255,7 @@ class MysqlDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $query);
+			$this->debugQueries[] = $query;
 		}
 			
 		$this->queries++;
@@ -272,7 +276,7 @@ class MysqlDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $query);
+			$this->debugQueries[] = $query;
 		}
 			
 		$this->queries++;
@@ -282,7 +286,7 @@ class MysqlDatabase
 		
 		while($temp = mysql_fetch_assoc($result))
 		{
-			array_push($return, $temp);
+			$return[] = $temp;
 		}
 		
 		return $return;
@@ -306,7 +310,7 @@ class MysqlDatabase
 				
 				if($this->debugSwitch)
 				{
-					array_push($this->debugQueries, $query);
+					$this->debugQueries[] = $query;
 				}
 			
 				$this->queries++;
@@ -320,7 +324,7 @@ class MysqlDatabase
 					{
 						$tmpArr2[$tmp["CatTagID"]] = $tmp["CatTagID"];
 					}
-					array_push($tmpArr[$key], $tmp["CatTagID"]);
+					$tmpArr[$key][] = $tmp["CatTagID"];
 				}
 			}
 		
@@ -342,7 +346,7 @@ class MysqlDatabase
 				
 				if($this->debugSwitch)
 				{
-					array_push($this->debugQueries, $query);
+					$this->debugQueries[] = $query;
 				}
 			
 				$this->queries++;
@@ -353,7 +357,7 @@ class MysqlDatabase
 				
 				if($this->debugSwitch)
 				{
-					array_push($this->debugQueries, $query);
+					$this->debugQueries[] = $query;
 				}
 				//echo $query;
 				$this->queries++;
@@ -394,7 +398,7 @@ class MysqlDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $query);
+			$this->debugQueries[] = $query;
 		}
 			
 		$this->queries++;
@@ -412,7 +416,7 @@ class MysqlDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $query2);
+			$this->debugQueries[] = $query2;
 		}
 			
 		$this->queries++;
@@ -422,7 +426,7 @@ class MysqlDatabase
 		
 		while($temp = mysql_fetch_assoc($result2))
 		{
-			array_push($tmpArr, $temp["PostID"]);
+			$tmpArr[] = $temp["PostID"];
 		}
 		
 		$queryStr = implode(", ", $tmpArr);
@@ -440,12 +444,12 @@ class MysqlDatabase
 		
 		while($temp = mysql_fetch_assoc($result3))
 		{
-			array_push($return, $temp);
+			$return[] = $temp;
 		}
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $query3);
+			$this->debugQueries[] = $query3;
 		}
 		
 			$this->queries++;
@@ -461,7 +465,7 @@ class MysqlDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $query);
+			$this->debugQueries[] = $query;
 		}
 		$this->queries++;
 		//echo $query;
@@ -471,7 +475,7 @@ class MysqlDatabase
 		
 		while($temp = mysql_fetch_assoc($result))
 		{
-			array_push($return, $temp);
+			$return[] = $temp;
 		}
 		
 		return $return;
@@ -483,7 +487,7 @@ class MysqlDatabase
 		
 		if($this->debugSwitch)
 		{
-			array_push($this->debugQueries, $query);
+			$this->debugQueries[] = $query;
 		}
 			
 			
@@ -494,7 +498,7 @@ class MysqlDatabase
 		
 		while($temp = mysql_fetch_assoc($result))
 		{
-			array_push($return, $temp);
+			$return[] = $temp;
 		}
 		
 		return $return;

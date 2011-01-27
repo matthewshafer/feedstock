@@ -281,7 +281,7 @@ class FeedstockAdmin
 		{
 			$tmp = array("Title" => $tempArr[$i], "NiceTitle" => $this->uriFriendlyTitle(trim($tempArr[$i])));
 			
-			array_push($tempArr2, $tmp);
+			$tempArr2[] = $tmp;
 		}
 		
 		//print_r($tempArr2);

@@ -401,7 +401,7 @@ class MysqlDatabaseAdmin extends MysqlDatabase
 		
 		while($tmp = mysql_fetch_assoc($result))
 		{
-			array_push($return, $tmp);
+			$return[] = $tmp;
 		}
 		
 		
@@ -430,7 +430,7 @@ class MysqlDatabaseAdmin extends MysqlDatabase
 		
 		while($tmp = mysql_fetch_assoc($result))
 		{
-			array_push($return, $tmp);
+			$return[] = $tmp;
 		}
 		
 		
@@ -470,7 +470,7 @@ class MysqlDatabaseAdmin extends MysqlDatabase
 		
 		while($tmp = mysql_fetch_assoc($result))
 		{
-			array_push($tmpArr, $tmp);
+			$tmpArr[] = $tmp;
 		}
 		
 		return $tmpArr;
@@ -484,7 +484,7 @@ class MysqlDatabaseAdmin extends MysqlDatabase
 		
 		while($tmp = mysql_fetch_assoc($result))
 		{
-			array_push($tmpArr, $tmp["CatTagID"]);
+			$tmpArr[] = $tmp["CatTagID"];
 		}
 		
 		//print_r($tmpArr);
@@ -499,7 +499,7 @@ class MysqlDatabaseAdmin extends MysqlDatabase
 			
 			while($tmp = mysql_fetch_assoc($result))
 			{
-				array_push($tmpArr, $tmp["Name"]);
+				$tmpArr[] = $tmp["Name"];
 			}
 		}
 		
@@ -567,12 +567,12 @@ class MysqlDatabaseAdmin extends MysqlDatabase
 				$result2 = mysql_query($query3, parent::$this->dbConn);
 				$ttttttmp = mysql_fetch_assoc($result2);
 				
-				array_push($tmpArr, $ttttttmp["PrimaryKey"]);
+				$tmpArr[] = $ttttttmp["PrimaryKey"];
 				
 			}
 			else
 			{
-				array_push($tmpArr, $arr["PrimaryKey"]);
+				$tmpArr[] = $arr["PrimaryKey"];
 			}
 		}
 		

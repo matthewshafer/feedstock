@@ -547,7 +547,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		{
 			while($row = $result->fetch_assoc())
 			{
-				array_push($return, $row);
+				$return[] = $row;
 			}
 			$result->close();
 		}
@@ -613,7 +613,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		{
 			while($row = $result->fetch_assoc())
 			{
-				array_push($return, $row);
+				$return[] = $row;
 			}
 			
 			$result->close();
@@ -643,7 +643,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		
 		while($query->fetch())
 		{
-			array_push($return, $categoryTagId);
+			$return[] = $categoryTagId;
 		}
 		$query->close();
 		
@@ -656,7 +656,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		{
 			while($row = $result->fetch_assoc())
 			{
-				array_push($return, $row["Name"]);
+				$return[] = $row["Name"];
 			}
 			$result->close();
 		}
@@ -778,13 +778,13 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 						$query1->store_result();
 						$query1->bind_result($primaryKey);
 						$query1->fetch();
-						array_push($primaryKeyArray, $primaryKey);
+						$primaryKeyArray[] = $primaryKey;
 						$query1->free_result();
 					}
 				}
 				else
 				{
-					array_push($primaryKeyArray, $primaryKey);
+					$primaryKeyArray[] = $primaryKey;
 				}
 			}
 			$query1->close();
@@ -828,7 +828,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		{
 			while($row = $result->fetch_assoc())
 			{
-				array_push($return, $row);
+				$return[] = $row;
 			}
 			$result->close();
 		}
@@ -933,7 +933,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		{
 			while($row = $result->fetch_assoc())
 			{
-				array_push($return, $row);
+				$return[] = $row;
 			}
 			$result->close();
 		}

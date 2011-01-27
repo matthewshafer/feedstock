@@ -900,7 +900,7 @@ class TemplateEngine
 			
 			foreach($this->pageData as $key)
 			{
-				array_push($tmpArr, $key["PrimaryKey"]);
+				$tmpArr[] = $key["PrimaryKey"];
 			}
 			
 			//print_r($tmpArr);
@@ -924,7 +924,7 @@ class TemplateEngine
 			
 			foreach($this->pageData as $key)
 			{
-				array_push($tmpArr, $key["PrimaryKey"]);
+				$tmpArr[] = $key["PrimaryKey"];
 			}
 			
 			$this->postCategory = $this->database->getPostCategoryOrTag($tmpArr, "category");

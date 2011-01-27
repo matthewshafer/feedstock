@@ -17,12 +17,12 @@ class PubSubHubBub
 		
 		if($this->checkValidURL($rss))
 		{
-			array_push($this->feedLoc, $rss);
+			$this->feedLoc[] = $rss;
 		}
 		
 		if($this->checkValidURL($atom))
 		{
-			array_push($this->feedLoc, $atom);
+			$this->feedLoc[] = $atom;
 		}
 		
 		//print_r($this->feedLoc);

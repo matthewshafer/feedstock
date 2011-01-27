@@ -44,7 +44,7 @@ class FileCache implements GenericCacher
 			
 			if($return)
 			{
-				array_push($this->store, $tmp);
+				$this->store[] = $tmp;
 				$this->storePos++;
 			}
 		}

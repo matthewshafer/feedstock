@@ -46,7 +46,7 @@ class Apc implements GenericCacher
 		
 		if($success)
 		{
-			array_push($this->store, apc_fetch($lookup));
+			$this->store[] = apc_fetch($lookup);
 			$this->storePos++;
 			
 			$return = true;
