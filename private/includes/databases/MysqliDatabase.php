@@ -125,6 +125,7 @@ class MysqliDatabase implements GenericDatabase
 		{
 			//$query = sprintf("SELECT * FROM %sposts WHERE Draft='0' order by Date DESC LIMIT %s OFFSET %s", $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 			$stockQuery = "SELECT PrimaryKey, Title, NiceTitle, URI, PostData, Category, Tags, Date, themeFile, Draft, displayName AS Author FROM %sposts LEFT JOIN %susers ON id = Author WHERE Draft='0' ORDER BY Date DESC LIMIT %s OFFSET %s";
+			
 			$nonEscapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $limit, $offset);
 			
 			

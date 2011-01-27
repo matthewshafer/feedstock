@@ -24,7 +24,6 @@ class TemplateLoader
 	{
 		$this->templateEngine = $templateEngine;
 		$this->outputHelper = $outputHelper;
-		//$this->themeLoc = $this->templateEngine->getThemeLoc();
 	}
 	
 	/**
@@ -37,14 +36,7 @@ class TemplateLoader
 	{
 		$this->themeLoc = $this->templateEngine->getThemeLocation();
 		
-		if(!$this->templateEngine->haveThemeError())
-		{
-			include $this->themeLoc;
-		}
-		else
-		{
-			echo $this->templateEngine->getThemeError();
-		}
+		include $this->themeLoc;
 		
 		return $this->outputHelper->stopStoreFlushGetBuffer();
 	}

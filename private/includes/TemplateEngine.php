@@ -15,8 +15,6 @@ class TemplateEngine
 	private $postTag = null;
 	private $arrayPosition = -1;
 	private $errorText = null;
-	// could possibly remove this and it's related functions
-	private $themeValidError = false;
 	private $pageDataCt = null;
 	// feeds are handled by the template engine.  Could possibly seperate it out later to be its own thing
 	private $feedAuthor = "";
@@ -598,8 +596,7 @@ class TemplateEngine
 		
 		if($format != null && isset($this->pageData[$this->arrayPosition]["Date"]))
 		{
-			$strTime = strtotime($this->pageData[$this->arrayPosition]["Date"]);
-			$return = date($format, $strTime);
+			$return = date($format, strtotime($this->pageData[$this->arrayPosition]["Date"]));
 		}
 		return $return;
 	}
@@ -1240,39 +1237,6 @@ class TemplateEngine
 	public function getError()
 	{
 		return $this->errorText;
-	}
-	
-	/**
-	 * themeError function.
-	 * 
-	 * @brief Do we have an error with themes?
-	 * @access public
-	 * @return Boolean True if we have an error with the themes
-	 */
-	public function haveThemeError()
-	{
-		if($this->themeValidError === false)
-		{
-			$return = false;
-		}
-		else
-		{
-			$return = true;
-		}
-		
-		return $return;
-	}
-	
-	/**
-	 * themeErrorText function.
-	 * 
-	 * @brief Error text related to theme errors
-	 * @access public
-	 * @return String with the error encountered or null if no error
-	 */
-	public function getThemeError()
-	{
-		return $this->themeValidError;
 	}
 	
 	
