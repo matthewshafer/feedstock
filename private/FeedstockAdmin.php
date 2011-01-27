@@ -73,7 +73,7 @@ class FeedstockAdmin
 	
 	private function handleRequest()
 	{
-		if($this->postManager->getPostType() == "login")
+		if($this->postManager->getPostType() === "login")
 		{
 			// check the login info and then set the cookie
 			if($this->postManager->getPostByName("username") != null and $this->postManager->getPostByName("username") != null)
@@ -82,7 +82,7 @@ class FeedstockAdmin
 				//print_r($userArray);
 				
 				// this should be true if the person supplied the correct information
-				if($userArray["PasswordHash"] == $this->makePasswordHash($this->postManager->getPostByName("password"), $userArray["Salt"], $this->config['passSalt']))
+				if($userArray["PasswordHash"] === $this->makePasswordHash($this->postManager->getPostByName("password"), $userArray["Salt"], $this->config['passSalt']))
 				{
 					//echo "hit";
 					$this->cookieMonster->createCookie($userArray["id"]);
@@ -337,7 +337,7 @@ class FeedstockAdmin
 				$id = $this->postManager->getPostByName("id");
 				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("page", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")), $id);
 				
-				if($this->postManager->getPostByName("pageUri") == "")
+				if($this->postManager->getPostByName("pageUri") === "")
 				{
 					$nonCheckedUri = sprintf("/%s", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")));
 				}
@@ -365,7 +365,7 @@ class FeedstockAdmin
 				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("page", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")));
 				// I can make this a bunch better
 				
-				if($this->postManager->getPostByName("pageUri") == "")
+				if($this->postManager->getPostByName("pageUri") === "")
 				{
 					$nonCheckedUri = sprintf("/%s", $this->uriFriendlyTitle($this->postManager->getPostByName("pageTitle")));
 				}
@@ -583,7 +583,7 @@ class FeedstockAdmin
 			}
 			
 			$ct = strlen($title);
-			if($ct > 0 && $title[$ct - 1] == "/")
+			if($ct > 0 && $title[$ct - 1] === "/")
 			{
 				$title = substr($title, 0, -1);
 			}
@@ -620,7 +620,7 @@ class FeedstockAdmin
 		//print_r($temp);
 		$tmpStr = "/";
 		
-		if($date == null)
+		if($date === null)
 		{
 			$date = $_SERVER['REQUEST_TIME'];
 		}

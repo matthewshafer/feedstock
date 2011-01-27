@@ -15,6 +15,7 @@ class TemplateEngine
 	private $postTag = null;
 	private $arrayPosition = -1;
 	private $errorText = null;
+	// could possibly remove this and it's related functions
 	private $themeValidError = false;
 	private $pageDataCt = null;
 	// feeds are handled by the template engine.  Could possibly seperate it out later to be its own thing
@@ -74,7 +75,7 @@ class TemplateEngine
 	{
 		$return = null;
 		
-		if($location == null)
+		if($location === null)
 		{
 			$location = sprintf("%s/private/themes/%s", $this->baseLocation, $this->themeName);
 		}
@@ -105,11 +106,11 @@ class TemplateEngine
 		$return = sprintf("%s/private/themes/%s", $this->baseLocation, $this->themeName);
 		$file = null;
 		
-		if(strtolower($this->router->pageType()) == "")
+		if(strtolower($this->router->pageType()) === "")
 		{	
 			$file = "index.php";
 		}
-		else if(strtolower($this->router->pageType()) == "page")
+		else if(strtolower($this->router->pageType()) === "page")
 		{
 			$offset = $this->router->getPageOffset() * $this->postsPerPage;
 			$this->pageData = $this->database->getPosts($this->postsPerPage, $offset);
@@ -135,7 +136,7 @@ class TemplateEngine
 			}
 			else
 			{
-				if($this->router->pageType() == "category")
+				if($this->router->pageType() === "category")
 				{
 					
 					// I totally forget what this was for, I should probably figure it out
@@ -151,7 +152,7 @@ class TemplateEngine
 					$categoryNameOffset = $this->router->searchURI("category") + 1;
 					$categoryName = $this->router->getUriPosition($categoryNameOffset);
 					
-					if($this->router->uriLength() == 1)
+					if($this->router->uriLength() === 1)
 					{
 						$this->pageData = $this->database->listCategoriesOrTags(0);
 					}
@@ -205,12 +206,12 @@ class TemplateEngine
 					}
 			
 				}
-				else if($this->router->pageType() == "tag")
+				else if($this->router->pageType() === "tag")
 				{	
 					$tagNameOffset = $this->router->searchURI("tag") + 1;
 					$tagName = $this->router->getUriPosition($tagNameOffset);
 				
-					if($this->router->uriLength() == 1)
+					if($this->router->uriLength() === 1)
 					{
 						$this->pageData = $this->database->listCategoriesOrTags(1);
 					}
@@ -268,7 +269,7 @@ class TemplateEngine
 					
 				}
 				// need to rewrite the feed to use template engine over doing stuff on it's own
-				else if($this->router->pageType() == "feed")
+				else if($this->router->pageType() === "feed")
 				{
 					$this->pageData = $this->database->getPosts($this->postsPerPage, 0);
 					$return = sprintf("%s/private/includes", $this->baseLocation);
@@ -294,7 +295,7 @@ class TemplateEngine
 		}
 		
 		
-		if($file == null)
+		if($file === null)
 		{
 			// we have some error which we need to figure out what to do.  for now we will just die
 			
@@ -329,7 +330,7 @@ class TemplateEngine
 	
 	private function arrayCustomFile($defaultFile)
 	{
-		if($this->pageData[$this->arrayPosition]["themeFile"] == null)
+		if($this->pageData[$this->arrayPosition]["themeFile"] === null)
 		{
 			$return = sprintf("%s.php", $defaultFile);
 		}
@@ -349,7 +350,7 @@ class TemplateEngine
 		$isBad = false;
 		$return = true;
 		
-		if($this->router->uriLength() == count($temp))
+		if($this->router->uriLength() === count($temp))
 		{
 			$tmpCt = count($temp);
 			
@@ -376,7 +377,7 @@ class TemplateEngine
 						}
 						break;
 					case "%TITLE%":
-						if($this->router->getUriPosition($i + 1) == null)
+						if($this->router->getUriPosition($i + 1) === null)
 						{
 							$isBad = true;
 						}
@@ -644,7 +645,7 @@ class TemplateEngine
 			foreach($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
 			{				
 				// for some reason I feel like its good to set a null to a string before I use it
-				if($return == null)
+				if($return === null)
 				{
 					$return = "";
 				}
@@ -697,7 +698,7 @@ class TemplateEngine
 			foreach($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
 			{
 				// feels like a good idea to make the null a string before I use it
-				if($return == null)
+				if($return === null)
 				{
 					$return = "";
 				}
@@ -829,7 +830,7 @@ class TemplateEngine
 		$return = $this->siteUrl;
 		$uriLen = strlen($uri);
 		
-		if($uriLen > 0 && $uri[0] == "/")
+		if($uriLen > 0 && $uri[0] === "/")
 		{
 			$uri = substr($uri, 1);
 		}
@@ -894,7 +895,7 @@ class TemplateEngine
 	 */
 	public function generateTags()
 	{
-		if($this->pageData != null && $this->postTag == null)
+		if($this->pageData != null && $this->postTag === null)
 		{
 			$tmpArr = array();
 			
@@ -918,7 +919,7 @@ class TemplateEngine
 	 */
 	public function generateCategories()
 	{
-		if($this->pageData != null && $this->postCategory == null)
+		if($this->pageData != null && $this->postCategory === null)
 		{
 			$tmpArr = array();
 			
@@ -1021,7 +1022,7 @@ class TemplateEngine
 	{
 		$return = false;
 		
-		if(strtolower($this->router->pageType()) == "page" && $this->router->getPageOffset() > 0 && $this->pageDataCt > 0)
+		if(strtolower($this->router->pageType()) === "page" && $this->router->getPageOffset() > 0 && $this->pageDataCt > 0)
 		{
 			$return = true;
 		}
@@ -1065,7 +1066,7 @@ class TemplateEngine
 		
 		if($this->havePreviousPostPage())
 		{
-			$offset = (int)$this->router->getPageOffset();
+			$offset = $this->router->getPageOffset();
 			
 			if($offset === 1)
 			{
@@ -1143,7 +1144,7 @@ class TemplateEngine
 	{
 		static $return = null;
 		
-		if($return == null)
+		if($return === null)
 		{
 			$return = sprintf("%s/themes/%s/", $this->siteUrl, $this->themeName);
 		}
@@ -1159,11 +1160,11 @@ class TemplateEngine
 		
 		if($this->router->uriLength() <= 2)
 		{
-			if($type == "" || $type == "rss")
+			if($type === "" || $type === "rss")
 			{
 				$return = "rss";
 			}
-			else if($type == "atom")
+			else if($type === "atom")
 			{
 				$return = "atom";
 			}
@@ -1199,7 +1200,7 @@ class TemplateEngine
 	{
 		$return = null;
 		
-		if($uri == null)
+		if($uri === null)
 		{
 			$return = $this->siteUrl;
 		}
@@ -1223,7 +1224,7 @@ class TemplateEngine
 	{
 		$return = true;
 		
-		if($this->errorText == null)
+		if($this->errorText === null)
 		{
 			$return = false;
 		}
@@ -1252,7 +1253,7 @@ class TemplateEngine
 	 */
 	public function haveThemeError()
 	{
-		if($this->themeValidError == null)
+		if($this->themeValidError === false)
 		{
 			$return = false;
 		}

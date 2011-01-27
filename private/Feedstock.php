@@ -46,7 +46,7 @@ class Feedstock
 	
 	private function handleRequest()
 	{
-		if($this->router->requestMethod() == "GET")
+		if($this->router->requestMethod() === "GET")
 		{
 			if($this->maintenanceMode($this->config['enableMaintenance'], $this->config['maintenancePassthru']))
 			{
@@ -118,7 +118,7 @@ class Feedstock
 		
 
 		// ok so really we only need the database when it comes to keeping track of files, which we currently don't do. Decisions decisions.
-		if($this->router->pageType() == "file")
+		if($this->router->pageType() === "file")
 		{
 			require_once("includes/FileServe.php");
 			$fileServe = new FileServe($this->database, $this->router, $this->config['baseLocation'], $this->config['enableFileDownload']);

@@ -267,7 +267,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		$query->bind_result($permissions, $canAdmin);
 		$query->fetch();
 		
-		if($currentPermissions < $permissions && $currentAdmin === 1)
+		if($currentPermissions < $permissions && $currentAdmin == 1)
 		{
 			$formattedQuery2 = sprintf("DELETE FROM %susers WHERE id=?", parent::$this->tablePrefix);
 			$query2 = parent::$this->databaseConnection->prepare($formattedQuery2);

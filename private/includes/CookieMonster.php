@@ -77,7 +77,7 @@ class CookieMonster
 	{
 		$return = false;
 		// if the db is null the cookie doesn't exist
-		if($this->userID == null and isset($_COOKIE[$this->cookieName]))
+		if($this->userID === null and isset($_COOKIE[$this->cookieName]))
 		{
 			//print_r($_COOKIE);
 			$this->userID = $this->database->findCookie($_COOKIE[$this->cookieName]);

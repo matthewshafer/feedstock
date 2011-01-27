@@ -163,7 +163,7 @@ class MysqliDatabase implements GenericDatabase
 			
 				while($row = $result->fetch_assoc())
 				{
-					if($row["Author"] == null)
+					if($row["Author"] === null)
 					{
 						$row["Author"] = "Unknown";
 					}
@@ -172,7 +172,7 @@ class MysqliDatabase implements GenericDatabase
 				}
 				$result->close();
 			
-				if(count($tempArray) == ($limit))
+				if(count($tempArray) === ($limit))
 				{
 					$this->haveNextPage = true;
 					array_pop($tempArray);
@@ -292,7 +292,7 @@ class MysqliDatabase implements GenericDatabase
 			{
 				$row = $result->fetch_assoc();
 			
-				if($row["Author"] == null)
+				if($row["Author"] === null)
 				{
 					$row["Author"] = "Unknown";
 				}
@@ -373,6 +373,7 @@ class MysqliDatabase implements GenericDatabase
 	 		
 	 		for($i = 0; $i < $catsTagsArrayLength; $i++)
 	 		{
+	 			// we can't use === here because the type is a string.  we could compare it to '1' and then we could use ===
 	 			if($arrayWithCatsAndTags[$i]["Type"] == 1)
 	 			{
 	 				// tag
@@ -400,7 +401,7 @@ class MysqliDatabase implements GenericDatabase
 	 		
 	 	}
 	 	
-	 	if($type == 1)
+	 	if($type === 1)
 	 	{
 	 		$return = $tagArray;
 	 	}
@@ -505,7 +506,7 @@ class MysqliDatabase implements GenericDatabase
 				{
 					while($row = $result->fetch_assoc())
 					{
-						if($row["Author"] == null)
+						if($row["Author"] === null)
 						{
 							$row["Author"] = "Unknown";
 						}
@@ -516,7 +517,7 @@ class MysqliDatabase implements GenericDatabase
 					
 					
 					$returnCout = count($return);
-					if($returnCout == $limit)
+					if($returnCout === $limit)
 					{
 						$this->haveNextPage = true;
 						array_pop($return);

@@ -83,7 +83,7 @@
  	{
  		$return = false;
  		
- 		if($this->customHeader == null)
+ 		if($this->customHeader === null)
  		{
  			$this->generateIP();
  		}
@@ -92,7 +92,7 @@
  			$this->getIPFromCustomHeader();
  		}
  		
- 		if($ipToCheck == $this->ipAddress)
+ 		if($ipToCheck === $this->ipAddress)
  		{
  			$return = true;
  		}
@@ -126,7 +126,7 @@
  			array("223.255.255.0", "223.255.255.255")
  		);
  		
- 		if($ipArrayCount == 4)
+ 		if($ipArrayCount === 4)
  		{
  			$ipFilterCount = count($ipFilterArray);
  			$i = 0;

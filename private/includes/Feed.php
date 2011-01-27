@@ -6,7 +6,7 @@
  * 
  */
 		
-		if($this->templateEngine->getFeedType() == "rss")
+		if($this->templateEngine->getFeedType() === "rss")
 		{
 			echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			
@@ -44,7 +44,7 @@
 			echo "\t" . '</rss>';
 				
 		}
-		else if($this->templateEngine->getFeedType() == "atom")
+		else if($this->templateEngine->getFeedType() === "atom")
 		{
 			echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
 			echo "\t" . '<feed xmlns="http://www.w3.org/2005/Atom">' . "\n";

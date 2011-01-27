@@ -153,15 +153,15 @@ class SitemapCreator
 				$return[$i] = array();
 				if(isset($data[$i]["URIName"]))
 				{
-					if($type == "tag")
+					if($type === "tag")
 					{
 						$data[$i]['URIName'] = $this->addTagToUri($data[$i]['URIName']);
 					}
-					else if($type == "category")
+					else if($type === "category")
 					{
 						$data[$i]['URIName'] = $this->addCategoryToUri($data[$i]['URIName']);
 					}
-					else if($type == "page")
+					else if($type === "page")
 					{
 						$data[$i]['URIName'] = $this->checkPageUri($data[$i]['URIName']);
 					}
@@ -170,15 +170,15 @@ class SitemapCreator
 				}
 				else
 				{
-					if($type == "tag")
+					if($type === "tag")
 					{
 						$data[$i]['URI'] = $this->addTagToUri($data[$i]['URI']);
 					}
-					else if($type == "category")
+					else if($type === "category")
 					{
 						$data[$i]['URI'] = $this->addCategoryToUri($data[$i]['URI']);
 					}
-					else if($type == "page")
+					else if($type === "page")
 					{
 						$data[$i]['URI'] = $this->checkPageUri($data[$i]['URI']);
 					}

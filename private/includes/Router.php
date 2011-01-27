@@ -225,7 +225,7 @@ class Router
 		
 		for($i = 0; $i < $count; $i++)
 		{
-			if($this->uriArray[$i] == $find)
+			if($this->uriArray[$i] === $find)
 			{
 				$return = $i + 1;
 				break;
@@ -271,7 +271,7 @@ class Router
 				$found = false;
 			}
 			
-			if(strtolower($key) == "page")
+			if(strtolower($key) === "page")
 			{
 				$found = true;
 			}

@@ -210,7 +210,7 @@ class TemplateEngineAdmin
 				break;
 		}
 		
-		if($return == null)
+		if($return === null)
 		{
 			// lets make it something that doesnt exist
 			$return = "/404.php";
@@ -231,7 +231,7 @@ class TemplateEngineAdmin
 		$return = array();
 		$specificCorral = $this->router->getUriPosition(2);
 		
-		if($specificCorral == null)
+		if($specificCorral === null)
 		{
 			$return = $this->db->getCorralList();
 		}
@@ -250,13 +250,13 @@ class TemplateEngineAdmin
 	{
 		$return = null;
 		
-		if($this->router->uriLength() == 1)
+		if($this->router->uriLength() === 1)
 		{
 			$return = "/tags.php";
 			$this->theTagData = $this->getTagsList();
 			$this->htmlPageTitle = "Tags";
 		}
-		else if($this->router->uriLength() == 2)
+		else if($this->router->uriLength() === 2)
 		{
 			$return = "/tagPosts.php";
 			
@@ -289,7 +289,7 @@ class TemplateEngineAdmin
 		$offset = intval($this->router->getUriPosition(2));
 		$tmpArr = array();
 		// the one thing is if you do like /posts/omg it just sends you to the begining
-		if($offset < 2 or $offset == null)
+		if($offset < 2 || $offset === null)
 		{
 			$offset = 0;
 		}
@@ -304,7 +304,7 @@ class TemplateEngineAdmin
 		$limit = 11;
 		
 		
-		if($type == "post")
+		if($type === "post")
 		{
 			//$tmpArr = $this->db->getPostList($limit, $offset);
 			// this one is from the normal database class.  It get's us things like author
@@ -315,7 +315,7 @@ class TemplateEngineAdmin
 			$tmpArr = $this->db->getPageList($limit, $offset);
 		}
 		
-		if(count($tmpArr) == $limit)
+		if(count($tmpArr) === $limit)
 		{
 			$this->haveNextPage = true;
 		}
@@ -341,7 +341,7 @@ class TemplateEngineAdmin
 		{
 			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
 				
-			if($pageNumber == 1)
+			if($pageNumber === 1)
 			{
 				$pageNumber = 2;
 			}
@@ -360,7 +360,7 @@ class TemplateEngineAdmin
 		{
 			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) + 1;
 			
-			if($pageNumber == 1)
+			if($pageNumber === 1)
 			{
 				$pageNumber = 2;
 			}
@@ -440,13 +440,13 @@ class TemplateEngineAdmin
 				
 				foreach($tmpArr2 as $key2)
 				{
-					if($key2["CatTagID"] == $key["PrimaryKey"])
+					if($key2["CatTagID"] === $key["PrimaryKey"])
 					{
 						$found = true;
 					}
 				}
 				
-				$key["Checked"] = ($found == true ? 1 : 0);
+				$key["Checked"] = ($found === true ? 1 : 0);
 				
 				$tmpArr3[] = $key;
 			}
@@ -756,7 +756,7 @@ class TemplateEngineAdmin
 	{
 		static $url = null;
 		
-		if($url == null)
+		if($url === null)
 		{
 			if(($i = strpos($this->adminAddress, "/index.php")) != false)
 			{

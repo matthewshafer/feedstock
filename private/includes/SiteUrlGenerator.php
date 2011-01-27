@@ -24,13 +24,13 @@ class SiteUrlGenerator
 		$baseLen = strlen($baseAddress);
 		
 		
-		if($baseLen > 0 && $baseAddress[$baseLen - 1] == "/")
+		if($baseLen > 0 && $baseAddress[$baseLen - 1] === "/")
 		{
 			$baseAddress = substr($baseAddress, 0 , -1);
 			$baseLen--;
 		}
 		
-		if($baseLen > 0 && $baseAddress[0] == "/")
+		if($baseLen > 0 && $baseAddress[0] === "/")
 		{
 			$baseAddress = substr($baseAddress, 1);
 			$baseLen--;
@@ -38,7 +38,7 @@ class SiteUrlGenerator
 		
 		if($urlLen > 0)
 		{
-			if($baseLen > 0 && $url[$urlLen - 1] == "/")
+			if($baseLen > 0 && $url[$urlLen - 1] === "/")
 			{
 				$url .= $baseAddress;
 			}
@@ -46,7 +46,7 @@ class SiteUrlGenerator
 			{
 				$url = sprintf("%s/%s", $url, $baseAddress);
 			}
-			else if($url[$urlLen - 1] == "/")
+			else if($url[$urlLen - 1] === "/")
 			{
 				$url = substr($url, 0, -1);
 			}

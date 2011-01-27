@@ -48,7 +48,7 @@ class PubSubHubBub
 	{
 		$return = array();
 		
-		if($this->errorText == null)
+		if($this->errorText === null)
 		{
 			$count = count($this->feedLoc);
 			$tmpArr = array();
