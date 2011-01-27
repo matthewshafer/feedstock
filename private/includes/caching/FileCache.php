@@ -27,7 +27,7 @@ class FileCache implements GenericCacher
 		// location should end in a /
 		$this->cacheLoc = $location;
 		$this->prefix = $prefix;
-		$this->expireTime = intval($expireTime);
+		$this->expireTime = (int)$expireTime;
 
 	}
 	

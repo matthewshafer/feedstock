@@ -218,7 +218,7 @@ class FileServe
 	
 	public function setDownloadSpeed($speed)
 	{
-		$this->fileDownloadSpeed = intval($speed);
+		$this->fileDownloadSpeed = (int)$speed;
 	}
 
 }

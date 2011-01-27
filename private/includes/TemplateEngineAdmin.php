@@ -133,7 +133,7 @@ class TemplateEngineAdmin
 				// set up some vars, we want to check if we have an ID in the uri and if we do we need to load that from the db and set up the vars
 				if($this->router->getUriPosition(2) != null)
 				{
-					$this->theData = $this->db->getPostDataById(intval($this->router->getUriPosition(2)));
+					$this->theData = $this->db->getPostDataById((int)$this->router->getUriPosition(2));
 					$tmpTitle = $this->postTitleID();
 					
 					if($tmpTitle != null)
@@ -141,7 +141,7 @@ class TemplateEngineAdmin
 						$this->htmlPageTitle = sprintf("%s%s", $tmpTitle, " :: Post");
 					}
 				}
-				$this->theCategoryData = $this->getCategoriesList(intval($this->router->getUriPosition(2)));
+				$this->theCategoryData = $this->getCategoriesList((int)$this->router->getUriPosition(2));
 				break;
 			case "page":
 				$return = "/createPage.php";
@@ -149,7 +149,7 @@ class TemplateEngineAdmin
 				// set up some vars, we want to check if we have an ID in the uri and we need to load that and set up some stuff
 				if($this->router->getUriPosition(2) != null)
 				{
-					$this->theData = $this->db->getPageDataById(intval($this->router->getUriPosition(2)));
+					$this->theData = $this->db->getPageDataById((int)$this->router->getUriPosition(2));
 					$tmpTitle = $this->pageTitleID();
 					
 					if($tmpTitle != null)
@@ -286,7 +286,7 @@ class TemplateEngineAdmin
 	 */
 	private function getPostOrPageList($type)
 	{
-		$offset = intval($this->router->getUriPosition(2));
+		$offset = (int)$this->router->getUriPosition(2);
 		$tmpArr = array();
 		// the one thing is if you do like /posts/omg it just sends you to the begining
 		if($offset < 2 || $offset === null)
@@ -377,7 +377,7 @@ class TemplateEngineAdmin
 		
 		$tempVal = $this->router->getUriPosition($this->router->uriLength());
 		
-		if($this->theData != null && is_int($tempVal) && intval($tempVal) > 1)
+		if($this->theData != null && is_int($tempVal) && (int)$tempVal > 1)
 		{
 			$return = true;
 		}
@@ -391,7 +391,7 @@ class TemplateEngineAdmin
 		
 		$tempVal = $this->router->getUriPosition($this->router->uriLength());
 		
-		if($this->theData != null && is_int((int)$tempVal) && intval($tempVal) > 1)
+		if($this->theData != null && is_int((int)$tempVal) && (int)$tempVal > 1)
 		{
 			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
 			
@@ -407,7 +407,7 @@ class TemplateEngineAdmin
 		
 		$tempVal = $this->router->getUriPosition($this->router->uriLength());
 		
-		if($this->theData != null && is_int((int)$tempVal) && intval($tempVal) > 1)
+		if($this->theData != null && is_int((int)$tempVal) && (int)$tempVal > 1)
 		{
 			$pageNumber = $this->router->getUriPosition($this->router->uriLength()) - 1;
 			
@@ -550,7 +550,7 @@ class TemplateEngineAdmin
 	{
 		if($this->router->getUriPosition(2) != null)
 		{
-			$arr = $this->db->getSinglePostTags(intval($this->router->getUriPosition(2)));
+			$arr = $this->db->getSinglePostTags((int)$this->router->getUriPosition(2));
 			$return = implode(", ", $arr);
 		}
 		else

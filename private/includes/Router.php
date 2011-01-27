@@ -267,7 +267,7 @@ class Router
 		{
 			if($found)
 			{
-				$page = intval($key);
+				$page = (int)$key;
 				$found = false;
 			}
 			

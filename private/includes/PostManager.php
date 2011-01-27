@@ -24,7 +24,7 @@ class PostManager
 		{
 			if($key == "id")
 			{
-				$data = intval($_POST[$key]);
+				$data = (int)$_POST[$key];
 			}
 			else if($key == "postorpagedata")
 			{

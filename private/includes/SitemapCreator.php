@@ -21,7 +21,7 @@ class SitemapCreator
 	{
 		$this->database = $db;
 		$this->sitemapLoc = $path;
-		$this->maxItems = intval($max);
+		$this->maxItems = (int)$max;
 		$this->siteUrl = $siteUrl;
 		
 		require_once("sitemap/SitemapTemplate.php");

@@ -46,7 +46,7 @@ class TemplateEngine
 		$this->siteDescription = $siteDescription;
 		$this->themeName = $themeName;
 		$this->postFormat = $postFormat;
-		$this->postsPerPage = intval($postsPerPage);
+		$this->postsPerPage = (int)$postsPerPage;
 		$this->baseLocation = $baseLocation;
 		$this->siteUrl = $siteUrl;
 	}
@@ -165,7 +165,7 @@ class TemplateEngine
 						{
 							// need to increase by 1 in order to get the right offset that the page number is on
 							$pageOffset++;
-							$pageID = intval($this->router->getUriPosition($pageOffset));
+							$pageID = (int)$this->router->getUriPosition($pageOffset);
 							
 							if($pageID > 0)
 							{
@@ -222,7 +222,7 @@ class TemplateEngine
 						if($pageOffset != -1)
 						{
 							$pageOffset++;
-							$pageID = intval($this->router->getUriPosition($pageOffset));
+							$pageID = (int)$this->router->getUriPosition($pageOffset);
 							
 							if($pageID > 0)
 							{
@@ -358,19 +358,19 @@ class TemplateEngine
 				switch((string)$temp[$i])
 				{
 					case "%MONTH%":
-						if(intval($this->router->getUriPosition($i + 1)) > 12 || intval($this->router->getUriPosition($i + 1)) < 1)
+						if((int)$this->router->getUriPosition($i + 1) > 12 || (int)$this->router->getUriPosition($i + 1) < 1)
 						{
 							$isBad = true;
 						}
 						break;
 					case "%DAY%":
-						if(intval($this->router->getUriPosition($i + 1)) > 31 || intval($this->router->getUriPosition($i + 1)) < 1)
+						if((int)$this->router->getUriPosition($i + 1) > 31 || (int)$this->router->getUriPosition($i + 1) < 1)
 						{
 							$isBad = true;
 						}
 						break;
 					case "%YEAR%":
-						if(strlen($this->router->getUriPosition($i + 1)) < 4 || intval($this->router->getUriPosition($i + 1)) < 1000)
+						if(strlen($this->router->getUriPosition($i + 1)) < 4 || (int)$this->router->getUriPosition($i + 1) < 1000)
 						{
 							$isBad = true;
 						}
