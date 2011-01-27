@@ -49,7 +49,7 @@ class OutputHelper
 		
 		if($tmp != false)
 		{
-			$this->pageStore = sprintf("%s%s", $this->pageStore, $tmp);
+			$this->pageStore .= $tmp;
 		}
 	}
 	
@@ -68,7 +68,7 @@ class OutputHelper
 		
 		if($tmp != false)
 		{
-			$this->pageStore = sprintf("%s%s", $this->pageStore, $tmp);
+			$this->pageStore .= $tmp;
 		}
 				
 		return $this->pageStore;
@@ -88,7 +88,7 @@ class OutputHelper
 		
 		if($tmp != false)
 		{
-			$this->pageStore = sprintf("%s%s", $this->pageStore, $tmp);
+			$this->pageStore .= $tmp;
 		}
 				
 		return $this->pageStore;

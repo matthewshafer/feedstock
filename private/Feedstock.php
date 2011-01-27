@@ -51,7 +51,7 @@ class Feedstock
 			if($this->maintenanceMode($this->config['enableMaintenance'], $this->config['maintenancePassthru']))
 			{
 				require_once("includes/Maintenance.php");
-				$maintenance = new Maintenance(sprintf("%s/private/themes/%s/maintenance.php", $this->config['baseLocation'], $this->config['themeName']), $this->outputHelper);
+				$maintenance = new Maintenance($this->config['baseLocation'] . '/private/themes/' . $this->config['themeName'] . '/maintenance.php', $this->outputHelper);
 				$maintenance->render();
 			}
 			else

@@ -23,7 +23,7 @@ class Xcache implements GenericCacher
 	{
 		$this->prefix = $prefix;
 		$this->expireTime = $expireTime;
-		$this->prefixArr = sprintf("%s%s", $this->prefix, "array");
+		$this->prefixArr = $this->prefix . 'array';
 	}
 	
 	/**
@@ -36,7 +36,7 @@ class Xcache implements GenericCacher
 	public function checkExists($lookup)
 	{
 		$return = false;
-		$lookup = sprintf("%s%s", $this->prefix, sha1($lookup));
+		$lookup = $this->prefix . sha1($lookup);
 		
 		// might need to make this so when we check we also reset the time on the array
 		if(xcache_isset($lookup))
@@ -84,7 +84,7 @@ class Xcache implements GenericCacher
 	public function writeCachedFile($toHash, $data)
 	{
 		$tmp = array();
-		$toHash = sprintf("%s%s", $this->prefix, sha1($toHash));
+		$toHash = $this->prefix . sha1($toHash);
 		
 		xcache_set($toHash, $data, $this->expireTime);
 			

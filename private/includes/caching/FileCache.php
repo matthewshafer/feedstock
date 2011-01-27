@@ -35,7 +35,7 @@ class FileCache implements GenericCacher
 	public function checkExists($lookup)
 	{
 		$return = false;
-		$lookup = sprintf("%s%s%s", $this->cacheLoc, $this->prefix, sha1($lookup));
+		$lookup = $this->cacheLoc . $this->prefix . sha1($lookup);
 		$tmp = "";
 		
 		if(file_exists($lookup))
@@ -108,7 +108,7 @@ class FileCache implements GenericCacher
 	
 	public function writeCachedFile($toHash, $data)
 	{
-		$toHash = sprintf("%s%s%s", $this->cacheLoc, $this->prefix, sha1($toHash));
+		$toHash = $this->cacheLoc . $this->prefix . sha1($toHash);
 		
 		if($data != null && ($file = fopen($toHash, 'w')) != false)
 		{

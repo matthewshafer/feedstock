@@ -24,7 +24,7 @@ class Apc implements GenericCacher
 	{
 		$this->prefix = $prefix;
 		$this->expireTime = $expireTime;
-		$this->prefixArr = sprintf("%s%s", $this->prefix, "array");
+		$this->prefixArr = $this->prefix . 'array';
 	}
 	
 	/**
@@ -37,7 +37,7 @@ class Apc implements GenericCacher
 	public function checkExists($lookup)
 	{
 		$return = false;
-		$lookup = sprintf("%s%s", $this->prefix, sha1($lookup));
+		$lookup = $this->prefix . sha1($lookup);
 		$success = false;
 		$store = null;
 		
@@ -88,7 +88,7 @@ class Apc implements GenericCacher
 	public function writeCachedFile($toHash, $data)
 	{
 		$tmp = array();
-		$toHash = sprintf("%s%s", $this->prefix, sha1($toHash));
+		$toHash = $this->prefix . sha1($toHash);
 		$success = false;
 		$store = null;
 		

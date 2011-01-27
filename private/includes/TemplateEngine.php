@@ -77,10 +77,10 @@ class TemplateEngine
 		
 		if($location === null)
 		{
-			$location = sprintf("%s/private/themes/%s", $this->baseLocation, $this->themeName);
+			$location = $this->baseLocation . '/private/themes/' . $this->themeName;
 		}
 		
-		$fileLoc = sprintf("%s/%s", $location, $file);
+		$fileLoc = $location . '/' . $file;
 		
 		if(file_exists($fileLoc) && is_readable($fileLoc))
 		{
@@ -103,7 +103,7 @@ class TemplateEngine
 	 */	
 	private function request()
 	{
-		$return = sprintf("%s/private/themes/%s", $this->baseLocation, $this->themeName);
+		$return = $this->baseLocation . '/private/themes/' . $this->themeName;
 		$file = null;
 		
 		if(strtolower($this->router->pageType()) === "")
@@ -272,7 +272,7 @@ class TemplateEngine
 				else if($this->router->pageType() === "feed")
 				{
 					$this->pageData = $this->database->getPosts($this->postsPerPage, 0);
-					$return = sprintf("%s/private/includes", $this->baseLocation);
+					$return = $this->baseLocation . '/private/includes';
 					$file = "Feed.php";
 				}
 				else
@@ -322,21 +322,20 @@ class TemplateEngine
 			$this->pageDataCt = count($this->pageData);
 		}
 		
-		// we can provbably streamline this
-		$return = sprintf("%s/%s", $return, $file);
+		$return .= '/' . $file;
 		//$this->getCategoriesForPageData();
 		return $return;
 	}
 	
 	private function arrayCustomFile($defaultFile)
 	{
-		if($this->pageData[$this->arrayPosition]["themeFile"] === null)
+		if($this->pageData[$this->arrayPosition]["themeFile"] === '')
 		{
-			$return = sprintf("%s.php", $defaultFile);
+			$return = $defaultFile . '.php';
 		}
 		else
 		{
-			$return = sprintf("%s.php", $this->pageData[$this->arrayPosition]["themeFile"]);
+			$return = $this->pageData[$this->arrayPosition]["themeFile"] . '.php';
 		}
 		
 		return $return;
@@ -493,7 +492,7 @@ class TemplateEngine
 
 		if(isset($this->pageData[$this->arrayPosition]["URI"]))
 		{
-			$return = sprintf("%s%s", $this->siteUrl, $this->pageData[$this->arrayPosition]["URI"]);
+			$return = $this->siteUrl . $this->pageData[$this->arrayPosition]["URI"];
 		}
 		else
 		{
@@ -517,7 +516,7 @@ class TemplateEngine
 		
 		if(isset($this->pageData[$this->arrayPosition]["Title"]))
 		{
-			$return = sprintf('%s%s%s', $this->pageData[$this->arrayPosition]["Title"], " :: ", $this->siteTitle);
+			$return = $this->pageData[$this->arrayPosition]["Title"] . " :: " . $this->siteTitle;
 		}
 		else
 		{
@@ -835,7 +834,7 @@ class TemplateEngine
 			$uri = substr($uri, 1);
 		}
 		
-		$return = sprintf("%s/%s", $return, $uri);
+		$return .= $uri;
 		
 		return $return;
 	}
@@ -965,10 +964,9 @@ class TemplateEngine
 		
 		$count = count($tmpArr);
 		
-		for($i=0; $i < $count; $i++)
+		for($i = 0; $i < $count; $i++)
 		{	
-			$tmpURL = sprintf("%s%s", $this->siteUrl, $tmpArr[$i]["URI"]);
-			$tmpArr[$i]["URL"] = $tmpURL;
+			$tmpArr[$i]["URL"] = $this->siteUrl . $tmpArr[$i]["URI"];
 		}
 		
 		return $tmpArr;
@@ -1146,7 +1144,7 @@ class TemplateEngine
 		
 		if($return === null)
 		{
-			$return = sprintf("%s/themes/%s/", $this->siteUrl, $this->themeName);
+			$return = $this->siteUrl . '/themes/' . $this->themeName . '/'; 
 		}
 		
 		return $return;

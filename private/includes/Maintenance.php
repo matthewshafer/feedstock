@@ -12,11 +12,9 @@
  	private $fileLocation = null;
  	private $outputHelper;
  	
-	// changed the construct to we save having to do another sprintf statement
+	// changed the construct so we save having to do another sprintf statement
  	public function __construct($fileLoc, $outputHelper)
- 	{
- 		//$fileLoc = sprintf("%s/%s", $loc, $filename);
- 		
+ 	{	
  		$this->outputHelper = $outputHelper;
  		
  		if(file_exists($fileLoc) && is_readable($fileLoc))
