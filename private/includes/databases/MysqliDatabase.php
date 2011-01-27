@@ -71,7 +71,7 @@ class MysqliDatabase implements GenericDatabase
 	{
 		$return = true;
 		
-		if(!is_resource($this->databaseConnection))
+		if(!$this->databaseConnection)
 		{
 			$this->databaseConnection = new mysqli($this->serverAddress, $this->username, $this->password, $this->databaseName);
 			if($this->databaseConnection->connect_errno)
