@@ -824,9 +824,10 @@ class TemplateEngine
 	private function generateUrlFromUri($uri)
 	{
 		$return = $this->siteUrl;
-		$uriLen = strlen($uri);
 		
-		if($uriLen > 0 && $uri[0] === "/")
+		// might be able to switch this to if(isset($uri[0]) && $uri[0] ==== '/')
+		$uriLen = strlen($uri);
+		if($uriLen > 0 && $uri[0] === '/')
 		{
 			$uri = substr($uri, 1);
 		}
@@ -841,16 +842,12 @@ class TemplateEngine
 	{
 		$subCat = $array["SubCat"];
 		$URI = $array["URIName"];
+		
 		while($subCat > -1)
 		{
-			//echo $subCat;
 			$data = $this->database->getCategoryOrTag($subCat, 0);
-			//print_r($data);
-			$temp = $data[0]["URIName"];
-			$temp .= "/" . $URI;
-			$URI = $temp;
+			$URI = $data[0]["URIName"] . "/" . $URI;
 			$subCat = $data[0]["SubCat"];
-			//echo "woot";
 		}
 		
 		return $URI;
@@ -867,9 +864,7 @@ class TemplateEngine
 			while($subTag > -1)
 			{
 				$data = $this->database->getCategoryOrTag($subTag, 1);
-				$temp = $data[0]["URIName"];
-				$temp .= "/" . $URI;
-				$URI = $temp;
+				$URI = $data[0]["URIName"] . "/" . $URI;
 				$subTag = $data[0]["SubCat"];
 			}
 		}
@@ -900,8 +895,6 @@ class TemplateEngine
 				$tmpArr[] = $key["PrimaryKey"];
 			}
 			
-			//print_r($tmpArr);
-			
 			$this->postTag = $this->database->getPostCategoryOrTag($tmpArr, 1);
 		}
 	}
@@ -926,7 +919,6 @@ class TemplateEngine
 			
 			$this->postCategory = $this->database->getPostCategoryOrTag($tmpArr, "category");
 			
-			//print_r($this->postCategory);
 		}
 	}
 	
