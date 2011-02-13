@@ -28,6 +28,7 @@ class Feedstock
 		
 		require_once("includes/Router.php");
 		$this->router = new Router($this->config['htaccess'], $this->config['siteUrlBase']);
+		$this->router->buildRouting();
 		
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();

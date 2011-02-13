@@ -30,7 +30,6 @@ class Router
 		$this->uri = $_SERVER['REQUEST_URI'];
 		$this->requestMethod = $_SERVER['REQUEST_METHOD'];
 		$this->base = $base;
-		$this->buildRouting();
 	}
 	
 	
@@ -38,10 +37,10 @@ class Router
 	 * buildRouting function.
 	 * 
 	 * @brief Makes cool things happen.
-	 * @access private
+	 * @access public
 	 * @return void
 	 */
-	private function buildRouting()
+	public function buildRouting()
 	{
 		// figure out what happens when using htaccess
 		// if its null we are going to assume its /

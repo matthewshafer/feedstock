@@ -1,5 +1,9 @@
 <?php
 
+
+/**
+ * CacherCreator class.
+ */
 class CacherCreator
 {
 	private $prefix = "";
@@ -10,6 +14,16 @@ class CacherCreator
 	
 	
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param string $cacheName
+	 * @param string $prefix
+	 * @param string $expireTime
+	 * @param string $baseLocation
+	 * @return void
+	 */
 	public function __construct($cacheName, $prefix, $expireTime, $baseLocation)
 	{
 		$this->cacheName = $cacheName;
@@ -20,6 +34,12 @@ class CacherCreator
 	
 	
 	
+	/**
+	 * getCacher function.
+	 * 
+	 * @access public
+	 * @return Cacher Object
+	 */
 	public function getCacher()
 	{
 		return $this->cacheObj;
@@ -27,6 +47,12 @@ class CacherCreator
 	
 	
 	
+	/**
+	 * createCacher function.
+	 * 
+	 * @access public
+	 * @return False if cache is not created, true if is created
+	 */
 	public function createCacher()
 	{
 		$return = false;

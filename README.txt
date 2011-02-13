@@ -11,7 +11,7 @@ You can find all the info inside the LICENSE file
 Also be sure to check out the NOTICE file
 
 Requirements:
-PHP >= 5.2.9 or 5.3
+PHP >= 5.1.2
 PHP Mcrypt (only required for the admin pages)
 MySQL >= 5 (ok possibly MySQL 4 as long as it is supported by mysqli)
 

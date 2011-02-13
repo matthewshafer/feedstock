@@ -31,6 +31,7 @@ class FeedstockAdmin
 		require_once("includes/Router.php");
 		
 		$this->router = new Router($this->config['adminHtaccess'], $this->config['adminBase']);
+		$this->router->buildRouting();
 		
 		require_once("includes/PostManager.php");
 		
