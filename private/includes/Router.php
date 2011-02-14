@@ -42,6 +42,22 @@ class Router
 	 */
 	public function buildRouting()
 	{
+		// adds a trailing slash to the base address if one does not exist fixes problems later with exploding strings and stuff
+		if(substr_compare($this->base, "/", -1) !== 0)
+		{
+			$this->base .= "/";
+		}
+		
+		// removes a trailing slash from a URI. Solves issues with array's who are exploded having somethign extra at the end
+		// we go in here when the uri is / and end up making the uri ""
+		// in the next statement block's else we would set the uri to false if it were to be changed to "" in this statement
+		// this isn't a problem because we set the uri correctly if the substr fails in the next statements else block.
+		if(substr_compare($this->uri, "/", -1) === 0)
+		{
+			$this->uri = substr($this->uri, 0, -1);
+		}
+		
+		
 		// figure out what happens when using htaccess
 		// if its null we are going to assume its /
 		if($this->base != "/" && $this->base != null)
@@ -53,7 +69,16 @@ class Router
 		// we end up having the database put the / back on when it is needed in things like URI
 		else
 		{
-			$this->uri = substr($this->uri, 1);
+			// when the uri is / we have an issue here where the uri becomes false (because the substr fails and returns false) it should be an empty string
+			//$this->uri = substr($this->uri, 1);
+			
+			// fixed the above issue by checking if the substr function returned false, if it did then we set $this->uri to an empty string (else it would be set to a boolean(false) value
+			if(($this->uri = substr($this->uri, 1)) === false)
+			{
+				$this->uri = "";
+				printf("here\n");
+			}
+			
 		}
 		
 		$this->uriArray = explode("/", $this->uri);
@@ -98,10 +123,11 @@ class Router
 				
 				// this removes the trailing slash if one exists
 				//if($this->uri[strlen($this->uri) - 1] === '/')
-				if(substr_compare($this->uri, "/", -1) === 0)
-				{
-					$this->uri = substr($this->uri, 0, -1);
-				}
+				// we have a function for this so im commenting this out for now
+				//if(substr_compare($this->uri, "/", -1) === 0)
+				//{
+				//	$this->uri = substr($this->uri, 0, -1);
+				//}
 				
 				// this removes the starting slash if it exists. useful because we are now exploding the string around index.php
 				// needed because when we look stuff up in the db we add the starting slash
@@ -153,7 +179,7 @@ class Router
 		
 		// I wonder which is faster, substr($return, -1) or $return[strlen($return) - 1]
 		//if(substr($return, -1) === "/")
-		if(substr_compare($return, '/', -1) === 0)
+		if($return !== "" && substr_compare($return, '/', -1) === 0)
 		{
 			$return = substr($return, 0, -1);
 		}
