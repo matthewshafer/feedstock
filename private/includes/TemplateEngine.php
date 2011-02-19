@@ -275,7 +275,7 @@ class TemplateEngine
 				}
 				else
 				{
-					$this->pageData = $this->database->getPage($this->router->fullURIRemoveTrailingSlash());
+					$this->pageData = $this->database->getPage($this->router->fullURI());
 					
 					// need some error checking for null pagedata
 					if(!empty($this->pageData))

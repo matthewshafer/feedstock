@@ -60,10 +60,20 @@ class Router
 		
 		// figure out what happens when using htaccess
 		// if its null we are going to assume its /
+		// explodes the uri around the base address
+		// leaving us with the actual request uri
 		if($this->base != "/" && $this->base != null)
 		{
 			$temp = explode($this->base, $this->uri);
-			$this->uri = $temp[1];
+			
+			if(isset($temp[1]))
+			{
+				$this->uri = $temp[1];
+			}
+			else
+			{
+				$this->uri = "";
+			}
 		}
 		// this else statement is here to strip off the first / as it will explode to nothing in an array
 		// we end up having the database put the / back on when it is needed in things like URI
@@ -76,7 +86,7 @@ class Router
 			if(($this->uri = substr($this->uri, 1)) === false)
 			{
 				$this->uri = "";
-				printf("here\n");
+				//printf("here\n");
 			}
 			
 		}
@@ -171,20 +181,6 @@ class Router
 	public function fullURI()
 	{
 		return $this->uri;
-	}
-	
-	public function fullURIRemoveTrailingSlash()
-	{
-		$return = $this->uri;
-		
-		// I wonder which is faster, substr($return, -1) or $return[strlen($return) - 1]
-		//if(substr($return, -1) === "/")
-		if($return !== "" && substr_compare($return, '/', -1) === 0)
-		{
-			$return = substr($return, 0, -1);
-		}
-		
-		return $return;
 	}
 	
 

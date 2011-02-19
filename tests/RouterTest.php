@@ -29,8 +29,6 @@ class RouterTest extends UnitTest
 		
 		assert($router->pageType() === "");
 		
-		assert($router->fullURIRemoveTrailingSlash() === "");
-		
 		assert($router->getUriPosition(1) === null);
 		
 		assert($router->getUriPosition(0) === null);
@@ -61,8 +59,6 @@ class RouterTest extends UnitTest
 		assert($router->fullURI() === "");
 		
 		assert($router->pageType() === "");
-		
-		assert($router->fullURIRemoveTrailingSlash() === "");
 		
 		assert($router->getUriPosition(1) === null);
 		
@@ -96,8 +92,7 @@ class RouterTest extends UnitTest
 		assert($router->fullURI() === "page/1");
 		
 		assert($router->pageType() === "page");
-		
-		assert($router->fullURIRemoveTrailingSlash() === "page/1");
+
 		
 		assert($router->getUriPosition(1) === "page");
 		
@@ -138,8 +133,6 @@ class RouterTest extends UnitTest
 		
 		assert($router->pageType() === "page");
 		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
-		
 		assert($router->getUriPosition(1) === "page");
 		
 		assert($router->getUriPosition(2) === "2");
@@ -177,8 +170,6 @@ class RouterTest extends UnitTest
 		assert($router->fullURI() === "page/1");
 		
 		assert($router->pageType() === "page");
-		
-		assert($router->fullURIRemoveTrailingSlash() === "page/1");
 		
 		assert($router->getUriPosition(1) === "page");
 		
@@ -219,8 +210,6 @@ class RouterTest extends UnitTest
 		
 		assert($router->pageType() === "page");
 		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
-		
 		assert($router->getUriPosition(1) === "page");
 		
 		assert($router->getUriPosition(2) === "2");
@@ -260,8 +249,6 @@ class RouterTest extends UnitTest
 		
 		assert($router->pageType() === "page");
 		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
-		
 		assert($router->getUriPosition(1) === "page");
 		
 		assert($router->getUriPosition(2) === "2");
@@ -299,8 +286,6 @@ class RouterTest extends UnitTest
 		assert($router->fullURI() === "page/2");
 		
 		assert($router->pageType() === "page");
-		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
 		
 		assert($router->getUriPosition(1) === "page");
 		
@@ -340,8 +325,6 @@ class RouterTest extends UnitTest
 		
 		assert($router->pageType() === "page");
 		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
-		
 		assert($router->getUriPosition(1) === "page");
 		
 		assert($router->getUriPosition(2) === "2");
@@ -379,8 +362,6 @@ class RouterTest extends UnitTest
 		assert($router->fullURI() === "page/2");
 		
 		assert($router->pageType() === "page");
-		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
 		
 		assert($router->getUriPosition(1) === "page");
 		
@@ -420,8 +401,6 @@ class RouterTest extends UnitTest
 		
 		assert($router->pageType() === "page");
 		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
-		
 		assert($router->getUriPosition(1) === "page");
 		
 		assert($router->getUriPosition(2) === "2");
@@ -460,8 +439,6 @@ class RouterTest extends UnitTest
 		
 		assert($router->pageType() === "page");
 		
-		assert($router->fullURIRemoveTrailingSlash() === "page/2");
-		
 		assert($router->getUriPosition(1) === "page");
 		
 		assert($router->getUriPosition(2) === "2");
@@ -484,6 +461,41 @@ class RouterTest extends UnitTest
 		
 		// the page offset is 1 less than the current page.  Page 1 should have an offset of 0 since it is the first page and there is no offset
 		assert($router->getPageOffset() === 1);
+	}
+	
+	public function testRouterBugBaseSameAsUriUndefinedOffset()
+	{
+		$refObj = new ReflectClass('Router', array(false, "niftysvn/feedstock/public/"));
+		
+		$router = $refObj->getReflection();
+		
+		$router->uri = "/niftysvn/feedstock/public/";
+		
+		$router->buildRouting();
+		
+		assert($router->fullURI() === "");
+		
+		assert($router->pageType() === "");
+		
+		assert($router->getUriPosition(1) === null);
+		
+		assert($router->getUriPosition(2) === null);
+		
+		assert($router->getUriPosition(3) === null);
+		assert($router->getUriPosition(0) === null);
+		
+		assert($router->requestMethod() === "GET");
+		
+		assert($router->uriLength() === 0);
+		
+		// doesnt search for partial matches
+		assert($router->searchURI("ge") === -1);
+		
+		// might want to test for even uri parts but i don't think we use that
+		
+		
+		// the page offset is 1 less than the current page.  Page 1 should have an offset of 0 since it is the first page and there is no offset
+		assert($router->getPageOffset() === 0);
 	}
 
 }
