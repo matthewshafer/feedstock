@@ -173,7 +173,7 @@ class Feedstock
 		
 		if($this->config['cacheEnable'] && $this->config['cacheType'] === "dynamic" && $this->cacherCreator->createCacher())
 		{
-			$cacher = $this->cacheCreator->getCacher();
+			$cacher = $this->cacherCreator->getCacher();
 		}
 		
 		

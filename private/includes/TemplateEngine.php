@@ -1266,6 +1266,7 @@ class TemplateEngine
 		return $this->feedPubSubHubBubSubscribe;
 	}
 	
+	// when we clean the feed part up we should keep this
 	public function getSiteDescription()
 	{
 		return $this->siteDescription;
