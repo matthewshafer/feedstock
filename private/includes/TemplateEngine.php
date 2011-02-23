@@ -1147,7 +1147,7 @@ class TemplateEngine
 		
 		if($this->router->uriLength() <= 2)
 		{
-			if($type === "" || $type === "rss")
+			if($type === null || $type === "rss")
 			{
 				$return = "rss";
 			}
