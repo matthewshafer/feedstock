@@ -21,6 +21,12 @@
 				<exclude name="build/"/>
 			</fileset>
 		</copy>
+		
+		
+		
+		
+		<!-- remove the folder when we are done running tests -->
+		<delete dir="build/unitTest" />
 	</target>
 	
 	<target name="phpDepend">
@@ -36,6 +42,8 @@
 		<phpdepend file="build/phpDepend">
 			<logger type="phpunit-xml" outfile="build/reports/phpDepend.xml"/>
 		</phpdepend>
+		
+		<delete dir="build/phpDepend" />
 	</target>
 	
 	<target name="cpd">
@@ -55,6 +63,9 @@
 			
 			<formatter type="pmd" outfile="build/reports/phpCPD.txt"/>
 		</phpcpd>
+		
+		
+		<delete dir="build/phpCPD" />
 	</target>
 	
 	<target name="pmd">
@@ -70,6 +81,9 @@
 		<phpmd file="build/pmd" rulesets="codesize,unusedcode,design,naming">
 			<formatter type="html" outfile="build/reports/pmd.html"/>
 		</phpmd>
+		
+		
+		<delete dir="build/pmd" />
 	</target>
 	
 	<target name="lint">
@@ -87,18 +101,25 @@
 				<include name="**/*.php"/>
 			</fileset>
 		</phplint>
+		
+		<delete dir="build/lint" />
 	</target>
 	
 	<target name="package">
 		<copy todir="build/package">
 			<fileset dir=".">
 				<include name="**/*.php"/>
+				<include name="**/*.txt"/>
+				<include name="LICENSE"/>
+				<include name="NOTICE"/>
 				<exclude name="config.php" />
 				<exclude name="build/"/>
 			</fileset>
 		</copy>
 		
 		<zip destfile="build/feedstock.zip" basedir="build/package"/>
+		
+		<delete dir="build/package" />
 	</target>
 
 
