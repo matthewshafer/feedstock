@@ -33,4 +33,8 @@
 ehthumbs.db
 Icon?
 Thumbs.db
+
+# Project specific ignores #
+############################
 config.php
+build/

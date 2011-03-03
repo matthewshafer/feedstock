@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="feedstock" default="all">
+
+	<target name="cleanUp">
+		<delete dir="build" />
+	</target>
+	
+	
+	<target name="prepare">
+		<echo msg="Making ./build Director" />
+		<mkdir dir="build" />
+		<mkdir dir="build/reports"/>
+	</target>
+	
+	<!-- Doesn't actually run any tests yet -->
+	<target name="unitTest">
+		<copy todir="build/unitTest">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="build/"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="phpDepend">
+		<copy todir="build/phpDepend">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="config.php" />
+				<exclude name="build/"/>
+			</fileset>
+		</copy>
+		
+		
+		<phpdepend file="build/phpDepend">
+			<logger type="phpunit-xml" outfile="build/reports/phpDepend.xml"/>
+		</phpdepend>
+	</target>
+	
+	<target name="cpd">
+	
+		<copy todir="build/phpCPD">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="config.php" />
+				<exclude name="build/"/>
+			</fileset>
+		</copy>
+		
+		<phpcpd>
+			<fileset dir="build/phpCPD">
+				<include name="**/*.php"/>
+			</fileset>
+			
+			<formatter type="pmd" outfile="build/reports/phpCPD.txt"/>
+		</phpcpd>
+	</target>
+	
+	<target name="pmd">
+	
+		<copy todir="build/pmd">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="config.php" />
+				<exclude name="build/"/>
+			</fileset>
+		</copy>
+		
+		<phpmd file="build/pmd" rulesets="codesize,unusedcode,design,naming">
+			<formatter type="html" outfile="build/reports/pmd.html"/>
+		</phpmd>
+	</target>
+	
+	<target name="lint">
+	
+		<copy todir="build/lint">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="config.php" />
+				<exclude name="build/"/>
+			</fileset>
+		</copy>
+		
+		<phplint deprecatedAsError="true" tofile="build/reports/badLint.txt">
+			<fileset dir="build/lint">
+				<include name="**/*.php"/>
+			</fileset>
+		</phplint>
+	</target>
+	
+	<target name="package">
+		<copy todir="build/package">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="config.php" />
+				<exclude name="build/"/>
+			</fileset>
+		</copy>
+		
+		<zip destfile="build/feedstock.zip" basedir="build/package"/>
+	</target>
+
+
+
+
+	<target name="all" depends="cleanUp, prepare, lint, phpDepend, cpd, pmd, unitTest, package" />
+</project>
