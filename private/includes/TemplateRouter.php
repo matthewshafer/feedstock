@@ -51,10 +51,10 @@ class TemplateRouter
 				$this->loadDataForPostList();
 			break;
 			case "category":
-				$file = $this->figureCategoryInfo();
+				$file = $this->figureCategoryOrTagInfo(0);
 			break;
 			case "tag":
-				$file = $this->figureTagInfo();
+				$file = $this->figureCategoryOrTagInfo(1);
 			break;
 			default:
 				$file = $this->figurePageOrPost();
@@ -89,7 +89,8 @@ class TemplateRouter
 		$this->templateData->addData($this->database->getPosts($this->postsPerPage, $offset));
 	}
 	
-	private function figureCategoryInfo()
+	// 0 for category 1 for tag
+	private function figureCategoryOrTagInfo($which)
 	{
 		$file = $this->themeLocation . "/postList.php";
 		
@@ -98,11 +99,11 @@ class TemplateRouter
 		//$categoryName = $this->router->getUriPosition($categoryNameOffset);
 		
 		// this is the above using hardcoded values
-		$categoryName = $this->router->getUriPosition(2);
+		$name = $this->router->getUriPosition(2);
 		
 		
 		// if the category does not exist in the database
-		if(!$this->database->checkCategoryOrTagName($categoryName, 0))
+		if(!$this->database->checkCategoryOrTagName($name, $which))
 		{
 			throw new exception("Category does not exist");
 		}
@@ -110,7 +111,8 @@ class TemplateRouter
 		// a length of two means that the uri (after the base is stripped) is /category/someNameHere
 		if($this->router->uriLength() === 2)
 		{
-			$this->templateData->addData($this->database->getPostsInCategoryOrTag(0, $this->postsPerPage, 0));
+			// when we check if it exists the database caches the category/tag for us which is why there is no need to send it the name again
+			$this->templateData->addData($this->database->getPostsInCategoryOrTag($which, $this->postsPerPage, 0));
 		}
 		// a length of two means that the uri (after the base is stripped) is /category/someNameHere/page/someNumberHere
 		else if($this->router->uriLength() === 4)
@@ -119,7 +121,7 @@ class TemplateRouter
 			// an error will be thrown
 			if($this->router->getUriPosition(3) !== "page")
 			{
-				throw new exception("Invalid Category URI");
+				throw new exception("Invalid URI");
 			}
 			
 			// page id of the page that is currently in the uri
@@ -130,25 +132,20 @@ class TemplateRouter
 			{
 				$pageId = ($pageId - 1) * 10;
 				
-				$this->templateData->addData($this->database->getPostsInCategoryOrTag(0, $this->postsPerPage, $pageId));
+				$this->templateData->addData($this->database->getPostsInCategoryOrTag($which, $this->postsPerPage, $pageId));
 			}
 			else
 			{
-				throw new exception("Invalid Category Page Number");
+				throw new exception("Invalid Page Number");
 			}
 		}
 		else
 		{
-			throw new exception("Invalid Category URI");
+			throw new exception("Invalid URI");
 		}
 		
 		// returns the name of the theme file to load
 		return $file;
-	}
-	
-	private function figureTagInfo()
-	{
-	
 	}
 	
 	private function figurePageOrPost()
