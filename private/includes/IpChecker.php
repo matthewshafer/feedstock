@@ -2,7 +2,7 @@
 /**
  * @file
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief checks Ip address.  Doesn't handle hostnames, so to it localhost != 127.0.0.1
+ * @brief checks Ip address.  Doesn't handle hostnames, so to it localhost != 127.0.0.1.  Only does a few basic checks to see if the Ip is valid.
  * 
  */
  
@@ -112,40 +112,69 @@
  		$ipArray = explode(".", $ipAddress);
  		$return = false;
  		$keepSearching = true;
+ 		$fallsInParam = true;
  		$ipArrayCount = count($ipArray);
  		$ipFilterArray = array(
- 			array("0.0.0.0", "0.255.255.255"),
- 			array("10.0.0.0", "10.255.255.255"),
- 			array("127.0.0.0", "127.255.255.255"),
- 			array("128.0.0.0", "128.0.255.255"),
- 			array("169.254.0.0", "169.254.255.255"),
- 			array("172.16.0.0", "172.31.255.255"),
- 			array("191.255.0.0", "191.255.255.255"),
- 			array("192.0.0.0", "192.0.0.255"),
- 			array("192.168.0.0", "192.168.255.255"),
- 			array("223.255.255.0", "223.255.255.255")
+ 			// 0.0.0.0 - 0.255.255.255
+ 			array(0, 16777215),
+ 			// 10.0.0.0 - 10.255.255.255
+ 			array(167772160, 184549375),
+ 			// 127.0.0.0 - 127.255.255.255
+ 			array(2130706432, 2147483647),
+ 			// 128.0.0.0 - 128.0.255.255
+ 			array(2147483648, 2147549183),
+ 			// 169.254.0.0 - 169.254.255.255
+ 			array(2851995648, 2852061183),
+ 			// 172.16.0.0 - 172.31.255.255
+ 			array(2886729728, 2887778303),
+ 			// 191.255.0.0 - 191.255.255.255
+ 			array(3221159936, 3221225471),
+ 			// 192.0.0.0 - 192.0.0.255
+ 			array(3221225472, 3221225727),
+ 			// 192.168.0.0 - 192.168.255.255
+ 			array(3232235520, 3232301055),
+ 			// 223.255.255.0 - 223.255.255.255
+ 			array(3758096128, 3758096383)
  		);
  		
  		if($ipArrayCount === 4)
  		{
- 			$ipFilterCount = count($ipFilterArray);
- 			$i = 0;
- 			
- 			if($this->classSearch($ipAddress, "0.0.0.0", "255.255.255.255"))
+ 			// checks to see if each block of the ip falls between 0 and 255
+ 			for($i = 0; $i < 4; $i++)
  			{
- 				while($keepSearching && $i < $ipFilterCount)
+ 				if($fallsInParam && (int)$ipArray[$i] >= 0 && (int)$ipArray[$i] <= 255)
  				{
- 					if($this->classSearch($this->ipAddress, $ipFilterArray[$i][0], $ipFilterArray[$i][1]))
+ 					// do nothing
+ 				}
+ 				else
+ 				{
+ 					$fallsInParam = false;
+ 				}
+ 			}
+ 		
+ 		
+ 			if($fallsInParam)
+ 			{
+ 				$ipFilterCount = count($ipFilterArray);
+ 				$ipIntVal = ((int)$ipArray[0] * 16777216) + ((int)$ipArray[1] * 65536) + ((int)$ipArray[2] * 256) + ((int)$ipArray[3]);
+ 				$currentPosition = 0;
+ 				
+ 				if($this->classSearch($ipIntVal, 0, 4294967295))
+ 				{
+ 					while($keepSearching && $currentPosition < $ipFilterCount)
  					{
- 						$keepSearching = false;
+ 						if($this->classSearch($ipIntVal, $ipFilterArray[$currentPosition][0], $ipFilterArray[$currentPosition][1]))
+ 						{
+ 							$keepSearching = false;
+ 						}
+ 				
+ 						++$currentPosition;
  					}
  				
- 					$i++;
- 				}
- 			
- 				if($keepSearching)
- 				{
- 					$return = true;
+ 					if($keepSearching)
+ 					{
+ 						$return = true;
+ 					}
  				}
  			}
  		}
@@ -165,24 +194,11 @@
  	 */
  	private function classSearch($ipAddr, $startAddr, $finishAddr)
  	{
- 		$startArr = explode(".", $startAddr);
- 		$finishArr = explode(".", $finishAddr);
- 		$ipArr = explode(".", $ipAddr);
  		$return = false;
  		
- 		// I would totally do this recursively with another function but I need to find out how php handles recursion and if it uses more memory when things are recursive
- 		if($ipArr[0] >= $startArr[0] && $ipArr[0] <= $finishArr[0])
+ 		if($ipAddr >= $startAddr && $ipAddr <= $finishAddr)
  		{
- 			if($ipArr[1] >= $startArr[1] && $ipArr[1] <= $finishArr[1])
- 			{
- 				if($ipArr[2] >= $startArr[2] && $ipArr[2] <= $finishArr[2])
- 				{
- 					if($ipArr[3] >= $startArr[3] && $ipArr[3] <= $finishArr[3])
- 					{
- 						$return = true;
- 					}
- 				}
- 			}
+ 			$return = true;
  		}
  		
  		return $return;
