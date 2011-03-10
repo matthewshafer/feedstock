@@ -10,8 +10,9 @@ class TemplateRouter
 	private $themeName;
 	private $themeLocation;
 	private $postsPerPage;
+	private $postFormat;
 	
-	public function __construct($router, $db, $themeData, $baseLoc, $themeName, $pageType $postsPerPage)
+	public function __construct($router, $db, $themeData, $baseLoc, $themeName, $pageType $postsPerPage, $postFormat)
 	{
 		$this->router = $router;
 		$this->database = $db;
@@ -20,6 +21,7 @@ class TemplateRouter
 		$this->themeName = $themeName;
 		$this->pageType = $pageType;
 		$this->postsPerPage = $postsPerPage;
+		$this->postFormat = $postFormat;
 		$this->themeLocation = $this->baseLocation . '/private/themes/' . $this->themeName;
 	}
 	
@@ -151,6 +153,66 @@ class TemplateRouter
 	private function figurePageOrPost()
 	{
 	
+	}
+	
+	private function uriLooksLikePost()
+	{
+		$postFormatArray = explode("/", $this->postFormat);
+		$return = true;
+		$postFormatCt = count($postFormatArray);
+		
+		if($this->router->uriLength() !== $postFormatCt)
+		{
+			// return false if the length of the uri does not match that of the length of the post format
+			$return = false;
+		}
+		// the uri could be a post because of its length
+		else
+		{
+			$loopCt = 0;
+			
+			// while the return value is still true we loop, otherwise we end the loop as the return is set to false
+			// the return is if the uri matches the post format
+			while($loopCt < $postFormatCt && $return)
+			{
+				$uriPositionValue = $this->router->getUriPosition($loopCt + 1);
+				
+				switch((string)$postFormatArray[$loopCt])
+				{
+					case "%MONTH%":
+						if((int)$uriPositionValue > 12 || (int)$uriPositionValue < 1)
+						{
+							$return = false;
+						}
+						break;
+					case "%DAY%":
+						if((int)$uriPositionValue > 31 || (int)$uriPositionValue < 1)
+						{
+							$return = false;
+						}
+						break;
+					case "%YEAR%":
+						if(strlen($uriPositionValue) < 4 || (int)$uriPositionValue < 1000)
+						{
+							$return = false;
+						}
+						break;
+					case "%TITLE%":
+						if($uriPositionValue === null)
+						{
+							$return = false;
+						}
+						break;
+					default:
+						$return = false;
+						break;
+				}
+				
+				++$loopCt;
+			}
+		}
+		
+		return $return;
 	}
 }
 ?>
