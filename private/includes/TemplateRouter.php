@@ -152,7 +152,48 @@ class TemplateRouter
 	
 	private function figurePageOrPost()
 	{
-	
+		$file;
+		
+		if($this->uriLooksLikePost())
+		{
+			// lookup the post
+			$tmp = $this->database->getSinglePost($this->router->fullURI());
+			
+			// throw exception if post does not exist
+			if(!isset($tmp[0]["PrimaryKey"]))
+			{
+				throw new exception("Post does not exist");
+			}
+			
+			$this->templateData->addData($tmp);
+			
+			// default file for posts
+			$file = "post.php";
+		}
+		else
+		{
+			// look for a page
+			$tmp = $this->database->getPage($this->router->fullURI());
+			
+			if(empty($tmp))
+			{
+				throw new exception("Page does not exist");
+			}
+			
+			$this->templateData->addData($tmp);
+			
+			// checking to see if the page uses a custom theme file
+			if($tmp[0]["themeFile"] !== "")
+			{
+				$file = $tmp[0]["themeFile"] . ".php";
+			}
+			else
+			{
+				$file = "page.php";
+			}
+		}
+		
+		return $file;
 	}
 	
 	private function uriLooksLikePost()
