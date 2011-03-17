@@ -16,7 +16,7 @@ class TemplateRouter
 	{
 		$this->router = $router;
 		$this->database = $db;
-		$this->themeData = $themeData;
+		$this->templateData = $themeData;
 		$this->baseLocation = $baseLoc;
 		$this->themeName = $themeName;
 		$this->pageType = $pageType;
@@ -76,6 +76,9 @@ class TemplateRouter
 		$return = false;
 		$file = $this->themeLocation . "/" . $file;
 		
+		// used for debugging
+		//printf("%s\n\n", $file);
+		
 		// checks to see if the file actually exists and is readable
 		if(file_exists($file) && is_readable($file))
 		{
@@ -94,7 +97,7 @@ class TemplateRouter
 	// 0 for category 1 for tag
 	private function figureCategoryOrTagInfo($which)
 	{
-		$file = $this->themeLocation . "/postList.php";
+		$file = "postList.php";
 		
 		// theses are currently commented because im testing hardcoding the variables so we don't have to search for the category in the array
 		//$categoryNameOffset = $this->router->searchURI("category") + 1;
