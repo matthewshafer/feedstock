@@ -8,6 +8,9 @@ class AllTests extends TestSuite
 	{
 		require_once('RouterTest.php');
 		$this->load('RouterTest');
+		
+		require_once('TemplateRouterTest.php');
+		$this->load('TemplateRouterTest');
 	}
 }
 

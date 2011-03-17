@@ -12,7 +12,7 @@ class TemplateRouter
 	private $postsPerPage;
 	private $postFormat;
 	
-	public function __construct($router, $db, $themeData, $baseLoc, $themeName, $pageType $postsPerPage, $postFormat)
+	public function __construct($router, $db, $themeData, $baseLoc, $themeName, $pageType, $postsPerPage, $postFormat)
 	{
 		$this->router = $router;
 		$this->database = $db;
@@ -43,7 +43,7 @@ class TemplateRouter
 	{
 		$file = null;
 		
-		switch((string)$pageType)
+		switch((string)$this->pageType)
 		{
 			case "":
 				$file = "index.php";
