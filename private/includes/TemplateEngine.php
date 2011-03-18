@@ -494,6 +494,46 @@ class TemplateEngine
 		return $return;
 	}
 	
+	// needs to check for null and no data in the array
+	private function generateSubCategoryUri($array)
+	{
+		$subCat = $array["SubCat"];
+		$URI = $array["URIName"];
+		
+		while($subCat > -1)
+		{
+			$data = $this->database->getCategoryOrTag($subCat, 0);
+			$URI = $data[0]["URIName"] . "/" . $URI;
+			$subCat = $data[0]["SubCat"];
+		}
+		
+		return $URI;
+	}
+	
+	private function generateSubTagUri($array)
+	{
+		$URI = null;
+		if($array != null)
+		{
+			$subTag = $array["SubCat"];
+			$URI = $array["URIName"];
+			
+			while($subTag > -1)
+			{
+				$data = $this->database->getCategoryOrTag($subTag, 1);
+				$URI = $data[0]["URIName"] . "/" . $URI;
+				$subTag = $data[0]["SubCat"];
+			}
+		}
+		
+		return $URI;
+	}
+	
+	private function subCategoryUri()
+	{
+		
+	}
+	
 	/**
 	 * generateTags function.
 	 * 
@@ -751,6 +791,35 @@ class TemplateEngine
 		if($return === null)
 		{
 			$return = $this->siteUrl . '/themes/' . $this->themeName . '/'; 
+		}
+		
+		return $return;
+	}
+	
+	public function getFeedType()
+	{
+		// default feed type
+		$return = null;
+		$type = $this->router->getUriPosition(2);
+		
+		if($this->router->uriLength() <= 2)
+		{
+			if($type === null || $type === "rss")
+			{
+				$return = "rss";
+			}
+			else if($type === "atom")
+			{
+				$return = "atom";
+			}
+			else
+			{
+				$this->errorText = "Invalid Feed Type";
+			}
+		}
+		else
+		{
+			$this->errorText = "Invalid Feed Address";
 		}
 		
 		return $return;
