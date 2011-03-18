@@ -172,8 +172,28 @@ class Feedstock
 			}
 			else
 			{
-				$themeLocation = $this->templateRouter->templateFile();
-				$this->templateEngine->processTemplateData();
+				try
+				{
+					$themeLocation = $this->templateRouter->templateFile();
+					$this->templateEngine->processTemplateData();
+				}
+				// catching an exception if it is either related to something not existing or the template enging not being able to process the template data
+				// we look for a valid 404 page and if that exists that gets rendered
+				// if one does not exist then we throw a new exception that gets caught around handleRequest();
+				catch(Exception $e)
+				{
+					$tmpTheme = $this->templateRouter->valid404Page($found);
+					if($found)
+					{
+						$themeLocation = $tmpTheme;
+					}
+					else
+					{
+						// this exception gets caught by the try/catch block around $this->handleRequest();
+						throw new Exception($e->getMessage());
+					}
+				}
+				
 				
 				require_once("includes/TemplateLoader.php");
 				$this->templateLoader = new TemplateLoader($themeLocation, $this->templateEngine, $this->outputHelper);
