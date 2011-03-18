@@ -101,7 +101,7 @@ class MysqliDatabase implements GenericDatabase
 	public function closeConnection()
 	{
 		// should allow us to close the database if there is no error upon connecting.
-		if($this->databaseConnection->connect_errno === 0)
+		if($this->databaseConnection !== null && $this->databaseConnection->connect_errno === 0)
 		{
 			$this->databaseConnection->close();
 		}

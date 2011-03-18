@@ -128,21 +128,12 @@ class Feedstock
 			$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
 			$data = $fileServe->render();
 		}
-		else if($pageType === "feed")
-		{
-			require_once("includes/feed/FeedEngine.php");
-			$feedEngine = new FeedEngine();
-			
-			// once I get the new TemplateRouter set up i'll do some work on the feeds
-			require_once("includes/TemplateEngine.php");
-			require_once("includes/feed/FeedLoader.php");
-		}
+		// allows us to remove some duplicate code as the feed and the regular loading share some common objects
 		else
 		{
 			require_once("includes/SiteUrlGenerator.php");
 			$siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess']);
 			
-			// the new stuff, TemplateRouter and TemplateData
 			require_once("includes/TemplateData.php");
 			$templateData = new TemplateData();
 			
@@ -157,10 +148,7 @@ class Feedstock
 												$this->config['postFormat']);
 			
 			
-			$themeLocation = $this->templateRouter->templateFile();
-			
 			require_once("includes/TemplateEngine.php");
-			
 			$this->templateEngine = new TemplateEngine($this->database, 
 														$this->router, 
 														$this->config['siteTitle'], 
@@ -171,10 +159,26 @@ class Feedstock
 														$this->config['postsPerPage'], 
 														$this->config['baseLocation'], 
 														$templateData);
-			
-			require_once("includes/TemplateLoader.php");
-			$this->templateLoader = new TemplateLoader($themeLocation, $this->templateEngine, $this->outputHelper);
-			$data = $this->templateLoader->render();
+														
+			// loads the feedEngine and uses objects created above									
+			if($pageType === "feed")
+			{
+				require_once("includes/feed/FeedEngine.php");
+				$feedEngine = new FeedEngine($this->config['feedAuthor'], $this->config['feedAuthorEmail'], $this->config['feedPubSubHubBub'], $this->config['feedPubSubHubBubSubscribe']);
+	
+				require_once("includes/feed/FeedLoader.php");
+				$feedLoader = new FeedLoader($this->router, $this->outputHelper, $feedEngine, $this->templateEngine);
+				$data = $feedLoader->loadFeed();
+			}
+			else
+			{
+				$themeLocation = $this->templateRouter->templateFile();
+				$this->templateEngine->processTemplateData();
+				
+				require_once("includes/TemplateLoader.php");
+				$this->templateLoader = new TemplateLoader($themeLocation, $this->templateEngine, $this->outputHelper);
+				$data = $this->templateLoader->render();
+			}
 		}
 		
 		$this->database->closeConnection();

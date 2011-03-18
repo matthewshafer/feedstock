@@ -16,11 +16,6 @@ class TemplateEngine
 	private $arrayPosition = 0;
 	private $errorText = null;
 	private $pageDataCt = null;
-	// feeds are handled by the template engine.  Could possibly seperate it out later to be its own thing
-	private $feedAuthor = "";
-	private $feedAuthorEmail = "";
-	private $feedPubSubHubBub = "";
-	private $feedPubSubHubBubSubscribe = "";
 	private $siteTitle = "";
 	private $siteDescription = "";
 	private $themeName = "";
@@ -49,8 +44,11 @@ class TemplateEngine
 		$this->baseLocation = $baseLocation;
 		$this->siteUrl = $siteUrl;
 		$this->templateData = $templateData;
+	}
+	
+	public function processTemplateData()
+	{
 		$this->pageData = $this->templateData->getData();
-		//print_r($this->pageData);
 		$this->pageDataCt = count($this->pageData);
 	}
 	

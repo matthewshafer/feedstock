@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?php echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'; 
+$this->templateEngine->getPostsIndex();
+?>
+
 <feed xmlns="http://www.w3.org/2005/Atom">
 			
 	<title><?php echo $this->templateEngine->getHtmlTitle();?></title>
