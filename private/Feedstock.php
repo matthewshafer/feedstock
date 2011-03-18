@@ -11,6 +11,7 @@ class Feedstock
 	private $outputHelper = null;
 	private $templateLoader = null;
 	private $cacherCreator = null;
+	private $templateRouter = null;
 	
 	// config data array
 	private $config = array();
@@ -116,20 +117,48 @@ class Feedstock
 	{		
 		$this->database = $this->databaseMaker();
 		$data = null;
+		$pageType = $this->router->pageType();
 		
 
 		// ok so really we only need the database when it comes to keeping track of files, which we currently don't do. Decisions decisions.
-		if($this->router->pageType() === "file")
+		if($pageType === "file")
 		{
 			require_once("includes/FileServe.php");
 			$fileServe = new FileServe($this->database, $this->router, $this->config['baseLocation'], $this->config['enableFileDownload']);
 			$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
 			$data = $fileServe->render();
 		}
+		else if($pageType === "feed")
+		{
+			require_once("includes/feed/FeedEngine.php");
+			$feedEngine = new FeedEngine();
+			
+			// once I get the new TemplateRouter set up i'll do some work on the feeds
+			require_once("includes/TemplateEngine.php");
+			require_once("includes/feed/FeedLoader.php");
+		}
 		else
 		{
 			require_once("includes/SiteUrlGenerator.php");
 			$siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess']);
+			
+			// the new stuff, TemplateRouter and TemplateData
+			require_once("includes/TemplateData.php");
+			$templateData = new TemplateData();
+			
+			require_once("includes/TemplateRouter.php");
+			$this->templateRouter = new TemplateRouter($this->router, 
+												$this->database, 
+												$templateData, 
+												$this->config['baseLocation'], 
+												$this->config['themeName'], 
+												$pageType, 
+												$this->config['postsPerPage'], 
+												$this->config['postFormat']);
+			
+			
+			$themeLocation = $this->templateRouter->templateFile();
+			
 			require_once("includes/TemplateEngine.php");
 			
 			$this->templateEngine = new TemplateEngine($this->database, 
@@ -140,13 +169,11 @@ class Feedstock
 														$siteUrlGenerator->generateSiteUrl(), 
 														$this->config['postFormat'], 
 														$this->config['postsPerPage'], 
-														$this->config['baseLocation']);
-																
-			$this->templateEngine->setFeedAuthorInfo($this->config['feedAuthor'], $this->config['feedAuthorEmail']);
-			$this->templateEngine->setPubSubHubBub($this->config['feedPubSubHubBub'], $this->config['feedPubSubHubBubSubscribe']);
+														$this->config['baseLocation'], 
+														$templateData);
 			
 			require_once("includes/TemplateLoader.php");
-			$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
+			$this->templateLoader = new TemplateLoader($themeLocation, $this->templateEngine, $this->outputHelper);
 			$data = $this->templateLoader->render();
 		}
 		

@@ -47,6 +47,9 @@ class TemplateRouter
 		{
 			case "":
 				$file = "index.php";
+				// adding a null data so we don't run into any errors when loading the index page
+				// the TemplateEngine loads the data because index pages don't require loading posts, only if the user's theme wants to
+				$this->templateData->addData(null);
 			break;
 			case "page":
 				$file = "postList.php";
@@ -171,7 +174,7 @@ class TemplateRouter
 			$this->templateData->addData($tmp);
 			
 			// default file for posts
-			$file = "post.php";
+			$file = "single.php";
 		}
 		else
 		{
