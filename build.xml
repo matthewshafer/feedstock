@@ -6,6 +6,31 @@
 		<delete dir="build" />
 	</target>
 	
+	<target name="documentation">
+		<copy todir="build/docSourceCode">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="config.php" />
+				<exclude name="build/"/>
+				<exclude name="private/themes/"/>
+				<exclude name="private/themesAdmin/"/>
+				<exclude name="tests/"/>
+			</fileset>
+		</copy>
+		
+		<phpdoc title="Feedstock Documentation" destdir="build/documentation" sourcecode="false" undocumentedelements="true" output="HTML:Smarty:PHP">
+			<fileset dir="build/docSourceCode">
+      			<include name="**/*.php" />
+  			</fileset>
+  			
+   			<projdocfileset dir="build/docSourceCode">
+      			<include name="README.txt" />
+   			</projdocfileset>
+		</phpdoc>
+		
+		<delete dir="build/docSourceCode" />
+	</target>
+	
 	
 	<target name="prepare">
 		<echo msg="Making ./build Director" />
@@ -125,5 +150,5 @@
 
 
 
-	<target name="all" depends="cleanUp, prepare, lint, phpDepend, cpd, pmd, unitTest, package" />
+	<target name="all" depends="cleanUp, prepare, lint, phpDepend, cpd, pmd, unitTest, documentation, package" />
 </project>

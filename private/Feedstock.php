@@ -89,6 +89,7 @@ class Feedstock
 				}
 				else
 				{
+					// we don't need to worry about the return value here because we are not storing it in the cacher
 					$this->heavyLift();
 					
 					if($this->config['databaseDebug'])

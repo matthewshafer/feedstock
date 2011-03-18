@@ -223,9 +223,9 @@ class TemplateEngine
 	/**
 	 * getPostAuthor function.
 	 * 
-	 * @brief Author who made the post
+	 * Author who made the current post
 	 * @access public
-	 * @return String containing the name of the author
+	 * @return string string containing the author of the current post
 	 */
 	public function getPostAuthor()
 	{
@@ -241,11 +241,11 @@ class TemplateEngine
 	/**
 	 * getPostTime function.
 	 * 
-	 * @brief returns the post time based on the format that was passed into the function
-	 * @brief to find out what formatting works look up the date function in the php documentation
+	 * returns the post time based on the format that was passed into the function
+	 * to find out what formatting works look up the date function in the php documentation
 	 * @access public
 	 * @param mixed $format
-	 * @return Formatted post time
+	 * @return string|null string containing the formatted post time or null if invalid
 	 */
 	public function getPostTime($format)
 	{
@@ -262,9 +262,9 @@ class TemplateEngine
 	/**
 	 * getPostTags function.
 	 * 
-	 * @brief Grabs the tags and puts then into a format like tag1, tag2, tag3
+	 * Grabs the tags and puts then into a format like tag1, tag2, tag3
 	 * @access public
-	 * @return String containing the tags for the post
+	 * @return string|null string containing the tags for the post or null if none
 	 */
 	public function getPostTags()
 	{
@@ -284,9 +284,9 @@ class TemplateEngine
 	/**
 	 * getPostTagsFormatted function.
 	 * 
-	 * @brief makes nice html links of the tags
+	 * Makes nice html links of the tags
 	 * @access public
-	 * @return String with tags with html tags for links
+	 * @return string|null string with html formatted tags. null if none exist
 	 */
 	public function getPostTagsFormatted()
 	{
@@ -315,9 +315,9 @@ class TemplateEngine
 	/**
 	 * getPostCategories function.
 	 * 
-	 * @brief Makes the categories for a post look nice, so something like cat1, cat2, cat3
+	 * Makes the categories for a post look nice, so something like cat1, cat2, cat3
 	 * @access public
-	 * @return String with the categories for a post
+	 * @return string|null string with the categories for a post. null if none exist
 	 */
 	public function getPostCategories()
 	{
@@ -339,9 +339,9 @@ class TemplateEngine
 	/**
 	 * getPostCategoriesFormatted function.
 	 * 
-	 * @brief Returns a formatted string that contains the html for a category.  so for instance < href="http://someurl/category/cat1">cat1</a>
+	 * Makes nice html formatted categories
 	 * @access public
-	 * @return String that contains the html
+	 * @return string|null string that contains the html formatted categories. null if none exist
 	 */
 	public function getPostCategoriesFormatted()
 	{
@@ -368,9 +368,9 @@ class TemplateEngine
 	/**
 	 * getPageTitle function.
 	 * 
-	 * @brief Gives you the title of the page if the page exists
+	 * Gives you the title of the page if the page exists
 	 * @access public
-	 * @return String if the page has a title or null if there is nothing to do
+	 * @return string|null string if the page has a title or null if there is nothing to do
 	 */
 	public function getPageTitle()
 	{
@@ -380,9 +380,9 @@ class TemplateEngine
 	/**
 	 * getPageUri function.
 	 * 
-	 * @brief Uri of the current page
+	 * Uri of the current page
 	 * @access public
-	 * @return String with the URI or null if something went wrong
+	 * @return string string with the URI or null if something went wrong
 	 */
 	public function getPageUri()
 	{
@@ -392,9 +392,9 @@ class TemplateEngine
 	/**
 	 * getPageURL function.
 	 * 
-	 * @brief URL of a page
+	 * URL of a page
 	 * @access public
-	 * @return String with the URL or null if there is no data
+	 * @return string|null string with the URL or null if there is no data
 	 */
 	public function getPageUrl()
 	{
@@ -404,9 +404,9 @@ class TemplateEngine
 	/**
 	 * getPageBody function.
 	 * 
-	 * @brief Gets the body of the page
+	 * Gets the body of the page
 	 * @access public
-	 * @return String with the body of the page, null if there is nothing
+	 * @return string|null string with the body of the page, null if there is nothing
 	 */
 	public function getPageBody()
 	{
@@ -422,9 +422,9 @@ class TemplateEngine
 	/**
 	 * getPageBodyHTML function.
 	 * 
-	 * @brief Page body but allowing html to be displayed
+	 * Page body but allowing html to be displayed
 	 * @access public
-	 * @return String with the body of the page, null if there is nothing
+	 * @return string|null string with the body of the page, null if there is nothing
 	 */
 	public function getPageBodyHtml()
 	{
@@ -441,21 +441,13 @@ class TemplateEngine
 		return $return;
 	}
 	
-	/*
-	* we currently don't build the authors into the page
-	public function getPageAuthor()
-	{
-		return $this->getPostAuthor();
-	}
-	*/
-	
 	/**
 	 * getPageTime function.
 	 * 
-	 * @brief lets you format the output of the date
+	 * Lets you format the output of the date
 	 * @access public
 	 * @param mixed $format
-	 * @return String containing the date specified in format
+	 * @return string|null string containing the date specified in format. null if invalid
 	 */
 	public function getPageTime($format)
 	{
@@ -467,7 +459,7 @@ class TemplateEngine
 	/**
 	 * getCategories function.
 	 * 
-	 * @brief IT DOES NOTHING YET SO DON'T USE IT
+	 * This is probably going to be marked for removal. This doesn't work anyway
 	 * @access public
 	 * @param mixed $number
 	 * @return void
@@ -532,7 +524,7 @@ class TemplateEngine
 	/**
 	 * generateTags function.
 	 * 
-	 * @brief Makes the Tag Array.  Must be called prior to getting the tags for post(s) else you won't get anything from those functions.
+	 * Makes the Tag Array.  Must be called prior to getting the tags for post(s) else you won't get anything from those functions.
 	 * @access public
 	 * @return void
 	 */
@@ -554,7 +546,7 @@ class TemplateEngine
 	/**
 	 * generateCategories function.
 	 * 
-	 * @brief Makes the Category array. Must be called prior to getting the categories for post(s) else you wont get anything from those functions.
+	 * Makes the Category array. Must be called prior to getting the categories for post(s) else you wont get anything from those functions.
 	 * @access public
 	 * @return void
 	 */
@@ -577,7 +569,7 @@ class TemplateEngine
 	/**
 	 * getPostsIndex function.
 	 * 
-	 * @brief Sets up the pageData for posts on an index page since we don't automatically generate that for an index page.
+	 * Sets up the pageData for posts on an index page since we don't automatically generate that for an index page. (also used for feeds so they have data to generate into a feed)
 	 * @access public
 	 * @return void
 	 */
@@ -594,10 +586,10 @@ class TemplateEngine
 	/**
 	 * getCorralArrayByName function.
 	 * 
-	 * @brief Returns and array with all the pages inside that corral
+	 * Returns an array with all the pages inside that corral
 	 * @access public
 	 * @param mixed $name
-	 * @return Array with Title, URI, and URL of the pages inside this corral
+	 * @return array|null array with Title, URI, and URL of the pages inside this corral. null if it doesn't exist
 	 */
 	public function getCorralArrayByName($name)
 	{
@@ -616,10 +608,10 @@ class TemplateEngine
 	/**
 	 * getFormattedCorralByName function.
 	 * 
-	 * @brief Takes the name of the corral and then if pages exist it makes a html list
+	 * Takes the name of the corral and then if pages exist it makes a html list
 	 * @access public
 	 * @param mixed $name
-	 * @return String containing an html list or null if no pages exist in that corral
+	 * @return string|null string containing an html list or null if no pages exist in that corral
 	 */
 	public function getFormattedCorralByName($name)
 	{
@@ -641,9 +633,9 @@ class TemplateEngine
 	/**
 	 * haveNextPostPage function.
 	 * 
-	 * @brief Lets us know if we have a next page we can go to
+	 * Lets us know if we have a next page we can go to
 	 * @access public
-	 * @return Boolean, True if we have a next page, false if we don't
+	 * @return boolean True if we have a next page, false if we don't
 	 */
 	public function haveNextPostPage()
 	{
@@ -653,9 +645,9 @@ class TemplateEngine
 	/**
 	 * havePreviousPostPage function.
 	 * 
-	 * @brief Lets us know if we have a page previous to the one we are currently at
+	 * Lets us know if we have a page previous to the one we are currently at
 	 * @access public
-	 * @return Boolean, True if we have a previous, false if we don't
+	 * @return boolean True if we have a previous, false if we don't
 	 */
 	public function havePreviousPostPage()
 	{
@@ -672,10 +664,10 @@ class TemplateEngine
 	/**
 	 * haveNextPostPageHtml function.
 	 * 
-	 * @brief Makes us a nice next link if we have a next page.  Can specify your own next text.
+	 * Makes us a nice next link if we have a next page.  Can specify your own next text.
 	 * @access public
 	 * @param string $title. (default: "Next Page ->")
-	 * @return String containing the link, null if we don't have a next page
+	 * @return string|null containing the link, null if we don't have a next page
 	 */
 	public function haveNextPostPageHtml($title = "Next Page ->")
 	{
@@ -694,10 +686,10 @@ class TemplateEngine
 	/**
 	 * havePreviousPostPageHtml function.
 	 * 
-	 * @brief Makes us a nice previous link if we have a previous page.  Can specify your own previous text
+	 * Makes us a nice previous link if we have a previous page.  Can specify your own previous text
 	 * @access public
 	 * @param string $title. (default: "<- Previous Page")
-	 * @return String containing the link, null if we don't have a previous page
+	 * @return string|null containing the link, null if we don't have a previous page
 	 */
 	public function havePreviousPostPageHtml($title = "<- Previous Page")
 	{
@@ -723,10 +715,10 @@ class TemplateEngine
 	/**
 	 * getSnippetByName function.
 	 * 
-	 * @brief gets the snippet data from the snippet specified by the name
+	 * Gets the snippet data from the snippet specified by the name
 	 * @access public
 	 * @param mixed $name
-	 * @return String containing the snippet with html escaped
+	 * @return string|null string containing the snippet with html escaped. null if it doesn't exist
 	 */
 	public function getSnippetByName($name)
 	{
@@ -747,10 +739,10 @@ class TemplateEngine
 	/**
 	 * getSnippetByNameHtml function.
 	 * 
-	 * @brief gets the snippet data from the snippet specified by the name and allows html to be run by the browser
+	 * Gets the snippet data from the snippet specified by the name and allows html to be run by the browser
 	 * @access public
 	 * @param mixed $name
-	 * @return String containing the snippet data with HTML
+	 * @return string|null string containing the snippet data with HTML. null if it doesn't exist
 	 */
 	public function getSnippetByNameHtml($name, $lineBreaks = true)
 	{
@@ -775,9 +767,9 @@ class TemplateEngine
 	/**
 	 * themeBaseLocation function.
 	 * 
-	 * @brief Builds the http location of a theme
+	 * Builds the http location of a theme
 	 * @access public
-	 * @return String containing the http address of the base of a theme
+	 * @return string containing the http address of the base of a theme
 	 */
 	public function themeBaseLocation()
 	{
@@ -826,9 +818,9 @@ class TemplateEngine
 	/**
 	 * haveError function.
 	 * 
-	 * @brief if there was an error somewhere then we have an error
+	 * If there was an error somewhere then we have an error
 	 * @access public
-	 * @return Boolean True if we have an error
+	 * @return boolean True if we have an error
 	 */
 	public function haveError()
 	{
@@ -845,9 +837,9 @@ class TemplateEngine
 	/**
 	 * getError function.
 	 * 
-	 * @brief Error text
+	 * Error text
 	 * @access public
-	 * @return String with the error encountered or null if no error
+	 * @return string|null with the error encountered or null if no error
 	 */
 	public function getError()
 	{
