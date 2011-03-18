@@ -12,28 +12,28 @@ class FeedEngine
 	{
 		$this->name = $name;
 		$this->email = $email;
-		$this->pubsubEnabled = $pub;
+		$this->pubSubEnabled = $pub;
 		$this->pubSubscribeAddress = $pubSubscribeAddress;
 	}
 	
 	public function getFeedAuthor()
 	{
-		return $this->feedAuthor;
+		return $this->name;
 	}
 	
 	public function getFeedEmail()
 	{
-		return $this->feedAuthorEmail;
+		return $this->email;
 	}
 	
 	public function pubSubHubBubEnabled()
 	{
-		return $this->feedPubSubHubBub;
+		return $this->pubSubEnabled;
 	}
 	
 	public function pubSubHubBubSubscribeUrl()
 	{
-		return $this->feedPubSubHubBubSubscribe;
+		return $this->pubSubHubBubSubscribe;
 	}
 }
 ?>

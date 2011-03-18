@@ -9,7 +9,7 @@
 class TemplateLoader
 {
 	
-	private $themeLoc = null;
+	private $themeLocation = null;
 	private $templateEngine = null;
 	private $outputHelper = null;
 	
@@ -20,8 +20,9 @@ class TemplateLoader
 	 * @param mixed $templateEngine
 	 * @return void
 	 */
-	public function __construct($templateEngine, $outputHelper)
+	public function __construct($themeLocation, $templateEngine, $outputHelper)
 	{
+		$this->themeLocation = $themeLocation;
 		$this->templateEngine = $templateEngine;
 		$this->outputHelper = $outputHelper;
 	}
@@ -33,10 +34,8 @@ class TemplateLoader
 	 * @return Generated html
 	 */
 	public function render()
-	{
-		$this->themeLoc = $this->templateEngine->getThemeLocation();
-		
-		include $this->themeLoc;
+	{	
+		include $this->themeLocation;
 		
 		return $this->outputHelper->stopStoreFlushGetBuffer();
 	}

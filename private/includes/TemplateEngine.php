@@ -13,14 +13,9 @@ class TemplateEngine
 	private $pageData = null;
 	private $postCategory = null;
 	private $postTag = null;
-	private $arrayPosition = -1;
+	private $arrayPosition = 0;
 	private $errorText = null;
 	private $pageDataCt = null;
-	// feeds are handled by the template engine.  Could possibly seperate it out later to be its own thing
-	private $feedAuthor = "";
-	private $feedAuthorEmail = "";
-	private $feedPubSubHubBub = "";
-	private $feedPubSubHubBubSubscribe = "";
 	private $siteTitle = "";
 	private $siteDescription = "";
 	private $themeName = "";
@@ -28,6 +23,7 @@ class TemplateEngine
 	private $postFormat = "";
 	private $postsPerPage = 0;
 	private $baseLocation = "";
+	private $templateData = null;
 	
 	
 	/**
@@ -36,7 +32,7 @@ class TemplateEngine
 	 * @brief you need at least a 404.php for the theme to be valid
 	 * @access public
 	 */
-	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postFormat, $postsPerPage, $baseLocation)
+	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postFormat, $postsPerPage, $baseLocation, $templateData)
 	{
 		$this->database = $database;
 		$this->router = $router;
@@ -47,363 +43,13 @@ class TemplateEngine
 		$this->postsPerPage = (int)$postsPerPage;
 		$this->baseLocation = $baseLocation;
 		$this->siteUrl = $siteUrl;
+		$this->templateData = $templateData;
 	}
 	
-	/**
-	 * getThemeLocation function.
-	 * 
-	 * @brief simply calls our private function which should return the location of the theme file
-	 * @access public
-	 * @return void
-	 */
-	public function getThemeLocation()
+	public function processTemplateData()
 	{
-		return $this->request();	
-	}
-	
-	/**
-	 * isThemeFileValid function.
-	 * 
-	 * @access private
-	 * @param mixed $file
-	 * @param mixed $location (Default = null)
-	 * @return True if theme file is valid, false if it isnt
-	 */
-	private function isThemeFileValid($file, $location = null)
-	{
-		$return = null;
-		
-		if($location === null)
-		{
-			$location = $this->baseLocation . '/private/themes/' . $this->themeName;
-		}
-		
-		$fileLoc = $location . '/' . $file;
-		
-		if(file_exists($fileLoc) && is_readable($fileLoc))
-		{
-			$return = true;
-		}
-		else
-		{
-			$return = false;
-		}
-		
-		return $return;
-	}
-
-
-	/**
-	 * request function.
-	 * 
-	 * @access private
-	 * @return void
-	 */	
-	private function request()
-	{
-		$return = $this->baseLocation . '/private/themes/' . $this->themeName;
-		$file = null;
-		
-		if(strtolower($this->router->pageType()) === "")
-		{	
-			$file = "index.php";
-		}
-		else if(strtolower($this->router->pageType()) === "page")
-		{
-			$offset = $this->router->getPageOffset() * $this->postsPerPage;
-			$this->pageData = $this->database->getPosts($this->postsPerPage, $offset);
-			$file = "postList.php";
-		}
-		else
-		{
-			
-			if($this->checkUriPost())
-			{
-				$this->pageData = $this->database->getSinglePost($this->router->fullURI());
-				
-				
-				if(isset($this->pageData[0]["PrimaryKey"]))
-				{
-					$this->arrayPosition = 0;
-					$file = $this->arrayCustomFile("single");
-				}
-				else
-				{
-					$this->errorText .= "Post not Found";
-				}
-			}
-			else
-			{
-				if($this->router->pageType() === "category")
-				{
-					
-					// I totally forget what this was for, I should probably figure it out
-					if($this->router->evenURIParts())
-					{
-						//echo "even";
-					}
-					else
-					{
-						//echo "odd";
-					}
-					
-					$categoryNameOffset = $this->router->searchURI("category") + 1;
-					$categoryName = $this->router->getUriPosition($categoryNameOffset);
-					
-					if($this->router->uriLength() === 1)
-					{
-						$this->pageData = $this->database->listCategoriesOrTags(0);
-					}
-					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryOrTagName($categoryName, 0))
-					{
-						
-						$pageOffset = $this->router->searchURI("page");
-						
-						if($pageOffset != -1)
-						{
-							// need to increase by 1 in order to get the right offset that the page number is on
-							$pageOffset++;
-							$pageID = (int)$this->router->getUriPosition($pageOffset);
-							
-							if($pageID > 0)
-							{
-								$pageID = ($pageID - 1) * 10;
-							}
-							
-							if($pageID >= 0)
-							{
-								$this->pageData = $this->database->getPostsInCategoryOrTag(0, $this->postsPerPage, $pageID);
-							}
-							else
-							{
-								$this->errorText = "Can't have a negative page";
-							}
-							
-						}
-						else
-						{
-							$this->pageData = $this->database->getPostsInCategoryOrTag(0, $this->postsPerPage, 0);
-						}
-					}
-					// need some error checking for null pagedata
-					if(!empty($this->pageData))
-					{
-						// just here for default
-						if($this->router->uriLength() > 1)
-						{
-							$file = "postList.php";
-						}
-						else
-						{
-							$file = "category.php";
-						}
-					}
-					else
-					{
-						// do stuff
-					}
-			
-				}
-				else if($this->router->pageType() === "tag")
-				{	
-					$tagNameOffset = $this->router->searchURI("tag") + 1;
-					$tagName = $this->router->getUriPosition($tagNameOffset);
-				
-					if($this->router->uriLength() === 1)
-					{
-						$this->pageData = $this->database->listCategoriesOrTags(1);
-					}
-					else if($this->router->uriLength() <= 4 && $this->router->evenURIParts() && $this->database->checkCategoryOrTagName($tagName, 1))
-					{
-						$pageOffset = $this->router->searchURI("page");
-						
-						if($pageOffset != -1)
-						{
-							$pageOffset++;
-							$pageID = (int)$this->router->getUriPosition($pageOffset);
-							
-							if($pageID > 0)
-							{
-								$pageID = ($pageID - 1) * 10;
-							}
-						
-							if($pageID >= 0)
-							{
-								echo $pageID;
-								$this->pageData = $this->database->getPostsInCategoryOrTag(1, $this->postsPerPage, $pageID);
-							}
-							else
-							{
-								$this->errorText = "Can't have a negative page";
-							}
-						
-						}
-						else
-						{
-							$this->pageData = $this->database->getPostsInCategoryOrTag(1, $this->postsPerPage, 0);
-						}
-					}
-					
-					// need some error checking for null pagedata
-					if(!empty($this->pageData))
-					{
-						// just here for default
-						
-						if($this->router->uriLength() > 1)
-						{
-							$file = "postList.php";
-						}
-						else
-						{
-							$file = "tag.php";
-						}
-						
-						//$file = "/tag.php";
-					}
-					else
-					{
-						// do stuff
-					}
-					
-				}
-				// need to rewrite the feed to use template engine over doing stuff on it's own
-				else if($this->router->pageType() === "feed")
-				{
-					$this->pageData = $this->database->getPosts($this->postsPerPage, 0);
-					$return = $this->baseLocation . '/private/includes';
-					$file = "Feed.php";
-				}
-				else
-				{
-					$this->pageData = $this->database->getPage($this->router->fullURI());
-					
-					// need some error checking for null pagedata
-					if(!empty($this->pageData))
-					{
-						$this->arrayPosition = 0;
-						$file = $this->arrayCustomFile("page");
-					}
-					else
-					{
-						// do stuff
-						$this->errorText = "Oops, That page was not found!";
-					}
-				}
-			}
-		}
-		
-		
-		if($file === null)
-		{
-			// we have some error which we need to figure out what to do.  for now we will just die
-			
-			if($this->isThemeFileValid("404.php"))
-			{
-				$file = "404.php";
-			}
-			else
-			{
-				throw new Exception("Missing major components required for themes");
-			}
-		}
-		// need to check for the theme file being valid here
-		else
-		{
-			if(!$this->isThemeFileValid($file, $return))
-			{
-				 throw new Exception("Theme file does not exist");
-			}
-		}
-		
-		if(!empty($this->pageData))
-		{
-			$this->pageDataCt = count($this->pageData);
-		}
-		
-		$return .= '/' . $file;
-		//$this->getCategoriesForPageData();
-		return $return;
-	}
-	
-	private function arrayCustomFile($defaultFile)
-	{
-		if($this->pageData[$this->arrayPosition]["themeFile"] === '')
-		{
-			$return = $defaultFile . '.php';
-		}
-		else
-		{
-			$return = $this->pageData[$this->arrayPosition]["themeFile"] . '.php';
-		}
-		
-		return $return;
-	}
-	
-	// dont use %CATEGORY% yet it doesnt work!
-	private function checkUriPost()
-	{
-		$temp = explode("/", $this->postFormat);
-		
-		$isBad = false;
-		$return = true;
-		
-		if($this->router->uriLength() === count($temp))
-		{
-			$tmpCt = count($temp);
-			
-			for($i = 0; $i < $tmpCt; $i++)
-			{
-				switch((string)$temp[$i])
-				{
-					case "%MONTH%":
-						if((int)$this->router->getUriPosition($i + 1) > 12 || (int)$this->router->getUriPosition($i + 1) < 1)
-						{
-							$isBad = true;
-						}
-						break;
-					case "%DAY%":
-						if((int)$this->router->getUriPosition($i + 1) > 31 || (int)$this->router->getUriPosition($i + 1) < 1)
-						{
-							$isBad = true;
-						}
-						break;
-					case "%YEAR%":
-						if(strlen($this->router->getUriPosition($i + 1)) < 4 || (int)$this->router->getUriPosition($i + 1) < 1000)
-						{
-							$isBad = true;
-						}
-						break;
-					case "%TITLE%":
-						if($this->router->getUriPosition($i + 1) === null)
-						{
-							$isBad = true;
-						}
-						break;
-					/* case "%CATEGORY%":
-						if(!$this->db->categoryCheck($this->router->getUriPosition($i + 1)))
-						{
-							$isBad = true;
-						}
-						break; */
-					default:
-						$isBad = true;
-						break;
-				}
-				
-				if($isBad)
-					break;
-			}
-		}
-		else
-		{
-			$return = false;
-		}
-		
-		if($isBad)
-		{
-			$return = false;
-		}
-		return $return;
+		$this->pageData = $this->templateData->getData();
+		$this->pageDataCt = count($this->pageData);
 	}
 	
 	/**
@@ -429,12 +75,23 @@ class TemplateEngine
 	public function haveNextPost()
 	{
 		$return = null;
+		// since we are starting at 0 so everything else works we need this to start at -1 so that we don't miss the first page when we are in a loop
+		// this allows us to not have to call other functions when we are doing a page/single post
+		// because haveNextPost is called before the first post we need to make this one less than it is since we are going to increment it anyway
+		// the static value remembers what it was set at the previous run
+		static $runOnce = false;
+		
+		if(!$runOnce)
+		{
+			$this->arrayPosition--;
+		}
 		
 		
 		if($this->arrayPosition + 1 < $this->pageDataCt && $this->pageDataCt != 0)
 		{
 			$this->arrayPosition++;
 			$return = true;
+			$runOnce = true;
 		}
 		else
 			$return = false;
@@ -837,46 +494,6 @@ class TemplateEngine
 		return $return;
 	}
 	
-	// needs to check for null and no data in the array
-	private function generateSubCategoryUri($array)
-	{
-		$subCat = $array["SubCat"];
-		$URI = $array["URIName"];
-		
-		while($subCat > -1)
-		{
-			$data = $this->database->getCategoryOrTag($subCat, 0);
-			$URI = $data[0]["URIName"] . "/" . $URI;
-			$subCat = $data[0]["SubCat"];
-		}
-		
-		return $URI;
-	}
-	
-	private function generateSubTagUri($array)
-	{
-		$URI = null;
-		if($array != null)
-		{
-			$subTag = $array["SubCat"];
-			$URI = $array["URIName"];
-			
-			while($subTag > -1)
-			{
-				$data = $this->database->getCategoryOrTag($subTag, 1);
-				$URI = $data[0]["URIName"] . "/" . $URI;
-				$subTag = $data[0]["SubCat"];
-			}
-		}
-		
-		return $URI;
-	}
-	
-	private function subCategoryUri()
-	{
-		
-	}
-	
 	/**
 	 * generateTags function.
 	 * 
@@ -1139,35 +756,6 @@ class TemplateEngine
 		return $return;
 	}
 	
-	public function getFeedType()
-	{
-		// default feed type
-		$return = null;
-		$type = $this->router->getUriPosition(2);
-		
-		if($this->router->uriLength() <= 2)
-		{
-			if($type === null || $type === "rss")
-			{
-				$return = "rss";
-			}
-			else if($type === "atom")
-			{
-				$return = "atom";
-			}
-			else
-			{
-				$this->errorText = "Invalid Feed Type";
-			}
-		}
-		else
-		{
-			$this->errorText = "Invalid Feed Address";
-		}
-		
-		return $return;
-	}
-	
 	public function lastUpdatedTime($format)
 	{
 		$return = null;
@@ -1231,45 +819,11 @@ class TemplateEngine
 		return $this->errorText;
 	}
 	
-	
-	// functions for getting and setting feed info
-	
-	public function setFeedAuthorInfo($name, $email = "")
-	{
-		$this->feedAuthor = $name;
-		$this->feedAuthorEmail = $email;
-	}
-	
-	public function setPubSubHubBub($enabled, $subscribeUrl = "")
-	{
-		$this->feedPubSubHubBub = $enabled;
-		$this->feedPubSubHubBubSubscribe = $subscribeUrl;
-	}
-	
-	public function getFeedAuthor()
-	{
-		return $this->feedAuthor;
-	}
-	
-	public function getFeedEmail()
-	{
-		return $this->feedAuthorEmail;
-	}
-	
-	public function pubSubHubBubEnabled()
-	{
-		return $this->feedPubSubHubBub;
-	}
-	
-	public function pubSubHubBubSubscribeUrl()
-	{
-		return $this->feedPubSubHubBubSubscribe;
-	}
-	
 	// when we clean the feed part up we should keep this
 	public function getSiteDescription()
 	{
 		return $this->siteDescription;
 	}
+	
 }
 ?>

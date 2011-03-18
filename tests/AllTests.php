@@ -11,6 +11,9 @@ class AllTests extends TestSuite
 		
 		require_once('IpCheckerTest.php');
 		$this->load('IpCheckerTest');
+		
+		require_once('TemplateRouterTest.php');
+		$this->load('TemplateRouterTest');
 	}
 }
 

@@ -11,6 +11,7 @@ class Feedstock
 	private $outputHelper = null;
 	private $templateLoader = null;
 	private $cacherCreator = null;
+	private $templateRouter = null;
 	
 	// config data array
 	private $config = array();
@@ -116,22 +117,38 @@ class Feedstock
 	{		
 		$this->database = $this->databaseMaker();
 		$data = null;
+		$pageType = $this->router->pageType();
 		
 
 		// ok so really we only need the database when it comes to keeping track of files, which we currently don't do. Decisions decisions.
-		if($this->router->pageType() === "file")
+		if($pageType === "file")
 		{
 			require_once("includes/FileServe.php");
 			$fileServe = new FileServe($this->database, $this->router, $this->config['baseLocation'], $this->config['enableFileDownload']);
 			$fileServe->setDownloadSpeed($this->fileDownloadSpeed);
 			$data = $fileServe->render();
 		}
+		// allows us to remove some duplicate code as the feed and the regular loading share some common objects
 		else
 		{
 			require_once("includes/SiteUrlGenerator.php");
 			$siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess']);
-			require_once("includes/TemplateEngine.php");
 			
+			require_once("includes/TemplateData.php");
+			$templateData = new TemplateData();
+			
+			require_once("includes/TemplateRouter.php");
+			$this->templateRouter = new TemplateRouter($this->router, 
+												$this->database, 
+												$templateData, 
+												$this->config['baseLocation'], 
+												$this->config['themeName'], 
+												$pageType, 
+												$this->config['postsPerPage'], 
+												$this->config['postFormat']);
+			
+			
+			require_once("includes/TemplateEngine.php");
 			$this->templateEngine = new TemplateEngine($this->database, 
 														$this->router, 
 														$this->config['siteTitle'], 
@@ -140,14 +157,48 @@ class Feedstock
 														$siteUrlGenerator->generateSiteUrl(), 
 														$this->config['postFormat'], 
 														$this->config['postsPerPage'], 
-														$this->config['baseLocation']);
-																
-			$this->templateEngine->setFeedAuthorInfo($this->config['feedAuthor'], $this->config['feedAuthorEmail']);
-			$this->templateEngine->setPubSubHubBub($this->config['feedPubSubHubBub'], $this->config['feedPubSubHubBubSubscribe']);
-			
-			require_once("includes/TemplateLoader.php");
-			$this->templateLoader = new TemplateLoader($this->templateEngine, $this->outputHelper);
-			$data = $this->templateLoader->render();
+														$this->config['baseLocation'], 
+														$templateData);
+														
+			// loads the feedEngine and uses objects created above									
+			if($pageType === "feed")
+			{
+				require_once("includes/feed/FeedEngine.php");
+				$feedEngine = new FeedEngine($this->config['feedAuthor'], $this->config['feedAuthorEmail'], $this->config['feedPubSubHubBub'], $this->config['feedPubSubHubBubSubscribe']);
+	
+				require_once("includes/feed/FeedLoader.php");
+				$feedLoader = new FeedLoader($this->router, $this->outputHelper, $feedEngine, $this->templateEngine);
+				$data = $feedLoader->loadFeed();
+			}
+			else
+			{
+				try
+				{
+					$themeLocation = $this->templateRouter->templateFile();
+					$this->templateEngine->processTemplateData();
+				}
+				// catching an exception if it is either related to something not existing or the template enging not being able to process the template data
+				// we look for a valid 404 page and if that exists that gets rendered
+				// if one does not exist then we throw a new exception that gets caught around handleRequest();
+				catch(Exception $e)
+				{
+					$tmpTheme = $this->templateRouter->valid404Page($found);
+					if($found)
+					{
+						$themeLocation = $tmpTheme;
+					}
+					else
+					{
+						// this exception gets caught by the try/catch block around $this->handleRequest();
+						throw new Exception($e->getMessage());
+					}
+				}
+				
+				
+				require_once("includes/TemplateLoader.php");
+				$this->templateLoader = new TemplateLoader($themeLocation, $this->templateEngine, $this->outputHelper);
+				$data = $this->templateLoader->render();
+			}
 		}
 		
 		$this->database->closeConnection();

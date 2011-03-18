@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?php echo '<?xml version="1.0" encoding="UTF-8"?>'; ?>
 
 	<?php		
+		// generate a list of posts as if this were the index page
+		$this->templateEngine->getPostsIndex();
 		if($this->feedEngine->pubSubHubBubEnabled())
 			{
 	?>
