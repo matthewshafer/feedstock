@@ -53,7 +53,8 @@ class SiteUrlGenerator
 		}
 		else
 		{
-			throw error("Invalid website URL");
+			// switched to an exception since we are catching all of them already
+			throw new exception("Invalid website URL");
 		}
 		
 		if(!$this->htaccess)
