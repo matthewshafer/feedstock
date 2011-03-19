@@ -1,8 +1,8 @@
 <?php
 /**
- * @file
+ * Handles writing responses to the disk for fast retrival
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Handles writing responses to the disk for fast retrival
+ * 
  *
  */
 class FileCache implements GenericCacher
@@ -16,9 +16,10 @@ class FileCache implements GenericCacher
 	/**
 	 * __construct function.
 	 * 
-	 * @brief Constructs the cache.  md5's the uri we are passed.
 	 * @access public
-	 * @param mixed $uri
+	 * @param mixed $prefix
+	 * @param mixed $expireTime
+	 * @param string $location (default: "")
 	 * @return void
 	 */
 	public function __construct($prefix, $expireTime, $location = "")
@@ -31,7 +32,14 @@ class FileCache implements GenericCacher
 
 	}
 	
-	
+	/**
+	 * checkExists function.
+	 * 
+	 * Checks to see if something in the cache exists
+	 * @access public
+	 * @param mixed $lookup
+	 * @return boolean True if it exists, false if it doesn't
+	 */
 	public function checkExists($lookup)
 	{
 		$return = false;
@@ -91,13 +99,7 @@ class FileCache implements GenericCacher
 		return $data;
 	}
 	
-	/**
-	 * deleteCachedFile function.
-	 * 
-	 * @brief Deletes the current cache file
-	 * @access private
-	 * @return void
-	 */
+	
 	private function deleteCachedFile($lookup)
 	{
 		if(file_exists($lookup))
@@ -106,6 +108,15 @@ class FileCache implements GenericCacher
 		}
 	}
 	
+	/**
+	 * writeCachedFile function.
+	 * 
+	 * Writes something to the cache. toHash is what you want the hash for that data to be
+	 * @access public
+	 * @param mixed $toHash
+	 * @param mixed $data
+	 * @return void
+	 */
 	public function writeCachedFile($toHash, $data)
 	{
 		$toHash = $this->cacheLoc . $this->prefix . sha1($toHash);
@@ -126,9 +137,9 @@ class FileCache implements GenericCacher
 	/**
 	 * getCachedData function.
 	 * 
-	 * @brief Returns the cached page data for us to display.
+	 * Gets cached data from the cache. Data is stored when you call checkExists. This way we do one lookup rather than two
 	 * @access public
-	 * @return String
+	 * @return mixed
 	 */
 	public function getCachedData()
 	{
@@ -147,7 +158,7 @@ class FileCache implements GenericCacher
 	/**
 	 * purgeCache function.
 	 * 
-	 * @brief Allows us to purge everything in the cache. Something for admin's only.
+	 * Purges the entire cache. Useful when a new post/page is created
 	 * @access public
 	 * @return void
 	 */
@@ -165,6 +176,12 @@ class FileCache implements GenericCacher
 		closedir($dir);
 	}
 	
+	/**
+	 * cacheWritable function.
+	 * 
+	 * @access public
+	 * @return boolean True if the cache is writable false if it is not
+	 */
 	public function cacheWritable()
 	{
 		$return = false;

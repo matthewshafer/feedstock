@@ -1,8 +1,8 @@
 <?php
 /**
- * @file
+ * Xcache caching class for feedstock
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Used to cache the sql from the database so we can get the data without having to talk to the database, if it's cached
+ *
  * 
  */
 class Xcache implements GenericCacher
@@ -17,6 +17,9 @@ class Xcache implements GenericCacher
 	 * __construct function.
 	 * 
 	 * @access public
+	 * @param mixed $prefix
+	 * @param mixed $expireTime
+	 * @param string $location (default: "")
 	 * @return void
 	 */
 	public function __construct($prefix, $expireTime, $location = "")
@@ -29,9 +32,10 @@ class Xcache implements GenericCacher
 	/**
 	 * checkExists function.
 	 * 
+	 * Checks to see if something in the cache exists
 	 * @access public
 	 * @param mixed $lookup
-	 * @return void
+	 * @return boolean True if it exists, false if it doesn't
 	 */
 	public function checkExists($lookup)
 	{
@@ -54,8 +58,9 @@ class Xcache implements GenericCacher
 	/**
 	 * getCachedData function.
 	 * 
+	 * Gets cached data from the cache. Data is stored when you call checkExists. This way we do one lookup rather than two
 	 * @access public
-	 * @return void
+	 * @return mixed
 	 */
 	public function getCachedData()
 	{
@@ -76,6 +81,7 @@ class Xcache implements GenericCacher
 	/**
 	 * writeCachedFile function.
 	 * 
+	 * Writes something to the cache. toHash is what you want the hash for that data to be
 	 * @access public
 	 * @param mixed $toHash
 	 * @param mixed $data
@@ -103,6 +109,7 @@ class Xcache implements GenericCacher
 	/**
 	 * purgeCache function.
 	 * 
+	 * Purges the entire cache. Useful when a new post/page is created
 	 * @access public
 	 * @return void
 	 */
@@ -121,7 +128,12 @@ class Xcache implements GenericCacher
 		}		
 	}
 	
-	
+	/**
+	 * cacheWritable function.
+	 * 
+	 * @access public
+	 * @return boolean True if the cache is writable false if it is not
+	 */
 	public function cacheWritable()
 	{
 		$ret = false;

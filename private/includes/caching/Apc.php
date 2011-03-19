@@ -1,11 +1,10 @@
 <?php
 /**
- * @file
+ * Apc caching class for feedstock
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Used to cache the sql from the database so we can get the data without having to talk to the database, if it's cached
+ * 
  * 
  */
- 
 class Apc implements GenericCacher
 {
 	private $prefix = null;
@@ -14,10 +13,14 @@ class Apc implements GenericCacher
 	private $storePos = -1;
 	private $expireTime;
 	
+
 	/**
 	 * __construct function.
 	 * 
 	 * @access public
+	 * @param mixed $prefix
+	 * @param mixed $expireTime
+	 * @param string $location (default: "")
 	 * @return void
 	 */
 	public function __construct($prefix, $expireTime, $location = "")
@@ -30,9 +33,10 @@ class Apc implements GenericCacher
 	/**
 	 * checkExists function.
 	 * 
+	 * Checks to see if something in the cache exists
 	 * @access public
 	 * @param mixed $lookup
-	 * @return void
+	 * @return boolean True if it exists, false if it doesn't
 	 */
 	public function checkExists($lookup)
 	{
@@ -58,8 +62,9 @@ class Apc implements GenericCacher
 	/**
 	 * getCachedData function.
 	 * 
+	 * Gets cached data from the cache. Data is stored when you call checkExists. This way we do one lookup rather than two
 	 * @access public
-	 * @return void
+	 * @return mixed
 	 */
 	public function getCachedData()
 	{
@@ -80,6 +85,7 @@ class Apc implements GenericCacher
 	/**
 	 * writeCachedFile function.
 	 * 
+	 * Writes something to the cache. toHash is what you want the hash for that data to be
 	 * @access public
 	 * @param mixed $toHash
 	 * @param mixed $data
@@ -111,6 +117,7 @@ class Apc implements GenericCacher
 	/**
 	 * purgeCache function.
 	 * 
+	 * Purges the entire cache. Useful when a new post/page is created
 	 * @access public
 	 * @return void
 	 */
@@ -133,6 +140,12 @@ class Apc implements GenericCacher
 	}
 	
 	
+	/**
+	 * cacheWritable function.
+	 * 
+	 * @access public
+	 * @return boolean True if the cache is writable false if it is not
+	 */
 	public function cacheWritable()
 	{
 		$ret = false;

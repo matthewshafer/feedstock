@@ -1,8 +1,8 @@
 <?php
-
-
 /**
  * CacherCreator class.
+ *
+ * @author Matthew Shafer <matt@niftystopwatch.com>
  */
 class CacherCreator
 {
@@ -38,7 +38,7 @@ class CacherCreator
 	 * getCacher function.
 	 * 
 	 * @access public
-	 * @return Cacher Object
+	 * @return GenericCacher|null GenericCacher object if one was created or null if one was not
 	 */
 	public function getCacher()
 	{
@@ -50,8 +50,9 @@ class CacherCreator
 	/**
 	 * createCacher function.
 	 * 
+	 * Creates the cacher object
 	 * @access public
-	 * @return False if cache is not created, true if is created
+	 * @return boolean False if cache is not created, true if is created
 	 */
 	public function createCacher()
 	{

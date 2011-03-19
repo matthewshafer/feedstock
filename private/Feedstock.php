@@ -1,8 +1,8 @@
 <?php
 /**
- * @file
+ * Makes everything we need to generate the front facing pages. You can think of it as the brain's of the operation.
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Makes everything we need to generate the front facing pages. You can think of it as the brain's of the operation.
+ *
  * 
  */
 class Feedstock
@@ -46,6 +46,14 @@ class Feedstock
 		}
 	}
 	
+	
+	/**
+	 * handleRequest function.
+	 * 
+	 * First part in figuring out what to do. Checks for maintenance mode and creates the cacher's if needed to generate a page
+	 * @access private
+	 * @return void
+	 */
 	private function handleRequest()
 	{
 		if($this->router->requestMethod() === "GET")
@@ -111,8 +119,9 @@ class Feedstock
 	/**
 	 * heavyLift function.
 	 * 
+	 * Handles the creating and rendering of a page
 	 * @access private
-	 * @return html data
+	 * @return string|null Generated html from the page
 	 */
 	private function heavyLift()
 	{		
@@ -156,7 +165,6 @@ class Feedstock
 														$this->config['siteDescription'], 
 														$this->config['themeName'], 
 														$siteUrlGenerator->generateSiteUrl(), 
-														$this->config['postFormat'], 
 														$this->config['postsPerPage'], 
 														$this->config['baseLocation'], 
 														$templateData);
@@ -211,9 +219,9 @@ class Feedstock
 	/**
 	 * databaseMaker function.
 	 * 
-	 * @brief Makes it easy to add new databases to Feedstock
+	 * Makes it easy to add new databases to Feedstock
 	 * @access private
-	 * @return Database Object or null;
+	 * @return GenericDatabase|null Database object or null if one could not be created;
 	 */
 	private function databaseMaker()
 	{
@@ -243,11 +251,11 @@ class Feedstock
 	/**
 	 * maintenanceMode function.
 	 * 
-	 * @brief Allows us to check if theres maintenance mode enabled and if the current person accessing the site can bypass maintenance mode
+	 * Allows us to check if theres maintenance mode enabled and if the current person accessing the site can bypass maintenance mode
 	 * @access private
 	 * @param boolean $enabled
 	 * @param mixed $allowThese
-	 * @return True if we are in maintenance mode, false if not or the user can bypass it;
+	 * @return boolean True if we are in maintenance mode, false if not or the user can bypass it;
 	 */
 	private function maintenanceMode($enabled, $allowThese)
 	{

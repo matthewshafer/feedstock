@@ -1,8 +1,8 @@
 <?php
 /**
- * @file
+ * Does all the heavy lifting for themes
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Does all the heavy lifting for themes
+ * 
  * 
  */
 class TemplateEngine
@@ -26,26 +26,43 @@ class TemplateEngine
 	private $templateData = null;
 	
 	
+	
 	/**
 	 * __construct function.
 	 * 
-	 * @brief you need at least a 404.php for the theme to be valid
 	 * @access public
+	 * @param GenericDatabase $database
+	 * @param Router $router
+	 * @param mixed $siteTitle
+	 * @param mixed $siteDescription
+	 * @param mixed $themeName
+	 * @param mixed $siteUrl
+	 * @param mixed $postsPerPage
+	 * @param mixed $baseLocation
+	 * @param TemplateData $templateData
+	 * @return void
 	 */
-	public function __construct($database, $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postFormat, $postsPerPage, $baseLocation, $templateData)
+	public function __construct(GenericDatabase $database, Router $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postsPerPage, $baseLocation, TemplateData $templateData)
 	{
 		$this->database = $database;
 		$this->router = $router;
 		$this->siteTitle = $siteTitle;
 		$this->siteDescription = $siteDescription;
 		$this->themeName = $themeName;
-		$this->postFormat = $postFormat;
 		$this->postsPerPage = (int)$postsPerPage;
 		$this->baseLocation = $baseLocation;
 		$this->siteUrl = $siteUrl;
 		$this->templateData = $templateData;
 	}
 	
+	
+	/**
+	 * processTemplateData function.
+	 * 
+	 * Grabs the already processed TemplateData and sets it up to be the pageData and gets a count of items in the array
+	 * @access public
+	 * @return void
+	 */
 	public function processTemplateData()
 	{
 		$this->pageData = $this->templateData->getData();
@@ -55,9 +72,9 @@ class TemplateEngine
 	/**
 	 * getPageData function.
 	 * 
-	 * @bried returns the array of page data.
+	 * Returns the array of page data.
 	 * @access public
-	 * @return Array of page data or null
+	 * @return array|null array of page data or null if nothing exists
 	 */
 	public function getPageData()
 	{
@@ -67,10 +84,10 @@ class TemplateEngine
 	/**
 	 * haveNextPost function.
 	 * 
-	 * @brief returns true if there are more posts to display, false if there are no new posts
-	 * @brief if there is a next post it moves to that one so you can call the rest of the functions to get it's info
+	 * Returns true if there are more posts to display, false if there are no new posts
+	 * if there is a next post it moves to that one so you can call the rest of the functions to get it's info
 	 * @access public
-	 * @return Boolean
+	 * @return boolean True if there are more posts or false if there are none left
 	 */
 	public function haveNextPost()
 	{
@@ -102,9 +119,9 @@ class TemplateEngine
 	/**
 	 * getPostTitle function.
 	 * 
-	 * @brief returns the title of the current post.
+	 * Returns the title of the current post.
 	 * @access public
-	 * @return Title of the current post
+	 * @return string|null string if the title exists or null if it doesn't
 	 */
 	public function getPostTitle()
 	{
@@ -120,9 +137,9 @@ class TemplateEngine
 	/**
 	 * getPostUri function.
 	 * 
-	 * @brief Returns only the URI of the post
+	 * Returns only the URI of the post
 	 * @access public
-	 * @return String of URI or null
+	 * @return string|null string if the post has a uri or null if it doesn't
 	 */
 	public function getPostUri()
 	{
@@ -138,9 +155,9 @@ class TemplateEngine
 	/**
 	 * getPostUrl function.
 	 * 
-	 * @brief returns the full URI of a post
+	 * Returns the full URI of a post
 	 * @access public
-	 * @return String, URL of the post or null if no post
+	 * @return string|null URL of the post or null if no post
 	 */
 	public function getPostUrl()
 	{
@@ -160,9 +177,9 @@ class TemplateEngine
 	/**
 	 * getHtmlTitle function.
 	 * 
-	 * @brief makes a nice title that is to be used inside the <title> tags
+	 * Makes a nice title that is to be used inside the <title> tags
 	 * @access public
-	 * @return String with the sites title
+	 * @return string|null string with the sites title or null if one doesn't exist
 	 */
 	public function getHtmlTitle()
 	{
@@ -184,9 +201,9 @@ class TemplateEngine
 	/**
 	 * getPostBody function.
 	 * 
-	 * @brief returns just the body of a post with no formatting, so html won't act like html
+	 * Returns just the body of a post with no formatting, so html won't act like html
 	 * @access public
-	 * @return String that contains the body of a post or null if doesn's exist
+	 * @return string|null string that contains the body of a post or null if doesn's exist
 	 */
 	public function getPostBody()
 	{
@@ -202,9 +219,9 @@ class TemplateEngine
 	/**
 	 * getPostBodyHtml function.
 	 * 
-	 * @brief Formatts the body so html runs and \n are converted to < br > "minus the spaces in there ofcourse"
+	 * Formatts the body so html runs and \n are converted to < br > "minus the spaces in there ofcourse"
 	 * @access public
-	 * @return String with the post body executing html on the client side, null if post doesn't exist
+	 * @return string|null string with the post body executing html on the client side, null if post doesn't exist
 	 */
 	public function getPostBodyHtml()
 	{
@@ -225,7 +242,7 @@ class TemplateEngine
 	 * 
 	 * Author who made the current post
 	 * @access public
-	 * @return string string containing the author of the current post
+	 * @return string|null string containing the author of the current post null if it doesn't exist
 	 */
 	public function getPostAuthor()
 	{
