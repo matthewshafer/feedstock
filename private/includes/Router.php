@@ -275,32 +275,39 @@ class Router
 	/**
 	 * getPageOffset function.
 	 * 
-	 * @brief Figures out what page we are on from the URI and returns what it figures out
+	 * Figures out what page we are on from the URI and returns what it figures out
 	 * @access public
-	 * @return Integer
+	 * @return int int containing the page offset
 	 */
 	public function getPageOffset()
 	{
-		$page = 0;
-		$found = false;
-		// could toss in a break if we want it to stop after finding the first "page"
-		foreach($this->uriArray as $key)
-		{
-			if($found)
-			{
-				$page = (int)$key;
-				$found = false;
-			}
-			
-			if(strtolower($key) === "page")
-			{
-				$found = true;
-			}
-		}
+		// allows php to save the last value of $page between runs so we can short circuit some logic
+		static $page = -1;
+		$pagePos;
+		$tmpPage = null;
 		
-		if($page > 0)
+		// short circuit the logic if the page offset has already been generated
+		if($page === -1)
 		{
-			$page = $page - 1;
+			$pagePos = $this->searchURI('page');
+			
+			// casting a null to an int gives is 0 and if we have anything less than 0 as the page then we have an error. casting an string to an int also gives us 0
+			// By testing the strlength we can see if someone is using a float as the page number and then throw an exception in the else if
+			if($pagePos > -1 && (int)($tmpPage = $this->getUriPosition($pagePos + 1)) > 0 && strlen($tmpPage) === strlen((int)$tmpPage))
+			{
+				// casting the tmpPage to an int because it previously was not
+				$page = (int)$tmpPage - 1;
+			}
+			// if the uri contains /page/ but not a number after it this exception get thrown
+			else if($pagePos > -1)
+			{
+				throw new exception('URI does not contain a page number');
+			}
+			// lastly if there is no page we set the page number to the default, 0
+			else
+			{
+				$page = 0;
+			}
 		}
 		
 		return $page;
