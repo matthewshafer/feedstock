@@ -1,8 +1,10 @@
 <?php
 /**
- * @file
+ * FileServe class.
+ *
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Serves up files from the files folder.  It is really basic and hasn't been tested
+ *
+ * Serves up files from the files folder.  It is really basic and hasn't been tested
  * 
  */
 class FileServe
@@ -13,15 +15,18 @@ class FileServe
 	protected $downloadEnabled;
 	protected $fileDownloadSpeed = -1;
 	
+
 	/**
 	 * __construct function.
 	 * 
 	 * @access public
-	 * @param mixed $database
-	 * @param mixed $router
+	 * @param GenericDatabase $database
+	 * @param Router $router
+	 * @param mixed $baseLocation
+	 * @param mixed $enabled
 	 * @return void
 	 */
-	public function __construct($database, $router, $baseLocation, $enabled)
+	public function __construct(GenericDatabase $database, Router $router, $baseLocation, $enabled)
 	{
 		$this->database = $database;
 		$this->router = $router;

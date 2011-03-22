@@ -1,11 +1,12 @@
 <?php
 /**
- * @file
+ * OutputHelper class.
+ * 
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Allows us to control output from the server while keeping all the output for static file caching
+ *
+ * Allows us to control output from the server while keeping all the output for static file caching
  * 
  */
- 
 class OutputHelper
 {
 	private $pageStore = "";
@@ -24,7 +25,7 @@ class OutputHelper
 	/**
 	 * startBuffer function.
 	 * 
-	 * @brief Starts an output buffer
+	 * Starts an output buffer
 	 * @access private
 	 * @return void
 	 */
@@ -36,7 +37,7 @@ class OutputHelper
 	/**
 	 * flushBuffer function.
 	 * 
-	 * @brief stores the output and flushes it
+	 * stores the output and flushes it
 	 * @access public
 	 * @return void
 	 */
@@ -56,9 +57,9 @@ class OutputHelper
 	/**
 	 * stopStoreFlushGetBuffer function.
 	 * 
-	 * @ 
+	 * stores, flushes, and returns the current buffer
 	 * @access public
-	 * @return String containing all the data from the buffer
+	 * @return string string containing all the data from the buffer
 	 */
 	public function stopStoreFlushGetBuffer()
 	{
@@ -77,9 +78,9 @@ class OutputHelper
 	/**
 	 * stopStoreGetBuffer function.
 	 * 
-	 * @ 
+	 * stores and returns the current buffer
 	 * @access public
-	 * @return String containing all the data from the buffer
+	 * @return string string containing all the data from the buffer
 	 */
 	public function stopStoreGetBuffer()
 	{

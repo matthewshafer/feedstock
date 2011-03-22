@@ -1,8 +1,10 @@
 <?php
 /**
- * @file
+ * Router class.
+ *
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Handles simple routing of pages
+ *
+ * Handles simple routing of pages
  *
  */
 class Router
@@ -18,10 +20,10 @@ class Router
 	/**
 	 * __construct function.
 	 * 
-	 * @brief Sets everything up
+	 * Sets everything up
 	 * @access public
 	 * @param mixed $htaccess
-	 * @param mixed $base (default = V_HTTPBASE)
+	 * @param mixed $base (default)
 	 * @return void
 	 */
 	public function __construct($htaccess, $base)
@@ -36,7 +38,7 @@ class Router
 	/**
 	 * buildRouting function.
 	 * 
-	 * @brief Makes cool things happen.
+	 * Makes cool things happen.
 	 * @access public
 	 * @return void
 	 */
@@ -162,9 +164,9 @@ class Router
 	/**
 	 * pageType function.
 	 * 
-	 * @brief Returns the first part of the uri. /test/1234/hello would return test. / returns "" (an empty string).
+	 * Returns the first part of the uri. /test/1234/hello would return test. / returns "" (an empty string).
 	 * @access public
-	 * @return String
+	 * @return string|null null if there is nothing/haven't called buildRouting()
 	 */
 	public function pageType()
 	{
@@ -174,9 +176,9 @@ class Router
 	/**
 	 * fullURI function.
 	 * 
-	 * @brief Returns the uri as a string.
+	 * Returns the uri as a string.
 	 * @access public
-	 * @return String
+	 * @return string|null
 	 */
 	public function fullURI()
 	{
@@ -187,10 +189,10 @@ class Router
 	/**
 	 * getUriPosition function.
 	 * 
-	 * @brief returns the value of the uri at the sepcific position
+	 * returns the value of the uri at the sepcific position
 	 * @access public
 	 * @param mixed $position
-	 * @return If the position exists then it returns that value, else it returns null
+	 * @return string|null null if the position does not exist. A string if the value at that position does exist
 	 */
 	public function getUriPosition($position)
 	{
@@ -209,9 +211,9 @@ class Router
 	/**
 	 * requestMethod function.
 	 * 
-	 * @brief returns the type of the request, GET/POST
+	 * returns the type of the request, GET/POST
 	 * @access public
-	 * @return String
+	 * @return string returns what is returned by $_SERVER['REQUEST_METHOD']
 	 */
 	public function requestMethod()
 	{
@@ -221,9 +223,9 @@ class Router
 	/**
 	 * uriLength function.
 	 * 
-	 * @brief Returns the number of items in the uri.  /test/123/afs/ would return 3.
+	 * Returns the number of items in the uri.  /test/123/afs/ would return 3.
 	 * @access public
-	 * @return Integer
+	 * @return int
 	 */
 	public function uriLength()
 	{
@@ -233,10 +235,10 @@ class Router
 	/**
 	 * searchURI function.
 	 * 
-	 * @brief Allows you to search the URI to find something. if the uri was /test123/hello/sup and you searched for hello you get 2
+	 * Allows you to search the URI to find something. if the uri was /test123/hello/sup and you searched for hello you get 2
 	 * @access public
 	 * @param mixed $find
-	 * @return Integer that is the position of the search in the URI, -1 if it doesn't exist
+	 * @return int integer that is the position of the search in the URI, -1 if it doesn't exist
 	 */
 	public function searchURI($find)
 	{
@@ -256,6 +258,13 @@ class Router
 		return $return;
 	}
 	
+	
+	/**
+	 * evenURIParts function.
+	 * 
+	 * @access public
+	 * @return boolean true if the uri has an even number of parts, false if it doesn't
+	 */
 	public function evenURIParts()
 	{
 		$count = count($this->uriArray);

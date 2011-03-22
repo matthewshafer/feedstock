@@ -1,19 +1,28 @@
 <?php
 /**
- * @file
+ * Maintenance class.
+ *
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief maintenance mode
+ *
+ * maintenance mode
  * 
  */
- 
  class Maintenance
  {
  	private $fileValid = false;
  	private $fileLocation = null;
  	private $outputHelper;
  	
-	// changed the construct so we save having to do another sprintf statement
- 	public function __construct($fileLoc, $outputHelper)
+	
+ 	/**
+ 	 * __construct function.
+ 	 * 
+ 	 * @access public
+ 	 * @param mixed $fileLoc
+ 	 * @param OutputHelper $outputHelper
+ 	 * @return void
+ 	 */
+ 	public function __construct($fileLoc, OutputHelper $outputHelper)
  	{	
  		$this->outputHelper = $outputHelper;
  		
@@ -24,6 +33,13 @@
  		}
  	}
  	
+ 	
+ 	/**
+ 	 * render function.
+ 	 * 
+ 	 * @access public
+ 	 * @return void
+ 	 */
  	public function render()
  	{
  		
@@ -33,7 +49,7 @@
  		}
  		else
  		{
- 			echo 'The website is currently undergoing some maintenance. <br>Check back soon.';
+ 			throw new exception('The website is currently undergoing some maintenance. <br>Check back soon.');
  		}
  		
  		$this->outputHelper->flushBuffer();

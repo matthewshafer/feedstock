@@ -1,8 +1,10 @@
 <?php
 /**
- * @file
+ * SiteIndexTemplate class.
+ *
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Siteindex template for sitemaps
+ *
+ * Siteindex template for sitemaps
  * 
  */
 class SiteindexTemplate

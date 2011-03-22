@@ -1,8 +1,10 @@
 <?php
 /**
- * @file
+ * SitemapTemplate
+ *
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief The template for sitemaps
+ *
+ * The template for sitemaps
  * 
  */
 class SitemapTemplate

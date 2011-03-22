@@ -1,4 +1,13 @@
 <?php
+
+/**
+ * PubSubHubBub class.
+ * 
+ * notifies a pubsubhubbub hub that a feed was updated
+ *
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ *
+ */
 class PubSubHubBub
 {
 	private $hubURL = null;
@@ -7,6 +16,14 @@ class PubSubHubBub
 	private $feedLoc = array();
 	
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $hubUrl
+	 * @param mixed $siteUrl
+	 * @return void
+	 */
 	public function __construct($hubUrl, $siteUrl)
 	{
 		$this->hubURL = $hubUrl;

@@ -1,8 +1,8 @@
 <?php
 /**
- * @file
+ * Handles creating/removing/checking of cookies
+ *
  * @author Matthew Shafer <matt@niftystopwatch.com> 
- * @brief Handles creating/removing/checking of cookies
  *
  */
 class CookieMonster
@@ -12,12 +12,18 @@ class CookieMonster
 	protected $cookieName;
 	protected $siteUrl;
 	
+
+
 	/**
-	* Constructor which grabs the client cookie and stores what it has locally
-	* 
-	* @param database that was created, this is used to invalidate the info from the database
-	*/
-	public function __construct($database, $cookieName, $siteUrl)
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param GenericDatabaseAdmin $database
+	 * @param mixed $cookieName
+	 * @param mixed $siteUrl
+	 * @return void
+	 */
+	public function __construct(GenericDatabaseAdmin $database, $cookieName, $siteUrl)
 	{
 		$this->database = $database;
 		$this->cookieName = $cookieName;
@@ -70,20 +76,22 @@ class CookieMonster
 	/**
 	 * checkCookie function.
 	 * 
+	 * if the userID already exists, so this was previously called then no lookup in the database is done, else we do a lookup
+	 * we could possibly remove the second check by rewriting some stuff, i'll have to look into it
 	 * @access public
-	 * @return Boolean
+	 * @return boolean true if the cookie exists for that userid or false if it doesn't
 	 */
 	public function checkCookie()
 	{
 		$return = false;
 		// if the db is null the cookie doesn't exist
-		if($this->userID === null and isset($_COOKIE[$this->cookieName]))
+		if($this->userID === null && isset($_COOKIE[$this->cookieName]))
 		{
 			//print_r($_COOKIE);
 			$this->userID = $this->database->findCookie($_COOKIE[$this->cookieName]);
 		}
 		
-		if($this->userID != null)
+		if($this->userID !== null)
 		{
 			//print_r($_COOKIE);
 			$return = true;
@@ -96,7 +104,7 @@ class CookieMonster
 	 * getUserID function.
 	 * 
 	 * @access public
-	 * @return Integer
+	 * @return int|null returns the user id if one exists or null if it doesn't
 	 */
 	public function getUserID()
 	{

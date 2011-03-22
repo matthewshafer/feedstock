@@ -13,14 +13,17 @@ class TemplateLoader
 	private $templateEngine = null;
 	private $outputHelper = null;
 	
+
 	/**
 	 * __construct function.
 	 * 
 	 * @access public
-	 * @param mixed $templateEngine
+	 * @param mixed $themeLocation
+	 * @param TemplateEngine $templateEngine
+	 * @param OutputHelper $outputHelper
 	 * @return void
 	 */
-	public function __construct($themeLocation, $templateEngine, $outputHelper)
+	public function __construct($themeLocation, TemplateEngine $templateEngine, OutputHelper $outputHelper)
 	{
 		$this->themeLocation = $themeLocation;
 		$this->templateEngine = $templateEngine;
@@ -31,7 +34,7 @@ class TemplateLoader
 	 * render function.
 	 * 
 	 * @access public
-	 * @return Generated html
+	 * @return string string containing the output of the theme
 	 */
 	public function render()
 	{	
