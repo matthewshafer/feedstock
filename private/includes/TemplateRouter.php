@@ -1,5 +1,14 @@
 <?php
 
+
+/**
+ * TemplateRouter class.
+ *
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ *
+ * Figures out what needs to be loaded from the uri, loads that and stores it in TemplateData
+ *
+ */
 class TemplateRouter
 {
 	private $router;
@@ -12,11 +21,26 @@ class TemplateRouter
 	private $postsPerPage;
 	private $postFormat;
 	
-	public function __construct($router, $db, $themeData, $baseLoc, $themeName, $pageType, $postsPerPage, $postFormat)
+	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param Router $router
+	 * @param GenericDatabase $db
+	 * @param TemplateData $templateData
+	 * @param mixed $baseLoc
+	 * @param mixed $themeName
+	 * @param mixed $pageType
+	 * @param mixed $postsPerPage
+	 * @param mixed $postFormat
+	 * @return void
+	 */
+	public function __construct(Router $router, GenericDatabase $db, TemplateData $templateData, $baseLoc, $themeName, $pageType, $postsPerPage, $postFormat)
 	{
 		$this->router = $router;
 		$this->database = $db;
-		$this->templateData = $themeData;
+		$this->templateData = $templateData;
 		$this->baseLocation = $baseLoc;
 		$this->themeName = $themeName;
 		$this->pageType = $pageType;
@@ -25,6 +49,14 @@ class TemplateRouter
 		$this->themeLocation = $this->baseLocation . '/private/themes/' . $this->themeName;
 	}
 	
+	
+	/**
+	 * valid404Page function.
+	 * 
+	 * @access public
+	 * @param mixed &$found
+	 * @return string string containing the 404.php location
+	 */
 	public function valid404Page(&$found)
 	{
 		if($this->validThemeFile("404.php"))
@@ -39,6 +71,13 @@ class TemplateRouter
 		return $this->themeLocation . "/" . "404.php";
 	}
 	
+	
+	/**
+	 * templateFile function.
+	 * 
+	 * @access public
+	 * @return string string containing the location of the theme file
+	 */
 	public function templateFile()
 	{
 		$file = null;
@@ -74,6 +113,14 @@ class TemplateRouter
 		return $this->themeLocation . "/" . $file;
 	}
 	
+	
+	/**
+	 * validThemeFile function.
+	 * 
+	 * @access private
+	 * @param mixed $file
+	 * @return boolean true if the theme file exists, false if it doesn't
+	 */
 	private function validThemeFile($file)
 	{
 		$return = false;
@@ -91,13 +138,28 @@ class TemplateRouter
 		return $return;
 	}
 	
+	
+	/**
+	 * loadDataForPostList function.
+	 * 
+	 * @access private
+	 * @return void
+	 */
 	private function loadDataForPostList()
 	{
 		$offset = $this->router->getPageOffset() * $this->postsPerPage;
 		$this->templateData->addData($this->database->getPosts($this->postsPerPage, $offset));
 	}
 	
-	// 0 for category 1 for tag
+	
+	/**
+	 * figureCategoryOrTagInfo function.
+	 *
+	 * figures out if the category or tag exists. $which is either 0 for a category or 1 for a tag
+	 * @access private
+	 * @param mixed $which
+	 * @return string string containing the file to load
+	 */
 	private function figureCategoryOrTagInfo($which)
 	{
 		$file = "postList.php";
@@ -156,6 +218,13 @@ class TemplateRouter
 		return $file;
 	}
 	
+	
+	/**
+	 * figurePageOrPost function.
+	 * 
+	 * @access private
+	 * @return string string containing the theme file to load
+	 */
 	private function figurePageOrPost()
 	{
 		$file;
@@ -202,6 +271,14 @@ class TemplateRouter
 		return $file;
 	}
 	
+	
+	/**
+	 * uriLooksLikePost function.
+	 * 
+	 * tries to figure out if the uri is a post or not
+	 * @access private
+	 * @return boolean true if the uri is a post or false if it is not
+	 */
 	private function uriLooksLikePost()
 	{
 		$postFormatArray = explode("/", $this->postFormat);

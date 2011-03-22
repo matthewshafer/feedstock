@@ -1,5 +1,13 @@
 <?php
 
+
+/**
+ * SiteUrlGenerator class.
+ *
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+ *
+ * Generates the site's url
+ */
 class SiteUrlGenerator
 {
 
@@ -8,6 +16,15 @@ class SiteUrlGenerator
 	private $htaccess;
 	
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param mixed $url
+	 * @param mixed $baseAddress
+	 * @param mixed $htaccess
+	 * @return void
+	 */
 	public function __construct($url, $baseAddress, $htaccess)
 	{
 		$this->url = $url;
@@ -16,6 +33,13 @@ class SiteUrlGenerator
 	}
 	
 	
+	/**
+	 * generateSiteUrl function.
+	 * 
+	 * generates the site's url
+	 * @access public
+	 * @return string url of the website
+	 */
 	public function generateSiteUrl()
 	{
 		$url = $this->url;

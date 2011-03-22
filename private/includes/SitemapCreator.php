@@ -1,8 +1,10 @@
 <?php
 /**
- * @file
+ * SitemapCreator class.
+ *
  * @author Matthew Shafer <matt@niftystopwatch.com>
- * @brief Creates Sitemaps
+ *
+ * Creates Sitemaps
  * 
  */
 class SitemapCreator
@@ -17,7 +19,7 @@ class SitemapCreator
 	private $maxItems = 0;
 	private $siteUrl = "";
 	
-	public function __construct($db, $path, $max, $siteUrl)
+	public function __construct(GenericDatabaseAdmin $db, $path, $max, $siteUrl)
 	{
 		$this->database = $db;
 		$this->sitemapLoc = $path;

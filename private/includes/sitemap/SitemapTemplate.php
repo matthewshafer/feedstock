@@ -9,11 +9,26 @@
  */
 class SitemapTemplate
 {
+	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function __construct()
 	{
 	
 	}
 	
+	
+	/**
+	 * generateSitemap function.
+	 * 
+	 * @access public
+	 * @param mixed $sitemapData
+	 * @return string
+	 */
 	public function generateSitemap($sitemapData)
 	{
 		$returnSitemap = '<?xml version="1.0" encoding="UTF-8"?>
