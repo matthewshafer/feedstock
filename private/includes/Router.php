@@ -15,6 +15,7 @@ class Router
 	protected $htaccess = null;
 	protected $requestMethod = null;
 	protected $base = null;
+	protected $pageNumber = -1;
 	
 	
 	/**
@@ -290,13 +291,11 @@ class Router
 	 */
 	public function getPageOffset()
 	{
-		// allows php to save the last value of $page between runs so we can short circuit some logic
-		static $page = -1;
 		$pagePos;
 		$tmpPage = null;
 		
 		// short circuit the logic if the page offset has already been generated
-		if($page === -1)
+		if($this->pageNumber === -1)
 		{
 			$pagePos = $this->searchURI('page');
 			
@@ -305,7 +304,7 @@ class Router
 			if($pagePos > -1 && (int)($tmpPage = $this->getUriPosition($pagePos + 1)) > 0 && strlen($tmpPage) === strlen((int)$tmpPage))
 			{
 				// casting the tmpPage to an int because it previously was not
-				$page = (int)$tmpPage - 1;
+				$this->pageNumber = (int)$tmpPage - 1;
 			}
 			// if the uri contains /page/ but not a number after it this exception get thrown
 			else if($pagePos > -1)
@@ -315,11 +314,11 @@ class Router
 			// lastly if there is no page we set the page number to the default, 0
 			else
 			{
-				$page = 0;
+				$this->pageNumber = 0;
 			}
 		}
 		
-		return $page;
+		return $this->pageNumber;
 	}
 }
 

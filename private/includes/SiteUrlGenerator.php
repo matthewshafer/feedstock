@@ -68,7 +68,7 @@ class SiteUrlGenerator
 			}
 			else if($baseLen > 0)
 			{
-				$url = sprintf("%s/%s", $url, $baseAddress);
+				$url = $url . "/" . $baseAddress;
 			}
 			else if($url[$urlLen - 1] === "/")
 			{
@@ -83,7 +83,7 @@ class SiteUrlGenerator
 		
 		if(!$this->htaccess)
 		{
-			$url = sprintf("%s/index.php", $url);
+			$url = $url . "/index.php";
 		}
 		
 		return $url;
