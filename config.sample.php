@@ -1,88 +1,87 @@
 <?php
 /* General Site Information */
-define("V_SITETITLE", "Feedstock");
-define("V_DESCRIPTION", "Just a little test!");
-define("V_THEME", "stopwatch");
+$this->config['siteTitle'] = "Feedstock";
+$this->config['siteDescription'] = "Just a little test!";
+$this->config['themeName'] = "stopwatch";
 // Are we using HTACCESS or rewrite rules?
-define("V_HTACCESS", false);
+$this->config['htaccess'] = false;
 // Web address and base location
-define("V_URL", "http://someAddressHere.whatever/");
-define("V_HTTPBASE", "/"); // if its not at the base of the address you need to point where it is, could be blog/ for instance
-define("F_MAINTENANCE", false);
-define("F_MAINTENANCEPASS", "127.0.0.1");
+$this->config['siteUrl'] = "http://localhost/";
+$this->config['siteUrlBase'] = "/";
+$this->config['enableMaintenance'] = false;
+$this->config['maintenancePassthru'] = "127.0.0.1";
 
 
 /* Post Settings */
-define("V_POSTFORMAT", "%MONTH%/%DAY%/%YEAR%/%TITLE%");
-define("F_POSTSPERPAGE", 10);
+$this->config['postFormat'] = "%MONTH%/%DAY%/%YEAR%/%TITLE%";
+$this->config['postsPerPage'] = 10;
 
 
 /* Feed Settings */
-define("F_AUTHOR", "username");
-define("F_AUTHOREMAIL", "some@email.com");
-define("F_PUBSUBHUBBUB", false);
-define("F_PUBSUBHUBBUBPUBLISH", "http://pubsubhubbub.appspot.com/publish");
-define("F_PUBSUBHUBBUBSUBSCRIBE", "http://pubsubhubbub.appspot.com/");
+$this->config['feedAuthor'] = "username";
+$this->config['feedAuthorEmail'] = "some@email.com";
+$this->config['feedPubSubHubBub'] = false;
+$this->config['feedPubSubHubBubPublishUrl'] = "http://pubsubhubbub.appspot.com/publish";
+$this->config['feedPubSubHubBubSubscribe'] = "http://pubsubhubbub.appspot.com/";
 
 
 /* File Download Settings */
 // Are we using built in file downloading?
-define("F_FILEDOWNLOAD", true);
+$this->config['fileDownload'] = false;
 // file download speed in KB/s
-define("V_FILEDOWNLOADSPEED", 200);
+$this->config['fileDownloadSpeed'] = 200;
 
 
 /* Database Information */
 // database type
-define("V_DATABASE", "Mysqli");
+$this->config['databaseType'] = "Mysqli";
 // database connection info
-$username = "username";
-$password = "password";
-$address = "localhost";
-$database = "databaseName";
-$tableprefix = "fs_";
+$this->config['databaseUsername'] = "username";
+$this->config['databasePassword'] = "password";
+$this->config['databaseAddress'] = "localhost";
+$this->config['databaseName'] = "feedstock";
+$this->config['databaseTablePrefix'] = "fs_";
 
 
 /* Caching Settings */
-define("V_CACHE", false);
-// name of the cacher.  filecache does standard files.  xcache uses php xcache for caching
-define("F_CACHENAME", "ApcDynamic");
-// This is in seconds. Should set to something like 1400.  Currently set low to help with testing.
-define("F_EXPIRECACHETIME", 120);
-// Xcache Setting
-define("F_XCACHEPREFIX", "something_");
+$this->config['cacheEnable'] = false;
+$this->config['cacheName'] = "FileCache";
+$this->config['cachePrefix'] = "something_";
+$this->config['cacheType'] = "static";
+$this->config['cacheExpireTime'] = 120;
 
 
 /* Sitemap Settings */
-define("F_SITEMAPGENERATE", false);
-define("F_SITEMAPMAXITEMS", 30000);
-define("F_PUBLICPATH", "/public/");
+$this->config['generateSitemap'] = false;
+$this->config['maxSitemapItems'] = 30000;
+$this->config['sitemapPath'] = "/public/";
 
 
 /* Cookie Settings */
-define("F_COOKIENAME", "FeedStock");
+// cleaning up the defines
+$this->config['cookieName'] = "FeedStock";
 
 
 /* Password Settings */
-define("F_PSALT", "ChangeThisToSomething");
+$this->config['passSalt'] = "ChangeThisToSomething";
 
 
 /* Admin Settings */
-define("F_ADMINADDRESS", "http://someAddressHere.whatever/admin/"); // need to point this to the location of the admin page, as you can change it from admin/
-define("F_ADMINBASE", V_HTTPBASE . "admin/");
-define("F_ADMINHTACCESS", false);
+$this->config['adminAddress'] = "http://localhost";
+$this->config['adminBase'] = $this->config['siteUrlBase'] . "admin/";
+$this->config['adminHtaccess'] = false;
 
 
 /* Other Configs.  You probably don't need to change these */
-define("V_BASELOC", dirname(__FILE__));
+$this->config['baseLocation'] = dirname(__FILE__);
 setlocale(LC_ALL, 'en_US.UTF8');
 
 
 // Error reporting, we want it on for testing
-ini_set('display_errors',1); // you should comment these out when you go into production as you probably dont want to show errors.  I use it for testing
+ini_set('display_errors',1); 
 error_reporting(E_ALL);
 
 // Mysql debugging stuff
-define("F_MYSQLSTOREQUERIES", true); // really turn this off when you go into production
+$this->config['databaseDebug'] = false;
 
 ?>
