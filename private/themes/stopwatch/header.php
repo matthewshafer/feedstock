@@ -4,3 +4,4 @@
 </head>
 
 <body>
+	<a href="<?php echo $this->templateEngine->themeBaseLocation();?>">Theme Base Location</a></br></br>

@@ -24,6 +24,8 @@ class TemplateEngine
 	private $postsPerPage = 0;
 	private $baseLocation = "";
 	private $templateData = null;
+	private $currentUrl = null;
+	private $siteBaseUrl = null;
 	
 	
 	
@@ -42,7 +44,7 @@ class TemplateEngine
 	 * @param TemplateData $templateData
 	 * @return void
 	 */
-	public function __construct(GenericDatabase $database, Router $router, $siteTitle, $siteDescription, $themeName, $siteUrl, $postsPerPage, $baseLocation, TemplateData $templateData)
+	public function __construct(GenericDatabase $database, Router $router, $siteTitle, $siteDescription, $themeName, SiteUrlGenerator $siteUrlGenerator, $postsPerPage, $baseLocation, TemplateData $templateData)
 	{
 		$this->database = $database;
 		$this->router = $router;
@@ -51,8 +53,10 @@ class TemplateEngine
 		$this->themeName = $themeName;
 		$this->postsPerPage = (int)$postsPerPage;
 		$this->baseLocation = $baseLocation;
-		$this->siteUrl = $siteUrl;
+		$this->siteUrl = $siteUrlGenerator->generateSiteUrl();
 		$this->templateData = $templateData;
+		$this->currentUrl = $siteUrlGenerator->currentAddressWithoutPageUrl();
+		$this->siteBaseUrl = $siteUrlGenerator->generateSiteBaseUrl();
 	}
 	
 	
@@ -670,7 +674,8 @@ class TemplateEngine
 	{
 		$return = false;
 		
-		if(strtolower($this->router->pageType()) === "page" && $this->router->getPageOffset() > 0 && $this->pageDataCt > 0)
+		// by removing strtolower($this->router->pageType()) === "page" we should be able to show previous post pages on all pages
+		if($this->router->getPageOffset() > 0 && $this->pageDataCt > 0)
 		{
 			$return = true;
 		}
@@ -694,7 +699,7 @@ class TemplateEngine
 		{
 			$offset = (int)$this->router->getPageOffset() + 2;
 			
-			$return = sprintf('<a href="%s/page/%d">%s</a>', $this->siteUrl, $offset, $title);
+			$return = sprintf('<a href="%spage/%d">%s</a>', $this->currentUrl, $offset, $title);
 		}
 		
 		return $return;
@@ -718,11 +723,11 @@ class TemplateEngine
 			
 			if($offset === 1)
 			{
-				$return = sprintf('<a href="%s">%s</a>', $this->siteUrl, $title);
+				$return = sprintf('<a href="%s">%s</a>', $this->currentUrl, $title);
 			}
 			else
 			{
-				$return = sprintf('<a href="%s/page/%d">%s</a>', $this->siteUrl, $offset, $title);
+				$return = sprintf('<a href="%spage/%d">%s</a>', $this->currentUrl, $offset, $title);
 			}
 		}
 		
@@ -794,7 +799,7 @@ class TemplateEngine
 		
 		if($return === null)
 		{
-			$return = $this->siteUrl . '/themes/' . $this->themeName . '/'; 
+			$return = $this->siteBaseUrl . '/themes/' . $this->themeName . '/'; 
 		}
 		
 		return $return;

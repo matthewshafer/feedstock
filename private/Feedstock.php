@@ -143,7 +143,7 @@ class Feedstock
 		else
 		{
 			require_once("includes/SiteUrlGenerator.php");
-			$siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess']);
+			$siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess'], $this->router);
 			
 			require_once("includes/TemplateData.php");
 			$templateData = new TemplateData();
@@ -165,7 +165,7 @@ class Feedstock
 														$this->config['siteTitle'], 
 														$this->config['siteDescription'], 
 														$this->config['themeName'], 
-														$siteUrlGenerator->generateSiteUrl(), 
+														$siteUrlGenerator, 
 														$this->config['postsPerPage'], 
 														$this->config['baseLocation'], 
 														$templateData);

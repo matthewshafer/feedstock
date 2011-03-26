@@ -320,6 +320,22 @@ class Router
 		
 		return $this->pageNumber;
 	}
+	
+	public function getUriPart($start, $finish)
+	{
+		$tmpStr = "/";
+		$arrayLen = count($this->uriArray);
+		
+		if($start >= 0 && $start < $arrayLen && $finish >= 0 && $finish < $arrayLen)
+		{
+			for($i = $start; $i <= $finish; $i++)
+			{
+				$tmpStr .= $this->uriArray[$i] . "/";
+			}
+		}
+		
+		return $tmpStr;
+	}
 }
 
 ?>
