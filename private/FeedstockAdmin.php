@@ -42,7 +42,7 @@ class FeedstockAdmin
 		$this->databaseAdmin = $this->databaseMaker();
 		
 		require_once("includes/SiteUrlGenerator.php");
-		$this->siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess']);
+		$this->siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess'], $this->router);
 		
 		require_once("includes/CookieMonster.php");
 		
@@ -50,7 +50,7 @@ class FeedstockAdmin
 		
 		require_once("includes/SiteUrlGenerator.php");
 		
-		$siteUrlGenerator = new SiteUrlGenerator($this->config['adminAddress'], $this->config['adminBase'], $this->config['adminHtaccess']);
+		$siteUrlGenerator = new SiteUrlGenerator($this->config['adminAddress'], $this->config['adminBase'], $this->config['adminHtaccess'], $this->router);
 		
 		require_once("includes/TemplateEngineAdmin.php");
 		
@@ -60,8 +60,8 @@ class FeedstockAdmin
 		require_once("includes/OutputHelper.php");
 		$outputHelper = new OutputHelper();
 		
-		require_once("includes/TemplateLoader.php");
-		$this->templateLoader = new TemplateLoader($this->templateEngine, $outputHelper);
+		require_once("includes/TemplateLoaderAdmin.php");
+		$this->templateLoader = new TemplateLoaderAdmin($this->templateEngine, $outputHelper);
 		
 		if($this->config['generateSitemap'])
 		{
