@@ -137,6 +137,7 @@
 				<include name="**/*.txt"/>
 				<include name="LICENSE"/>
 				<include name="NOTICE"/>
+				<include name="sql/"/>
 				<exclude name="config.php" />
 				<exclude name="build/"/>
 			</fileset>
