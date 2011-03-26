@@ -65,7 +65,7 @@ class Router
 		// if its null we are going to assume its /
 		// explodes the uri around the base address
 		// leaving us with the actual request uri
-		if($this->base != "/" && $this->base != null)
+		if($this->base !== "/" && $this->base !== null)
 		{
 			$temp = explode($this->base, $this->uri);
 			
