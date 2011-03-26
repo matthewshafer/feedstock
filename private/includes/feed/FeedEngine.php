@@ -80,7 +80,7 @@ class FeedEngine
 	 */
 	public function pubSubHubBubSubscribeUrl()
 	{
-		return $this->pubSubHubBubSubscribe;
+		return $this->pubSubscribeAddress;
 	}
 }
 ?>

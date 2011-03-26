@@ -66,7 +66,7 @@ class FeedstockAdmin
 		if($this->config['generateSitemap'])
 		{
 			require_once("includes/SitemapCreator.php");
-			$this->sitemapCreator = new SitemapCreator($this->databaseAdmin, $this->config['baseLocation'] . $this->config['sitemapPath'], $this->config['maxSitemapItems'], $this->siteUrlGenerator->generateSiteUrl());
+			$this->sitemapCreator = new SitemapCreator($this->databaseAdmin, $this->config['baseLocation'] . $this->config['sitemapPath'], $this->config['maxSitemapItems'], $this->siteUrlGenerator->generateSiteUrl(), $this->config['postsPerPage']);
 		}
 		
 		$this->handleRequest();
@@ -735,12 +735,12 @@ class FeedstockAdmin
 	{
 		if($this->config['cacheEnable'])
 		{
-			require_once("includes/CacheHandler.php");
-			$cacheHandler = new CacheHandler($this->router);
+				require_once("includes/CacherCreator.php");
+				$this->cacherCreator = new CacherCreator($this->config['cacheName'], $this->config['cachePrefix'], $this->config['cacheExpireTime'], $this->config['baseLocation']);
 			
-			if($cacheHandler->cacheWriteableLoc())
+			if($this->cacherCreator->createCacher())
 			{
-				$cache = $cacheHandler->cacheMaker();
+				$cache = $this->cacherCreator->getCacher();
 				$cache->purgeCache();
 			}
 		}

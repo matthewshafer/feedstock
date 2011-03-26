@@ -18,13 +18,15 @@ class SitemapCreator
 	private $siteindexTemplate;
 	private $maxItems = 0;
 	private $siteUrl = "";
+	private $postPerPage;
 	
-	public function __construct(GenericDatabaseAdmin $db, $path, $max, $siteUrl)
+	public function __construct(GenericDatabaseAdmin $db, $path, $max, $siteUrl, $postPerPage)
 	{
 		$this->database = $db;
 		$this->sitemapLoc = $path;
 		$this->maxItems = (int)$max;
 		$this->siteUrl = $siteUrl;
+		$this->postPerPage = $postPerPage;
 		
 		require_once("sitemap/SitemapTemplate.php");
 		$this->sitemapTemplate = new SitemapTemplate();
@@ -50,7 +52,7 @@ class SitemapCreator
 		$posts = $this->formatAddData($posts, ".5", "monthly");
 		$postCt = count($posts);
 		$this->totalLength = $this->totalLength + $postCt;
-		$num = $postCt / F_POSTSPERPAGE;
+		$num = $postCt / $this->postPerPage;
 		$totalPostPages = ceil($num) - 1;
 		$postPage = $this->makePostPageLinks($totalPostPages);
 		$this->totalLength = $this->totalLength + count($postPage);
