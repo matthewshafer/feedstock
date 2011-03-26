@@ -10,7 +10,6 @@ class SetupConfig
 	public function loadConfig($loc)
 	{
 		require_once($loc . "config.php");
-		var_dump($this->config);
 	}
 	
 	public function getData($name)
