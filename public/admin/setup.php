@@ -1,21 +1,55 @@
 <?php
+
 ini_set('display_errors',1); 
 error_reporting(E_ALL);
+
+class SetupConfig
+{
+	private $config = array();
+	
+	public function loadConfig($loc)
+	{
+		require_once($loc . "config.php");
+		var_dump($this->config);
+	}
+	
+	public function getData($name)
+	{
+		$return = null;
+		
+		if(isset($this->config[$name]))
+		{
+			$return = $this->config[$name];
+		}
+		
+		return $return;
+	}
+}
+
+
 // for now just point this to the root
 $loc = "../../";
 
 if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["displayname"]))
 {
-	require_once($loc . "config.php");
-	require_once($loc . "private/includes/" . $databaseType . "Admin.php");
+	$config = new SetupConfig();
+	$config->loadConfig($loc);
+	require_once($loc . "private/includes/interfaces/GenericDatabase.php");
+	require_once($loc . "private/includes/interfaces/GenericDatabaseAdmin.php");
+	require_once($loc . "private/includes/databases/" . $config->getData('databaseType') . "DatabaseAdmin.php");
 	
-	if($databaseType == "Mysql")
+	if($config->getData('databaseType') == "Mysql")
 	{
-		$db = new mysqlDatabaseAdmin($username, $password, $address, $database, $tableprefix);
+		//$db = new mysqlDatabaseAdmin($username, $password, $address, $database, $tableprefix);
+		trigger_error("Mysql database type doesnt really work, try mysqli", E_USER_ERROR);
 	}
-	else if($databaseType == "Mysqli")
+	else if($config->getData('databaseType') == "Mysqli")
 	{
-		$db = new MysqliDatabaseAdmin($username, $password, $address, $database, $tableprefix);
+		$db = new MysqliDatabaseAdmin($config->getData('databaseUsername'), 
+										$config->getData('databasePassword'), 
+										$config->getData('databaseAddress'), 
+										$config->getData('databaseName'), 
+										$config->getData('databaseTablePrefix'));
 	}
 	//$db = new databaseAdmin($username, $password, $address, $database, $tableprefix);
 	$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()_+=-|}{[];:,./<>?\'\\';
@@ -28,8 +62,8 @@ if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["dis
 	{
 		$randomized .= $str[rand(0, $len)];
 	}
-	
-	$db->addUser($_POST["username"], $_POST["displayname"], makePasswordHash($_POST["password"], $randomized, $passSalt), $randomized, 0, 1);
+	var_dump($randomized);
+	$db->addUser($_POST["username"], $_POST["displayname"], makePasswordHash($_POST["password"], $randomized, $config->getData('passSalt')), $randomized, 0, 1);
 }
 
 function makePasswordHash($p, $s, $s2)
