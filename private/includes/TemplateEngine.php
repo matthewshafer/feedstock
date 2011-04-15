@@ -711,9 +711,10 @@ class TemplateEngine
 	 * Makes us a nice previous link if we have a previous page.  Can specify your own previous text
 	 * @access public
 	 * @param string $title. (default: "<- Previous Page")
+	 * @param boolean $indexBase. (default: false)
 	 * @return string|null containing the link, null if we don't have a previous page
 	 */
-	public function havePreviousPostPageHtml($title = "<- Previous Page")
+	public function havePreviousPostPageHtml($title = "<- Previous Page", $indexBase = false)
 	{
 		$return = null;
 		
@@ -721,7 +722,7 @@ class TemplateEngine
 		{
 			$offset = $this->router->getPageOffset();
 			
-			if($offset === 1)
+			if($indexBase === true && $offset === 1)
 			{
 				$return = sprintf('<a href="%s">%s</a>', $this->currentUrl, $title);
 			}
