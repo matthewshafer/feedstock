@@ -47,8 +47,8 @@ class CookieMonster
 		// need to generate the value for the cookie
 		$val = sprintf("%s%d%s", $userID, $_SERVER['REQUEST_TIME'], $this->siteUrl);
 		
-		// we could always use mcrypt but for now I should just get crypt working
-		$val = crypt($val);
+		// hashing the cookie value with whirlpool
+		$val = hash('whirlpool', $val);
 		//echo $val;
 		// we need to write the value to the DB so we can do checking later
 		// i should probably create this function
