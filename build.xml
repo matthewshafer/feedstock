@@ -134,6 +134,7 @@
 		<copy todir="build/package">
 			<fileset dir=".">
 				<include name="**/*.php"/>
+				<include name="**/*.css"/>
 				<include name="**/*.txt"/>
 				<include name="LICENSE"/>
 				<include name="NOTICE"/>

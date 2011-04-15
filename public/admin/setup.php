@@ -61,7 +61,7 @@ if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["dis
 	{
 		$randomized .= $str[rand(0, $len)];
 	}
-	var_dump($randomized);
+	
 	$db->addUser($_POST["username"], $_POST["displayname"], makePasswordHash($_POST["password"], $randomized, $config->getData('passSalt')), $randomized, 0, 1);
 }
 
