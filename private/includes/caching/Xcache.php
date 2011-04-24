@@ -102,8 +102,9 @@ class Xcache implements GenericCacher
 		if(!isset($tmp[$toHash]))
 		{
 			$tmp[$toHash] = $toHash;
-			xcache_set($this->prefixArr, $tmp, $this->expireTime);
 		}
+		
+		xcache_set($this->prefixArr, $tmp, $this->expireTime);
 	}
 	
 	/**

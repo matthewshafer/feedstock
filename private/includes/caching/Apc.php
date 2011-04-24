@@ -110,8 +110,9 @@ class Apc implements GenericCacher
 		if(!isset($tmp[$toHash]))
 		{
 			$tmp[$toHash] = $toHash;
-			apc_store($this->prefixArr, $tmp, $this->expireTime);
 		}
+		
+		apc_store($this->prefixArr, $tmp, $this->expireTime);
 	}
 	
 	/**
