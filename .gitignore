@@ -38,3 +38,9 @@ Thumbs.db
 ############################
 config.php
 build/
+
+# Eclipse specific ignores #
+############################
+/.settings
+/.buildpath
+/.project
