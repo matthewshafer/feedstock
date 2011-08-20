@@ -11,7 +11,6 @@
 class PubSubHubBub
 {
 	private $hubURL = null;
-	private $hubValid = null;
 	private $errorText = null;
 	private $feedLoc = array();
 	
@@ -69,7 +68,7 @@ class PubSubHubBub
 		{
 			$count = count($this->feedLoc);
 			$tmpArr = array();
-			$mh = curl_multi_init();
+			$curlMulti = curl_multi_init();
 			$threads = 0;
 			
 			for($i = 0; $i < $count; $i++)
@@ -78,12 +77,12 @@ class PubSubHubBub
 				$tmpArr[$i] = curl_init();
 				$curlOpts = array(CURLOPT_URL => $this->hubURL, CURLOPT_POST => true, CURLOPT_POSTFIELDS => $postField, CURLOPT_USERAGENT => "Feedstock-PubSubHubBub/1.0ALPHA");
 				curl_setopt_array($tmpArr[$i], $curlOpts);
-				curl_multi_add_handle($mh, $tmpArr[$i]);
+				curl_multi_add_handle($curlMulti, $tmpArr[$i]);
 			}
 			
 			do
 			{
-				$n = curl_multi_exec($mh, $threads);
+				$multiReturn = curl_multi_exec($curlMulti, $threads);
 			} while($threads > 0);
 			
 			for($i = 0; $i < $count; $i++)
@@ -100,11 +99,11 @@ class PubSubHubBub
 					$return[$i] = false;
 				}
 				
-				curl_multi_remove_handle($mh, $tmpArr[$i]);
+				curl_multi_remove_handle($curlMulti, $tmpArr[$i]);
 				curl_close($tmpArr[$i]);
 			}
 			
-			curl_multi_close($mh);
+			curl_multi_close($curlMulti);
 		}
 		
 		return $return;
