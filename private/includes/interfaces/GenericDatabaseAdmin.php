@@ -6,13 +6,13 @@ interface GenericDatabaseAdmin extends GenericDatabase
 
 	//public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null, $lazy = true);
 	
-	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $draft, $id = null);
+	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $draft, $postId = null);
 	
-	public function deletePost($id);
+	public function deletePost($postId);
 	
-	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $id = null);
+	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $pageId = null);
 	
-	public function removePage($id);
+	public function removePage($pageId);
 	
 	public function addUser($username, $displayName, $passwordHash, $salt, $permissions = 99, $canAdministrateUsers = 0);
 	
@@ -22,17 +22,17 @@ interface GenericDatabaseAdmin extends GenericDatabase
 	
 	public function getPostIdNiceCheckedTitle($niceTitle);
 	
-	public function checkDuplicateUri($type, $uri, $id = null);
+	public function checkDuplicateUri($type, $uri, $postOrPageId = null);
 	
-	public function checkDuplicateTitle($type, $niceTitle, $id = null);
+	public function checkDuplicateTitle($type, $niceTitle, $postPageSnippetIt = null);
 	
 	public function updateCookieVal($userId, $cookieValue = "");
 	
 	public function findCookie($cookieValue);
 	
-	public function getPostDataById($id);
+	public function getPostDataById($postId);
 	
-	public function getPageDataById($id);
+	public function getPageDataById($pageId);
 	
 	//public function getPostList($limit, $offset);
 	
@@ -40,7 +40,7 @@ interface GenericDatabaseAdmin extends GenericDatabase
 	
 	public function addCategory($name, $niceTitle);
 	
-	public function getSinglePostCategories($id);
+	public function getSinglePostCategories($postId);
 	
 	public function getSinglePostTags($id);
 	
