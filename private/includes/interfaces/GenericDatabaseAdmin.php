@@ -42,25 +42,25 @@ interface GenericDatabaseAdmin extends GenericDatabase
 	
 	public function getSinglePostCategories($postId);
 	
-	public function getSinglePostTags($id);
+	public function getSinglePostTags($postId);
 	
-	public function processPostCategories($id, $categoryArray);
+	public function processPostCategories($postId, $categoryArray);
 	
-	public function unlinkPostCategoriessAndTags($id);
+	public function unlinkPostCategoriessAndTags($postId);
 	
-	public function processTags($id, $tagArray);
+	public function processTags($postId, $tagArray);
 	
 	public function getCorralList();
 	
 	public function getPagesInCorral($name);
 	
-	public function addSnippet($name, $data, $id = null);
+	public function addSnippet($name, $data, $snippetId = null);
 	
-	public function removeSnippet($id);
+	public function removeSnippet($snippetId);
 	
 	public function getSnippetList();
 	
-	public function getSnippetById($id);
+	public function getSnippetById($snippetId);
 	
 	public function getAllPostsSitemap();
 	
