@@ -82,6 +82,7 @@ class PubSubHubBub
 			
 			do
 			{
+				// see if we need to put the result into a variable
 				$multiReturn = curl_multi_exec($curlMulti, $threads);
 			} while($threads > 0);
 			
