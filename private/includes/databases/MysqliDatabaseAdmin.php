@@ -39,14 +39,14 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * @param mixed $category
 	 * @param mixed $tags
 	 * @param mixed $draft
-	 * @param mixed $id. (default: null)
+	 * @param mixed $postId. (default: null)
 	 * @return True if able to insert or update. False if Not able to insert or update.
 	 */
-	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $draft, $id = null)
+	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $draft, $postId = null)
 	{
 		$return = false;
 		
-		if($id == null)
+		if($postId == null)
 		{
 			$formattedQuery = sprintf("INSERT INTO %sposts (Title, NiceTitle, URI, PostData, Author, Date, Draft) VALUES(?, ?, ?, ?, ?, ?, ?)", parent::$this->tablePrefix);
 			$query = parent::$this->databaseConnection->prepare($formattedQuery);
@@ -66,7 +66,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 			{
 				$formattedQuery = sprintf("UPDATE %sposts SET Title=?, NiceTitle=?, URI=?, PostData=?, Author=?, Date=?, Draft=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
 				$query = parent::$this->databaseConnection->prepare($formattedQuery);
-				$query->bind_param('ssssisii', $title, $niceTitle, $uri, $data, $author, $date, $draft, $id);
+				$query->bind_param('ssssisii', $title, $niceTitle, $uri, $data, $author, $date, $draft, $postId);
 				$query->execute();
 			
 				if($query->affected_rows > 0)
@@ -80,7 +80,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 			{
 				$formattedQuery = sprintf("UPDATE %sposts SET Title=?, NiceTitle=?, URI=?, PostData=?, Author=?, Draft=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
 				$query = parent::$this->databaseConnection->prepare($formattedQuery);
-				$query->bind_param('ssssiii', $title, $niceTitle, $uri, $data, $author, $draft, $id);
+				$query->bind_param('ssssiii', $title, $niceTitle, $uri, $data, $author, $draft, $postId);
 				$query->execute();
 			
 				if($query->affected_rows > 0)
@@ -100,16 +100,16 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Removes a post from the database
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $postId
 	 * @return True if able to delete. False if not able to delete.
 	 */
-	public function deletePost($id)
+	public function deletePost($postId)
 	{
 		$return = false;
 		
 		$formattedQuery = sprintf("DELETE FROM %sposts WHERE PrimaryKey=?", parent::$this->tablePrefix);
 		$query = parent::$this->databaseConnection->prepare($formattedQuery);
-		$query->bind_param('i', $id);
+		$query->bind_param('i', $postId);
 		$query->execute();
 		
 		if($query->affected_rows > 0)
@@ -134,10 +134,10 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * @param mixed $date
 	 * @param mixed $draft
 	 * @param mixed $corral. (default: null)
-	 * @param mixed $id. (default: null)
+	 * @param mixed $pageId. (default: null)
 	 * @return True if able to Insert ot Update. False if not able ti Insert or Update
 	 */
-	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $id = null)
+	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $pageId = null)
 	{
 		$return = false;
 		
@@ -147,7 +147,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 			$corral = null;
 		}
 		
-		if($id == null)
+		if($pageId == null)
 		{
 			
 			$formattedQuery = sprintf("INSERT INTO %spages (Title, NiceTitle, URI, PageData, Author, Date, Draft, Corral) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", parent::$this->tablePrefix);
@@ -165,7 +165,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		{	
 			$formattedQuery = sprintf("UPDATE %spages SET Title=?, NiceTitle=?, URI=?, PageData=?, Author=?, Draft=?, Corral=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
 			$query = parent::$this->databaseConnection->prepare($formattedQuery);
-			$query->bind_param('ssssiisi', $title, $niceTitle, $uri, $data, $author, $draft, $corral, $id);
+			$query->bind_param('ssssiisi', $title, $niceTitle, $uri, $data, $author, $draft, $corral, $pageId);
 			$query->execute();
 			
 			if($query->affected_rows > 0)
@@ -183,16 +183,16 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Removes a page from the database
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $pageId
 	 * @return True if able to delete, false if not.
 	 */
-	public function removePage($id)
+	public function removePage($pageId)
 	{
 		$return = false;
 		
 		$formattedQuery = sprintf("DELETE FROM %spages WHERE PrimaryKey=?", parent::$this->tablePrefix);
 		$query = parent::$this->databaseConnection->prepare($formattedQuery);
-		$query->bind_param('i', $id);
+		$query->bind_param('i', $pageId);
 		$query->execute();
 		
 		if($query->affected_rows > 0)
@@ -343,10 +343,10 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * @access public
 	 * @param mixed $type
 	 * @param mixed $uri
-	 * @param mixed $id. (default: null)
+	 * @param mixed $postOrPageId. (default: null)
 	 * @return True if the URI doesn't exist. False if it exists.
 	 */
-	public function checkDuplicateUri($type, $uri, $id = null)
+	public function checkDuplicateUri($type, $uri, $postOrPageId = null)
 	{
 		$formattedQuery = null;
 		$return = false;
@@ -370,7 +370,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 			
 			if($query->fetch())
 			{
-				if($id != null && $result == $id)
+				if($postOrPageId != null && $result == $postOrPageId)
 				{
 					$return = true;
 				}
@@ -393,10 +393,10 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * @access public
 	 * @param mixed $type
 	 * @param mixed $niceTitle
-	 * @param mixed $id. (default: null)
+	 * @param mixed $postPageSnippetId. (default: null)
 	 * @return True if the title doesn't exist. False if it exists.
 	 */
-	public function checkDuplicateTitle($type, $niceTitle, $id = null)
+	public function checkDuplicateTitle($type, $niceTitle, $postPageSnippetId = null)
 	{
 		$formattedQuery = null;
 		$return = false;
@@ -425,7 +425,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 			
 			if($query->fetch())
 			{
-				if($id != null && $result == $id)
+				if($postPageSnippetId != null && $result == $postPageSnippetId)
 				{
 					$return = true;
 				}
@@ -492,13 +492,13 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Returns the post data based on the ID passed in.
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $postId
 	 * @return Array with post information
 	 */
-	public function getPostDataById($id)
+	public function getPostDataById($postId)
 	{
 		$return = array();
-		$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($id));
+		$query = sprintf("SELECT * FROM %sposts WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($postId));
 		
 		if($result = parent::$this->databaseConnection->query($query))
 		{
@@ -514,14 +514,14 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Returns the page data based in the ID passed in.
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $pageId
 	 * @return Array with page information
 	 */
-	public function getPageDataById($id)
+	public function getPageDataById($pageId)
 	{
 		$return = array();
 		
-		$query = sprintf("SELECT * FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($id));
+		$query = sprintf("SELECT * FROM %spages WHERE PrimaryKey='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($pageId));
 		
 		if($result = parent::$this->databaseConnection->query($query))
 		{
@@ -601,13 +601,13 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Returns the category ID's based on the postID passed in.
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $postId
 	 * @return Array with post categories
 	 */
-	public function getSinglePostCategories($id)
+	public function getSinglePostCategories($postId)
 	{
 		$return = array();
-		$query = sprintf("SELECT * FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($id));
+		$query = sprintf("SELECT * FROM %sposts_tax WHERE PostID='%s'", parent::$this->tablePrefix, parent::$this->databaseConnection->real_escape_string($postId));
 		
 		if($result = parent::$this->databaseConnection->query($query))
 		{
@@ -627,16 +627,16 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Returns the post tags by the postID passed in.
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $postId
 	 * @return Array with post tags
 	 */
-	public function getSinglePostTags($id)
+	public function getSinglePostTags($postId)
 	{
 		$return = array();
 		
 		$formattedQuery = sprintf("SELECT CatTagID FROM %sposts_tax WHERE PostID=?", parent::$this->tablePrefix);
 		$query = parent::$this->databaseConnection->prepare($formattedQuery);
-		$query->bind_param('i', $id);
+		$query->bind_param('i', $postId);
 		$query->execute();
 		$query->store_result();
 		$query->bind_result($categoryTagId);
@@ -669,18 +669,18 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Insert the categories for the post into the database.
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $postId
 	 * @param mixed $categoryArray
 	 * @return True if able to insert categories for post. False if not able to.
 	 */
-	public function processPostCategories($id, $categoryArray)
+	public function processPostCategories($postId, $categoryArray)
 	{
 		$return = false;
 		if($categoryArray != null or !empty($categoryArray))
 		{
 			$formattedQuery = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES(?, ?)", parent::$this->tablePrefix);
 			$query = parent::$this->databaseConnection->prepare($formattedQuery);
-			$query->bind_param('ii', $id, $key);
+			$query->bind_param('ii', $postId, $key);
 			
 			foreach($categoryArray as $key)
 			{
@@ -702,16 +702,16 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief deletes the categories and tags for the post from the database
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $postId
 	 * @return True if we were able to Delete.  False if we were unable to Delete or there was nothing to delete.
 	 */
-	public function unlinkPostCategoriessAndTags($id)
+	public function unlinkPostCategoriessAndTags($postId)
 	{
 		$return = false;
 		
 		$formattedQuery = sprintf("DELETE FROM %sposts_tax WHERE PostID=?", parent::$this->tablePrefix);
 		$query = parent::$this->databaseConnection->prepare($formattedQuery);
-		$query->bind_param('i', $id);
+		$query->bind_param('i', $postId);
 		$query->execute();
 		
 		if($query->affected_rows > 0)
@@ -729,11 +729,11 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * 
 	 * @brief Inserts the tags into the database if they don't exist
 	 * @access public
-	 * @param mixed $id
+	 * @param mixed $postId
 	 * @param mixed $tagArray
 	 * @return True if tags were processed or if there was nothing to process.  False if there was an error.
 	 */
-	public function processTags($id, $tagArray)
+	public function processTags($postId, $tagArray)
 	{
 		$return = false;
 		$type = 1;
@@ -754,7 +754,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 			
 			$formattedQuery3 = sprintf("INSERT INTO %sposts_tax (PostID, CatTagID) VALUES(?, ?)", parent::$this->tablePrefix);
 			$query3 = parent::$this->databaseConnection->prepare($formattedQuery3);
-			$query3->bind_param('ii', $id, $catID);
+			$query3->bind_param('ii', $postId, $catID);
 			
 			foreach($tagArray as $key)
 			{
@@ -868,11 +868,11 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		return $return;
 	}
 	
-	public function addSnippet($name, $data, $id = null)
+	public function addSnippet($name, $data, $snippetId = null)
 	{
 		$return = false;
 		
-		if($id == null)
+		if($snippetId == null)
 		{
 			$formattedQuery = sprintf("INSERT INTO %ssnippet (Name, SnippetData) VALUES(?, ?)", parent::$this->tablePrefix);
 			$query = parent::$this->databaseConnection->prepare($formattedQuery);
@@ -889,7 +889,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		{
 			$formattedQuery = sprintf("UPDATE %ssnippet SET Name=?, SnippetData=? WHERE PrimaryKey=?", parent::$this->tablePrefix);
 			$query = parent::$this->databaseConnection->prepare($formattedQuery);
-			$query->bind_param('ssi', $name, $data, $id);
+			$query->bind_param('ssi', $name, $data, $snippetId);
 			$query->execute();
 			
 			if($query->affected_rows > 0)
@@ -902,15 +902,15 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		return $return;
 	}
 	
-	public function removeSnippet($id)
+	public function removeSnippet($snippetId)
 	{
 		$return = false;
 		
-		if($id != null)
+		if($snippetId != null)
 		{
 			$formattedQuery = sprintf("DELETE %ssnippet WHERE PrimaryKey=?", parent::$this->tablePrefix);
 			$query = parent::$this->databaseConnection->prepare($formattedQuery);
-			$query->bind_param('i', $id);
+			$query->bind_param('i', $snippetId);
 			$query->execute();
 			
 			if($query->affected_rows > 0)
@@ -941,13 +941,13 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 		return $return;
 	}
 	
-	public function getSnippetById($id)
+	public function getSnippetById($snippetId)
 	{
 		$return = array();
 		
-		if($id != null)
+		if($snippetId != null)
 		{
-			$formattedQuery = sprintf("SELECT * FROM %ssnippet WHERE PrimaryKey='%s'", parent::$this->tablePrefix, $id);
+			$formattedQuery = sprintf("SELECT * FROM %ssnippet WHERE PrimaryKey='%s'", parent::$this->tablePrefix, $snippetId);
 			
 			if($result = parent::$this->databaseConnection->query($formattedQuery))
 			{

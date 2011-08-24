@@ -24,7 +24,7 @@ interface GenericDatabaseAdmin extends GenericDatabase
 	
 	public function checkDuplicateUri($type, $uri, $postOrPageId = null);
 	
-	public function checkDuplicateTitle($type, $niceTitle, $postPageSnippetIt = null);
+	public function checkDuplicateTitle($type, $niceTitle, $postPageSnippetId = null);
 	
 	public function updateCookieVal($userId, $cookieValue = "");
 	
