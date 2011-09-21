@@ -17,6 +17,8 @@ interface GenericCacher
 	public function purgeCache();
 	
 	public function cacheWritable();
+	
+	public function clearStoredData();
 
 }
 

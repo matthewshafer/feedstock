@@ -153,6 +153,11 @@ class MysqliDatabase implements GenericDatabase
 		}
 		else if($this->lazyConnect())
 		{
+			// if we have a cacher we are clearing out its stored data incase the last check above failed
+			if($this->haveCacher)
+			{
+				$this->cacher->clearStoredData();
+			}
 		
 			$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 			
@@ -501,6 +506,12 @@ class MysqliDatabase implements GenericDatabase
 			}
 			else if($this->lazyConnect())
 			{
+				// if we have a cacher we are clearing out its stored data incase the last check above failed
+				if($this->haveCacher)
+				{
+					$this->cacher->clearStoredData();
+				}
+				
 				$escapedQuery = sprintf($stockQuery, $this->tablePrefix, $this->tablePrefix, $this->databaseConnection->real_escape_string($queryString), $this->databaseConnection->real_escape_string($limit), $this->databaseConnection->real_escape_string($offset));
 				
 				if($result = $this->databaseConnection->query($escapedQuery))

@@ -158,6 +158,19 @@ class Apc implements GenericCacher
 		
 		return $ret;
 	}
+	
+	/**
+	 * clearStoredData function.
+	 * 
+	 * Cleares the data that is stored inside the cacher's temporary array.
+	 * @access public
+	 *
+	 */
+	 public function clearStoredData()
+	 {
+	 	$this->store = array();
+	 	$this->storePos = -1;
+	 }
 }
 
 ?>
