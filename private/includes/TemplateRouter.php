@@ -187,20 +187,21 @@ class TemplateRouter
 		// a length of two means that the uri (after the base is stripped) is /category/someNameHere/page/someNumberHere
 		else if($this->router->uriLength() === 4)
 		{
-			// throws an exception if the third part of the uri is not "page" so if someone tries to do /category/test/arrrr/3
-			// an error will be thrown
-			if($this->router->getUriPosition(3) !== "page")
+			
+			$pageId = -1;
+		
+			try
+			{
+				$pageId = $this->router->getPageOffset();
+			}
+			catch(exception $e)
 			{
 				throw new exception("Invalid URI");
 			}
 			
-			// page id of the page that is currently in the uri
-			// so /category/something/page/2 would give pageId of 2
-			$pageId = (int)$this->router->getUriPosition(4);
-			
 			if($pageId > 0)
 			{
-				$pageId = ($pageId - 1) * 10;
+				$pageId = $pageId * $this->postsPerPage;
 				
 				$this->templateData->addData($this->database->getPostsInCategoryOrTag($which, $this->postsPerPage, $pageId));
 			}
