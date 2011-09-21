@@ -189,12 +189,18 @@ class TemplateEngine
 	{
 		// need to add logic to this so it can decide what title to return based on the page that is loaded
 		$return = null;
-		$type = $this->router->getPageType();
+		$type = $this->router->pageType();
 		
 		if($type === "page")
 		{
-			// needs to be tested
-			$return = "Page " . $this->router->getUriPosition(2) . " :: " . $this->siteTitle;
+			try
+			{
+				$return = "Page " . ($this->router->getPageOffset() + 1) . " :: " . $this->siteTitle;
+			}
+			catch(exception $e)
+			{
+				$return = "Error";
+			}
 		}
 		else if($type === "tag" || $type === "category")
 		{
@@ -204,7 +210,11 @@ class TemplateEngine
 			{
 				$page = $this->router->getPageOffset();
 				
-				$return .= " Page " . $page;
+				if($page !== 0)
+				{
+					// incrementing the page by 1 because the getPageOffset returns us the offset, so page 2 would be page 1
+					$return .= " Page " . ($page + 1);
+				}
 			}
 			catch(exception $e)
 			{
