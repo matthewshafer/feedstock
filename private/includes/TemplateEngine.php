@@ -744,6 +744,7 @@ class TemplateEngine
 	 * havePreviousPostPageHtml function.
 	 * 
 	 * Makes us a nice previous link if we have a previous page.  Can specify your own previous text
+	 * indexBase allows us to set if the first page should have /page/1 appended to it or not
 	 * @access public
 	 * @param string $title. (default: "<- Previous Page")
 	 * @param boolean $indexBase. (default: false)

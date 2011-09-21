@@ -199,7 +199,7 @@ class TemplateRouter
 				throw new exception("Invalid URI");
 			}
 			
-			if($pageId > 0)
+			if($pageId >= 0)
 			{
 				$pageId = $pageId * $this->postsPerPage;
 				
