@@ -204,7 +204,8 @@ class TemplateEngine
 		}
 		else if($type === "tag" || $type === "category")
 		{
-			$return = $type . " " . $this->router->getUriPosition(2);
+			// searches the uri for the category or tag and then looks one place after that for the name of the category
+			$return = $type . " " . $this->router->getUriPosition($this->router->searchURI($type) + 1);
 			
 			try
 			{
