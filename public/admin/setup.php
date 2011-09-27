@@ -47,6 +47,16 @@ if(isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["dis
 		$db = new MysqliDatabaseAdmin($config->getData('databaseUsername'), 
 										$config->getData('databasePassword'), 
 										$config->getData('databaseAddress'), 
+										$config->getData('databasePort'),
+										$config->getData('databaseName'), 
+										$config->getData('databaseTablePrefix'));
+	}
+	else if($config->getData('databaseType') === "Postgresql")
+	{
+		$db = new PostgresqlDatabaseAdmin($config->getData('databaseUsername'), 
+										$config->getData('databasePassword'), 
+										$config->getData('databaseAddress'), 
+										$config->getData('databasePort'),
 										$config->getData('databaseName'), 
 										$config->getData('databaseTablePrefix'));
 	}
