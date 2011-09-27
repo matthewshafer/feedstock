@@ -21,9 +21,9 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	 * @param mixed $tablePrefix
 	 * @return void
 	 */
-	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null, $lazy = true)
+	public function __construct($username, $password, $serverAddress, $serverPort, $databaseName, $tablePrefix, $cacher = null, $lazy = true)
 	{
-		parent::__construct($username, $password, $serverAddress, $databaseName, $tablePrefix, null, false);
+		parent::__construct($username, $password, $serverAddress, $serverPort, $databaseName, $tablePrefix, null, false);
 	}
 	
 	/**

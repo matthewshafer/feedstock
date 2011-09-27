@@ -725,7 +725,7 @@ class FeedstockAdmin
 		$type = $this->config['databaseType'] . "DatabaseAdmin";
 		
 
-		$return = new $type($this->config['databaseUsername'], $this->config['databasePassword'], $this->config['databaseAddress'], $this->config['databaseName'], $this->config['databaseTablePrefix']);
+		$return = new $type($this->config['databaseUsername'], $this->config['databasePassword'], $this->config['databaseAddress'], $this->config['databasePort'], $this->config['databaseName'], $this->config['databaseTablePrefix']);
 
 		
 		return $return;

@@ -10,6 +10,7 @@ class MysqliDatabase implements GenericDatabase
 	private $username = null;
 	private $password = null;
 	private $serverAddress = null;
+	private $serverPort = null;
 	private $databaseName = null;
 	protected $databaseConnection = null;
 	protected $tablePrefix = null;
@@ -33,11 +34,12 @@ class MysqliDatabase implements GenericDatabase
 	 * @param mixed $tablePrefix
 	 * @return void
 	 */
-	public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null, $lazy = true)
+	public function __construct($username, $password, $serverAddress, $serverPort, $databaseName, $tablePrefix, $cacher = null, $lazy = true)
 	{
 		$this->username = $username;
 		$this->password = $password;
 		$this->serverAddress = $serverAddress;
+		$this->serverPort = $serverPort;
 		$this->databaseName = $databaseName;
 		$this->tablePrefix = $tablePrefix;
 		
@@ -73,7 +75,7 @@ class MysqliDatabase implements GenericDatabase
 		
 		if(!$this->databaseConnection)
 		{
-			$this->databaseConnection = new mysqli($this->serverAddress, $this->username, $this->password, $this->databaseName);
+			$this->databaseConnection = new mysqli($this->serverAddress, $this->username, $this->password, $this->databaseName, $this->serverPort);
 			if($this->databaseConnection->connect_errno)
 			{
 				throw new Exception(sprintf("Cannot connect to server: %s", $this->databaseConnection->connect_errno));

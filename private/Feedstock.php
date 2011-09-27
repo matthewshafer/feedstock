@@ -238,7 +238,7 @@ class Feedstock
 		}
 		
 		
-		$return = new $type($this->config['databaseUsername'], $this->config['databasePassword'], $this->config['databaseAddress'], $this->config['databaseName'], $this->config['databaseTablePrefix'], $cacher);
+		$return = new $type($this->config['databaseUsername'], $this->config['databasePassword'], $this->config['databaseAddress'], $this->config['databasePort'], $this->config['databaseName'], $this->config['databaseTablePrefix'], $cacher);
 		
 		// add some checking if the database name is set up wrong
 		if($this->config['databaseDebug'])

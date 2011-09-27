@@ -39,6 +39,7 @@ $this->config['databaseType'] = "Mysqli";
 $this->config['databaseUsername'] = "username";
 $this->config['databasePassword'] = "password";
 $this->config['databaseAddress'] = "localhost";
+$this->config['databasePort'] = 1234;
 $this->config['databaseName'] = "feedstock";
 $this->config['databaseTablePrefix'] = "fs_";
 
