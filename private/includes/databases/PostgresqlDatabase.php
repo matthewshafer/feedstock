@@ -51,7 +51,7 @@ class PostgresqlDatabase implements GenericDatabase
 			$this->databaseConnection = pg_connect($connectionString);
 			if($this->databaseConnection === false)
 			{
-				throw new Exception"Cannot connect to postgresql server");
+				throw new Exception("Cannot connect to postgresql server");
 				$return = false;
 			}
 		}
