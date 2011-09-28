@@ -29,7 +29,7 @@ class PostgresqlDatabase implements GenericDatabase
 		$this->tablePrefix = $tablePrefix;
 		
 		
-		if(!lazy === true)
+		if(!$lazy === true)
 		{
 			$this->lazyConnect();
 		}
