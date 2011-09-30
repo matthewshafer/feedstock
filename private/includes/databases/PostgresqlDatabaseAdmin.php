@@ -147,7 +147,39 @@ class PostgresqlDatabaseAdmin extends PostgresqlDatabase implements GenericDatab
 	
 	public function checkDuplicateUri($type, $uri, $postOrPageId = null)
 	{
-	
+		$return = false;
+		$formattedQuery = null;
+		
+		if($type === "post")
+		{
+			$formattedQuery = sprintf('SELECT "PrimaryKey" FROM %sposts WHERE "URI"=$1 LIMIT 1', parent::$this->tablePrefix);
+		}
+		else if($type === "page")
+		{
+			$formattedQuery = sprintf('SELECT "PrimaryKey" FROM %spages WHERE "URI"=$1 LIMIT 1', parent::$this->tablePrefix);
+		}
+		
+		if($formattedQuery !== null)
+		{
+			$result = $this->runQuery($formattedQuery);
+			
+			$id = pg_fetch_result($result, 0, "PrimaryKey");
+			
+			if($id !== false)
+			{
+				// not sure if we should make this === or not.  I'll have to debug it some other time.  Only reason to use === here is for performance.
+				if($postOrPageId !== null && $id == $postOrPageId)
+				{
+					$return = true;
+				}
+			}
+			else
+			{
+				$return = true;
+			}
+		}
+		
+		return $return;
 	}
 	
 	public function checkDuplicateTitle($type, $niceTitle, $postPageSnippetId = null)
