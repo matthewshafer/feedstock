@@ -6,6 +6,14 @@ interface GenericDatabaseAdmin extends GenericDatabase
 
 	//public function __construct($username, $password, $serverAddress, $databaseName, $tablePrefix, $cacher = null, $lazy = true);
 	
+	public function isTransactional();
+	
+	public function startTransaction();
+	
+	public function commitTransaction();
+	
+	public function rollbackTransaction();
+	
 	public function addPost($title, $data, $niceTitle, $uri, $author, $date, $draft, $postId = null);
 	
 	public function deletePost($postId);

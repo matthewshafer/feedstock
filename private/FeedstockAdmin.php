@@ -165,106 +165,122 @@ class FeedstockAdmin
 		//$postsNeeded = array("postTitle", "postorpagedata", "postCategories", "postTags", "draft", "id");
 		$postsNeeded = array("postTitle", "postorpagedata", "draft", "id");
 		
-		if($this->postManager->checkPostWithArray($postsNeeded))
+		if($this->databaseAdmin->isTransactional())
 		{
-			//echo "<br>" . $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")));
-			//print_r($this->postManager->getPostByName("postCategories"));
-			if($this->postManager->getPostByName("id") != -1)
+			$this->databaseAdmin->startTransaction();
+		}
+		
+		try
+		{
+			if($this->postManager->checkPostWithArray($postsNeeded))
 			{
-				$id = $this->postManager->getPostByName("id");
-				// update
-				
-				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $id);
-				
-				if($this->postManager->getPostByName("useCurrentDate") == 0)
+				//echo "<br>" . $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")));
+				//print_r($this->postManager->getPostByName("postCategories"));
+				if($this->postManager->getPostByName("id") != -1)
 				{
-					$tempPostArray = $this->databaseAdmin->getPostDataById($id);
+					$id = $this->postManager->getPostByName("id");
+					// update
 					
-					$tempDate = null;
+					$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $id);
 					
-					if(isset($tempPostArray["Date"]))
+					if($this->postManager->getPostByName("useCurrentDate") == 0)
 					{
-						$tempDate = strtotime($tempPostArray["Date"]);
+						$tempPostArray = $this->databaseAdmin->getPostDataById($id);
+						
+						$tempDate = null;
+						
+						if(isset($tempPostArray["Date"]))
+						{
+							$tempDate = strtotime($tempPostArray["Date"]);
+						}
+						
+						$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $tempDate), $id);
+					}
+					else
+					{
+						$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), $id);
 					}
 					
-					$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")), $tempDate), $id);
+					
+					if($this->postManager->getPostByName("useCurrentDate") == 1)
+					{
+						$date = date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']);
+					}
+					else
+					{
+						$date = null;
+					}
+					
+					$this->databaseAdmin->addPost(
+						$this->postManager->getPostByName("postTitle"), 
+						$this->postManager->getPostByName("postorpagedata"), 
+						$niceCheckedTitle, 
+						$goodUri, 
+						$this->cookieMonster->getUserID(), 
+						$date, 
+						$this->postManager->getPostByName("draft"), 
+						$id
+					);
+				
+					// only need to unlink updates
+					$this->databaseAdmin->unlinkPostCategoriessAndTags($id);
+					$this->databaseAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
+					$this->databaseAdmin->processTags($id, $this->tagsToArray());
+					// commits the transaction. can be called even when not using a transactional engine.
+					$this->databaseAdmin->commitTransaction();
 				}
 				else
 				{
-					$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))), $id);
+					//$this->tagsToArray();
+					//echo "test";
+					//echo "<br>" . $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"));
+					$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")));
+					// doing it this way allows to only have 1 of the same title and 1 of the same uri.  So if the user changes the structure we'll be fine
+					$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))));
+					
+					$this->databaseAdmin->addPost(
+						$this->postManager->getPostByName("postTitle"), 
+						$this->postManager->getPostByName("postorpagedata"), 
+						$niceCheckedTitle, 
+						$goodUri, 
+						$this->cookieMonster->getUserID(), 
+						date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']), 
+						$this->postManager->getPostByName("draft")
+					);
+					
+					$id = $this->databaseAdmin->getPostIdNiceCheckedTitle($niceCheckedTitle);
+					
+					
+					//print_r($this->postManager->getPostByName("postCategories"));
+					$this->databaseAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
+					$this->databaseAdmin->processTags($id, $this->tagsToArray());
+					// commits the transaction. can be called even when not using a transactional engine.
+					$this->databaseAdmin->commitTransaction();
 				}
 				
+				$this->purgeCache();
 				
-				if($this->postManager->getPostByName("useCurrentDate") == 1)
+				if($this->config['feedPubSubHubBub'])
 				{
-					$date = date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']);
+					require_once("includes/feed/PubSubHubBub.php");
+					
+					$hub = new PubSubHubBub($this->config['feedPubSubHubBubPublishUrl'], $this->siteUrlGenerator->generateSiteUrl());
+					$hub->publish();
+					//$returned = $hub->publish();
+					//echo "PubSub: ";
+					//print_r($returned);
+					//echo "\n";
 				}
-				else
+				
+				if($this->sitemapCreator != null)
 				{
-					$date = null;
+					$this->sitemapCreator->generateSitemap();
 				}
-				
-				$this->databaseAdmin->addPost(
-					$this->postManager->getPostByName("postTitle"), 
-					$this->postManager->getPostByName("postorpagedata"), 
-					$niceCheckedTitle, 
-					$goodUri, 
-					$this->cookieMonster->getUserID(), 
-					$date, 
-					$this->postManager->getPostByName("draft"), 
-					$id
-				);
-				
-				// only need to unlink updates
-				$this->databaseAdmin->unlinkPostCategoriessAndTags($id);
-				$this->databaseAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
-				$this->databaseAdmin->processTags($id, $this->tagsToArray());
 			}
-			else
-			{
-				//$this->tagsToArray();
-				//echo "test";
-				//echo "<br>" . $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"));
-				$niceCheckedTitle = $this->checkAndFixNiceTitleCollision("post", $this->uriFriendlyTitle($this->postManager->getPostByName("postTitle")));
-				// doing it this way allows to only have 1 of the same title and 1 of the same uri.  So if the user changes the structure we'll be fine
-				$goodUri = $this->checkAndFixNiceUriCollision("post", $this->generatePostUri($this->uriFriendlyTitle($this->postManager->getPostByName("postTitle"))));
-				
-				$this->databaseAdmin->addPost(
-					$this->postManager->getPostByName("postTitle"), 
-					$this->postManager->getPostByName("postorpagedata"), 
-					$niceCheckedTitle, 
-					$goodUri, 
-					$this->cookieMonster->getUserID(), 
-					date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']), 
-					$this->postManager->getPostByName("draft")
-				);
-				
-				$id = $this->databaseAdmin->getPostIdNiceCheckedTitle($niceCheckedTitle);
-				
-				
-				//print_r($this->postManager->getPostByName("postCategories"));
-				$this->databaseAdmin->processPostCategories($id, $this->postManager->getPostByName("postCategories"));
-				$this->databaseAdmin->processTags($id, $this->tagsToArray());
-			}
-			
-			$this->purgeCache();
-			
-			if($this->config['feedPubSubHubBub'])
-			{
-				require_once("includes/feed/PubSubHubBub.php");
-				
-				$hub = new PubSubHubBub($this->config['feedPubSubHubBubPublishUrl'], $this->siteUrlGenerator->generateSiteUrl());
-				$hub->publish();
-				//$returned = $hub->publish();
-				//echo "PubSub: ";
-				//print_r($returned);
-				//echo "\n";
-			}
-			
-			if($this->sitemapCreator != null)
-			{
-				$this->sitemapCreator->generateSitemap();
-			}
+		}
+		catch(exception $e)
+		{
+			$this->databaseAdmin->rollbackTransaction();
 		}
 	}
 	

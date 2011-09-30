@@ -27,6 +27,30 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 	}
 	
 	/**
+	* these are currently just placeholders and don't do anything yet
+	**/
+	
+	public function isTransactional()
+	{
+		return false;
+	}
+	
+	public function startTransaction()
+	{
+		return false;
+	}
+	
+	public function commitTransaction()
+	{
+		return false;
+	}
+	
+	public function rollbackTransaction()
+	{
+		return false;
+	}
+	
+	/**
 	 * addPost function.
 	 * 
 	 * @brief Add's a post to the database
