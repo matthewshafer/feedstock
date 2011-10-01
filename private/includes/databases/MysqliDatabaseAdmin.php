@@ -822,6 +822,7 @@ class MysqliDatabaseAdmin extends MysqliDatabase implements GenericDatabaseAdmin
 				$query3->execute();
 			}
 			
+			// seems like this might only be valid on the last execute statement.  Need to go back and read the docs again
 			if($query3->affected_rows > 0)
 			{
 				$return = true;
