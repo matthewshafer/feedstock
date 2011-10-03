@@ -100,6 +100,7 @@ class PostgresqlDatabaseAdmin extends PostgresqlDatabase implements GenericDatab
 		
 		$formattedQuery = sprintf('INSERT INTO %susers ("loginName", "displayName", "PasswordHash", "Salt", "Permissions", "CanAdminUsers") VALUES($1, $2, $3, $4, $5, $6)', parent::$this->tablePrefix);
 		
+		// we need to remove the start and rollback transactions as these should be done by the class calling the database.
 		$this->startTransaction();
 		
 		try
