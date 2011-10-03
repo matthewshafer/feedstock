@@ -99,7 +99,21 @@ class PostgresqlDatabase implements GenericDatabase
 	
 	public function listCategoriesOrTags($type)
 	{
-	
+		$return = array();
+		$formattedQuery = sprintf('SELECT * FROM %scatstags WHERE "Type"=$1', $this->tablePrefix);
+		
+		// need to see if this works when having a cacher
+		// we just want to add $type to the end of $formattedQuery
+		if($this->haveCacher && $this->cacher->checkExists($formattedQuery . $type))
+		{
+			$return = $this->cacher->getCachedData()
+		}
+		else if($this->lazyConnect())
+		{
+			// need to finish this out as we have decisions to make as to how exceptions are handled for the main database class
+		}
+		
+		return $return;
 	}
 
 	public function haveNextPage()

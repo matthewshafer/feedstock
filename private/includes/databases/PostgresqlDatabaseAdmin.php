@@ -311,13 +311,16 @@ class PostgresqlDatabaseAdmin extends PostgresqlDatabase implements GenericDatab
 	
 	public function processPostCategories($postId, $categoryArray)
 	{
-		$formattedQuery = sprintf('INSERT INTO %sposts_tax ("PostID", "CatTagID") VALUES($1, $2)', parent::$this->tablePrefix);
-		
-		// running through all the categories selected and adding them to posts_tax
-		foreach($categoryArray as $key)
+		if($categoryArray !== null && !empty($categoryArray))
 		{
-			$this->runQuery($formattedQuery, array($postId, $key));
-			// need to put a check here to see if we are actually inserting values
+			$formattedQuery = sprintf('INSERT INTO %sposts_tax ("PostID", "CatTagID") VALUES($1, $2)', parent::$this->tablePrefix);
+			
+			// running through all the categories selected and adding them to posts_tax
+			foreach($categoryArray as $key)
+			{
+				$this->runQuery($formattedQuery, array($postId, $key));
+				// need to put a check here to see if we are actually inserting values
+			}
 		}
 	}
 	
@@ -376,7 +379,7 @@ class PostgresqlDatabaseAdmin extends PostgresqlDatabase implements GenericDatab
 			}
 		}
 		
-		throw new exception("just for testing");
+		//throw new exception("just for testing");
 	}
 	
 	public function getCorralList()
