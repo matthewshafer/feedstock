@@ -64,6 +64,18 @@ class PostgresqlDatabase implements GenericDatabase
 		pg_close($this->databaseConnection);
 	}
 	
+	private function runQuery($query, $params)
+	{
+		$result = pg_query_params($this->databaseConnection, $query, $params);
+		
+		if(!$result)
+		{
+			throw new exception("query failed");
+		}
+		
+		return $result;
+	}
+	
 	public function getPosts($limit, $offset, $draft = false)
 	{
 	
@@ -106,11 +118,23 @@ class PostgresqlDatabase implements GenericDatabase
 		// we just want to add $type to the end of $formattedQuery
 		if($this->haveCacher && $this->cacher->checkExists($formattedQuery . $type))
 		{
-			$return = $this->cacher->getCachedData()
+			$return = $this->cacher->getCachedData();
 		}
 		else if($this->lazyConnect())
 		{
 			// need to finish this out as we have decisions to make as to how exceptions are handled for the main database class
+			$result = $this->runQuery($formattedQuery, array($type));
+			
+			$assocArray = pg_fetch_all($result);
+			
+			// debug stuff
+			var_dump($assocArray);
+			
+			// just checking to make sure we got something back from pg_fetch_all
+			if($assocArray !== false)
+			{
+				$return = $assocArray;
+			}
 		}
 		
 		return $return;
