@@ -81,7 +81,17 @@ class PostgresqlDatabaseAdmin extends PostgresqlDatabase implements GenericDatab
 	
 	public function deletePost($postId)
 	{
-	
+		$return = false;
+		
+		$formattedQuery = sprintf("DELETE FROM %sposts WHERE PrimaryKey=$1", parent::$this->tablePrefix);
+		$result = $this->runQuery($formattedQuery, array($postId));
+		
+		if(pg_affected_rows($result) > 0)
+		{
+			$return = true;
+		}
+		
+		return $return;
 	}
 	
 	public function addPage($title, $data, $niceTitle, $uri, $author, $date, $draft, $corral = null, $pageId = null)
@@ -91,7 +101,17 @@ class PostgresqlDatabaseAdmin extends PostgresqlDatabase implements GenericDatab
 	
 	public function removePage($pageId)
 	{
-	
+		$return = false;
+		
+		$formattedQuery = sprintf("DELETE FROM %spages WHERE PrimaryKey=$1", parent::$this->tablePrefix);
+		$result = $this->runQuery($formattedQuery, array($pageId));
+		
+		if(pg_affected_rows($result) > 0)
+		{
+			$return = true;
+		}
+		
+		return $return;
 	}
 	
 	public function addUser($username, $displayName, $passwordHash, $salt, $permissions = 99, $canAdministrateUsers = 0)
@@ -415,12 +435,40 @@ class PostgresqlDatabaseAdmin extends PostgresqlDatabase implements GenericDatab
 	
 	public function getAllPostsSitemap()
 	{
-	
+		$return = array();
+		
+		$formattedQuery = sprintf("SELECT URI, Date FROM %sposts ORDER BY Date DESC", parent::$this->tablePrefix);
+		
+		// need to check this to see if query_params takes either an empty array or a null value
+		$result = $this->runQuery($formattedQuery, array());
+		
+		$assocArray = pg_fetch_all($result);
+		
+		if($assocArray !== false)
+		{
+			$return = $assocArray;
+		}
+		
+		return $return;
 	}
 	
 	public function getAllPagesSitemap()
 	{
-	
+		$return = array();
+		
+		$formattedQuery = sprintf("SELECT URI, Date FROM %spages ORDER BY Date DESC", parent::$this->tablePrefix);
+		
+		// same deal here with the above function, need to check to see if this works fine
+		$result = $this->runQuery($formattedQuery, array());
+		
+		$assocArray = pg_fetch_all($result);
+		
+		if($assocArray !== false)
+		{
+			$return = $assocArray;
+		}
+		
+		return $return;
 	}
 }
 

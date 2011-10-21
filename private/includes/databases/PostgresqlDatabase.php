@@ -142,7 +142,7 @@ class PostgresqlDatabase implements GenericDatabase
 
 	public function haveNextPage()
 	{
-	
+		return $this->haveNextPage;
 	}
 	
 	public function getCorralByName($name)
