@@ -29,12 +29,14 @@ class Feedstock
 		
 		require_once("includes/Router.php");
 		$this->router = new Router($this->config['htaccess'], $this->config['siteUrlBase']);
+		// this is the fun part where we break down the URI, it just stores the stuff for us to use later
 		$this->router->buildRouting();
 		
 		require_once("includes/OutputHelper.php");
 		$this->outputHelper = new OutputHelper();
 		
-		
+		// attempts to break down the uri request and get the data for the user
+		// if this fails then we echo a message out to the user
 		try
 		{
 			$this->handleRequest();
@@ -56,8 +58,10 @@ class Feedstock
 	 */
 	private function handleRequest()
 	{
+		// making sure this is a GET request.  We currently do not support any other forms of requests.
 		if($this->router->requestMethod() === "GET")
 		{
+			// checks for maintenance mode
 			if($this->maintenanceMode($this->config['enableMaintenance'], $this->config['maintenancePassthru']))
 			{
 				require_once("includes/Maintenance.php");
@@ -67,10 +71,11 @@ class Feedstock
 			}
 			else
 			{
+				// builds a cacherCreator object so we can create caching objects for the database
 				require_once("includes/CacherCreator.php");
 				$this->cacherCreator = new CacherCreator($this->config['cacheName'], $this->config['cachePrefix'], $this->config['cacheExpireTime'], $this->config['baseLocation']);
 				
-			
+				// checks to see if caching is enabled and if its set to static caching we make a static page cacher.
 				if($this->config['cacheEnable'] && $this->config['cacheType'] === "static" && $this->cacherCreator->createCacher())
 				{
 					// Should create the cacher first so that we can check if a file exists before we even create a database
