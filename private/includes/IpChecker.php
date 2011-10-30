@@ -93,9 +93,28 @@
  			$this->getIPFromCustomHeader();
  		}
  		
- 		if($ipToCheck === $this->ipAddress)
+ 		if(is_array($ipToCheck))
  		{
- 			$return = true;
+ 			$ct = count($ipToCheck);
+ 			$loopCt = 0;
+ 			
+ 			while($loopCt < $ct)
+ 			{
+ 				if($ipToCheck === $this->ipAddress)
+ 				{
+ 					$return = true;
+ 					break;
+ 				}
+ 				
+ 				++$loopCt;
+ 			}
+ 		}
+ 		else
+ 		{
+ 			if($ipToCheck === $this->ipAddress)
+ 			{
+ 				$return = true;
+ 			}
  		}
  		
  		return $return;
