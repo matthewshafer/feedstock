@@ -669,13 +669,14 @@ class MysqliDatabase implements GenericDatabase
 	 * 
 	 * @access public
 	 * @param mixed $name
+	 * @param int $draft
 	 * @return void
 	 */
-	public function getCorralByName($name)
+	public function getCorralByName($name, $draft = 0)
 	{
 		$return = array();
-		$formattedQuery = sprintf("SELECT Title, URI FROM %spages WHERE Corral=?", $this->tablePrefix);
-		$cacheQuery = sprintf("%s%s", $formattedQuery, $name);
+		$formattedQuery = sprintf("SELECT Title, URI FROM %spages WHERE Corral=? AND Draft=?", $this->tablePrefix);
+		$cacheQuery = sprintf("%s%s%s", $formattedQuery, $name, $draft);
 		
 		
 		if($this->haveCacher && $this->cacher->checkExists($cacheQuery))
@@ -685,7 +686,7 @@ class MysqliDatabase implements GenericDatabase
 		else if($this->lazyConnect())
 		{
 			$query = $this->databaseConnection->prepare($formattedQuery);
-			$query->bind_param('s', $name);
+			$query->bind_param('si', $name, $draft);
 			$query->execute();
 			$query->store_result();
 			$query->bind_result($title, $uri);

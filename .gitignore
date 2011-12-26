@@ -49,3 +49,7 @@ build/
 #############################
 /.kdev4
 *.kdev4
+
+# Espresso specific ignores #
+#############################
+*.esproj

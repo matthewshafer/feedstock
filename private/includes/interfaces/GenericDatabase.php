@@ -24,7 +24,7 @@ interface GenericDatabase
 	
 	public function haveNextPage();
 	
-	public function getCorralByName($name);
+	public function getCorralByName($name, $draft = 0);
 	
 	public function getSnippetByName($name);
 	
