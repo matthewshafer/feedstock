@@ -14,7 +14,6 @@ class TemplateEngine
 	private $postCategory = null;
 	private $postTag = null;
 	private $arrayPosition = 0;
-	private $errorText = null;
 	private $pageDataCt = null;
 	private $siteTitle = "";
 	private $siteDescription = "";
@@ -871,38 +870,6 @@ class TemplateEngine
 		}
 		
 		return $return;
-	}
-	
-	
-	/**
-	 * haveError function.
-	 * 
-	 * If there was an error somewhere then we have an error
-	 * @access public
-	 * @return boolean True if we have an error
-	 */
-	public function haveError()
-	{
-		$return = true;
-		
-		if($this->errorText === null)
-		{
-			$return = false;
-		}
-		
-		return $return;
-	}
-	
-	/**
-	 * getError function.
-	 * 
-	 * Error text
-	 * @access public
-	 * @return string|null with the error encountered or null if no error
-	 */
-	public function getError()
-	{
-		return $this->errorText;
 	}
 	
 	// when we clean the feed part up we should keep this
