@@ -66,6 +66,9 @@
 		
 		<phpdepend file="build/phpDepend">
 			<logger type="phpunit-xml" outfile="build/reports/phpDepend.xml"/>
+			<logger type="jdepend-chart" outfile="build/reports/phpDepend-chart.svg"/>
+			<logger type="overview-pyramid" outfile="build/reports/phpDepend-pyramid.svg"/>
+			<logger type="summary-xml" outfile="build/reports/phpDepend-summary.xml"/>
 		</phpdepend>
 		
 		<delete dir="build/phpDepend" />
