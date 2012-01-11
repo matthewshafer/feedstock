@@ -139,6 +139,8 @@ class Feedstock
 		require_once("includes/SiteUrlGenerator.php");
 		$siteUrlGenerator = new SiteUrlGenerator($this->config['siteUrl'], $this->config['siteUrlBase'], $this->config['htaccess'], $this->router);
 		
+		// templateData holds an alias to the actual object we are creating here.  This allows us to 
+		// create the template engine and pass it templateData and later on add data to templateData and templateEngine see that data.
 		require_once("includes/TemplateData.php");
 		$templateData = new TemplateData();
 		
