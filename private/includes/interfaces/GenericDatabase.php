@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * GenericDatabase interface.
+ * 
+ * Interface required to be implemented by all od the different database addons
+ * @author Matthew Shafer <matt@niftystopwatch.com>
+*/
 interface GenericDatabase
 {
 	public function __construct($username, $password, $serverAddress, $serverPort, $databaseName, $tablePrefix, $cacher = null, $lazy = true);

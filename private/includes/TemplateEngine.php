@@ -841,6 +841,14 @@ class TemplateEngine
 		return $return;
 	}
 	
+	/**
+	 * lastUpdatedTime function.
+	 * 
+	 * finds out the last time the page was updated. Does this by getting the date of the first item
+	 * @access public
+	 * @param string $format
+	 * @return string|null
+	*/
 	public function lastUpdatedTime($format)
 	{
 		$return = null;
@@ -856,6 +864,14 @@ class TemplateEngine
 		return $return;
 	}
 	
+	/**
+	 * siteUrl function.
+	 * 
+	 * Returns the url of the website. If given a uri it generates a url for the website at that uri
+	 * @access public
+	 * @param string $uri (default)
+	 * @return string
+	*/
 	public function siteUrl($uri = null)
 	{
 		$return = null;
@@ -872,7 +888,13 @@ class TemplateEngine
 		return $return;
 	}
 	
-	// when we clean the feed part up we should keep this
+	/**
+	 * getSiteDescription function.
+	 * 
+	 * Returns the description of the website
+	 * @access public
+	 * @return string
+	*/
 	public function getSiteDescription()
 	{
 		return $this->siteDescription;

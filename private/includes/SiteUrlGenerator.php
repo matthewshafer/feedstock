@@ -104,6 +104,13 @@ class SiteUrlGenerator
 		return $this->generatedSiteUrl;
 	}
 	
+	/**
+	 * generateSiteBaseUrl function.
+	 * 
+	 * Generates the base url for the website. EX http://niftystopwatch.com/
+	 * @access public
+	 * @return string Url of the website
+	*/
 	public function generateSiteBaseUrl()
 	{
 		if($this->siteBase === null)
@@ -114,6 +121,13 @@ class SiteUrlGenerator
 		return $this->siteBase;
 	}
 	
+	/**
+	 * currentAddressWithoutPageUrl function.
+	 * 
+	 * gets the current address without /page/1 or various other page numbers
+	 * @access public
+	 * @return string url of the address
+	*/
 	public function currentAddressWithoutPageUrl()
 	{
 		// need to subract 2 because getUriPart goes by array indexes which start at 0. if they started at 1 we could just subtract 1

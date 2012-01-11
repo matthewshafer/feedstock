@@ -20,6 +20,17 @@ class SitemapCreator
 	private $siteUrl = "";
 	private $postPerPage;
 	
+	/**
+	 * __construct function.
+	 * 
+	 * @access public
+	 * @param GenericDatabaseAdmin $$db
+	 * @param mixed $path
+	 * @param mixed $max
+	 * @param string $siteUrl
+	 * @param mixed $postPerPage
+	 * @return void
+	*/
 	public function __construct(GenericDatabaseAdmin $db, $path, $max, $siteUrl, $postPerPage)
 	{
 		$this->database = $db;
@@ -35,6 +46,13 @@ class SitemapCreator
 		//$this->siteindexTemplate = new SiteindexTemplate();
 	}
 	
+	/**
+	 * generateSitemap function.
+	 * 
+	 * Generates a sitemap for the website
+	 * @access public
+	 * @return void
+	*/
 	public function generateSitemap()
 	{
 		
@@ -259,7 +277,7 @@ class SitemapCreator
 	{
 		$fileLoc = sprintf("%s%s", $this->sitemapLoc, $name);
 		
-		if($data != null)
+		if($data !== null)
 		{
 			if($file = fopen($fileLoc, 'w'))
 			{
