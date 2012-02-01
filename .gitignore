@@ -25,6 +25,8 @@
 *.log
 # *.sql
 # *.sqlite
+*.sqlite3
+db/config.yml
 
 # OS generated files #
 ######################
