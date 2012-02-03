@@ -20,9 +20,9 @@ ActiveRecord::Schema.define(:version => 20120201040229) do
     t.integer "SubCat",  :default => -1, :null => false
   end
 
-  add_index "catstags", ["Type", "PrimaryKey"], :name => "TypePrimaryIndex"
-  add_index "catstags", ["Type"], :name => "TypeIndex"
-  add_index "catstags", ["URIName"], :name => "URINameINDEX"
+  add_index "catstags", ["Type", "PrimaryKey"], :name => "catstags_Index_on_Type_and_PrimaryKey"
+  add_index "catstags", ["Type"], :name => "catstags_Index_on_Type"
+  add_index "catstags", ["URIName"], :name => "catstags_Index_on_URIName"
 
   create_table "pages", :primary_key => "PrimaryKey", :force => true do |t|
     t.string   "Title",                                        :null => false
@@ -36,8 +36,8 @@ ActiveRecord::Schema.define(:version => 20120201040229) do
     t.string   "Corral",    :limit => 50
   end
 
-  add_index "pages", ["Corral"], :name => "CorralIndex"
-  add_index "pages", ["URI", "Draft"], :name => "URIDraftINDEX"
+  add_index "pages", ["Corral"], :name => "pages_Index_on_Corral"
+  add_index "pages", ["URI", "Draft"], :name => "pages_Index_on_URI_and_Draft"
 
   create_table "posts", :primary_key => "PrimaryKey", :force => true do |t|
     t.string   "Title",                                        :null => false
@@ -52,25 +52,25 @@ ActiveRecord::Schema.define(:version => 20120201040229) do
     t.integer  "Draft",                         :default => 0, :null => false
   end
 
-  add_index "posts", ["Draft", "Date"], :name => "Date_Draft"
-  add_index "posts", ["Draft", "PrimaryKey"], :name => "DraftPrimaryIndex"
-  add_index "posts", ["URI"], :name => "URIINDEX"
+  add_index "posts", ["Draft", "Date"], :name => "posts_Index_on_Draft_and_Date"
+  add_index "posts", ["Draft", "PrimaryKey"], :name => "posts_Index_on_Draft_and_PrimaryKey"
+  add_index "posts", ["URI"], :name => "posts_Index_on_URI"
 
   create_table "posts_tax", :id => false, :force => true do |t|
     t.integer "PostID",   :null => false
     t.integer "CatTagID", :null => false
   end
 
-  add_index "posts_tax", ["CatTagID"], :name => "CatTagIDindex"
-  add_index "posts_tax", ["PostID", "CatTagID"], :name => "PostCatTagIndex"
-  add_index "posts_tax", ["PostID"], :name => "PostIDindex"
+  add_index "posts_tax", ["CatTagID"], :name => "posts_tax_Index_on_CatTagID"
+  add_index "posts_tax", ["PostID", "CatTagID"], :name => "posts_tax_Index_on_PostID_and_CatTagID"
+  add_index "posts_tax", ["PostID"], :name => "posts_tax_Index_on_PostID"
 
   create_table "snippet", :primary_key => "PrimaryKey", :force => true do |t|
     t.string "Name",                            :null => false
     t.text   "SnippetData", :limit => 16777216, :null => false
   end
 
-  add_index "snippet", ["Name"], :name => "NameIndex"
+  add_index "snippet", ["Name"], :name => "snippet_Index_on_Name"
 
   create_table "users", :force => true do |t|
     t.text    "loginName",                                    :null => false
