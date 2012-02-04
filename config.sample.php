@@ -23,7 +23,6 @@ $this->config['feedAuthorEmail'] = "some@email.com";
 $this->config['feedPubSubHubBub'] = false;
 $this->config['feedPubSubHubBubPublishUrl'] = "http://pubsubhubbub.appspot.com/publish";
 $this->config['feedPubSubHubBubSubscribe'] = "http://pubsubhubbub.appspot.com/";
-$this->config['fileDownloadSpeed'] = 200;
 
 
 /* Database Information */
