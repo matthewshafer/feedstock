@@ -27,7 +27,7 @@
 # *.sqlite
 *.sqlite3
 db/config.yml
-
+db/schema.rb
 # OS generated files #
 ######################
 .DS_Store?

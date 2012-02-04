@@ -13,7 +13,9 @@ Also be sure to check out the NOTICE file
 Requirements:
 PHP >= 5.1.2
 PHP Mcrypt (only required for the admin pages)
+PCRE
 MySQL >= 5 (ok possibly MySQL 4 as long as it is supported by mysqli)
+Ruby + standalone_migrations gem (should install activerecord when you install that gem, also get mysql2 gem if using mysql)
 
 
 How To Install:
