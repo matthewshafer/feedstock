@@ -22,7 +22,7 @@ class FileCache implements GenericCacher
 	 * @param string $location (default: "")
 	 * @return void
 	 */
-	public function __construct($prefix, $expireTime, $location = "")
+	public function __construct($prefix, $expireTime, $location = "", $options = null)
 	{
 		// setting up the variables
 		// location should end in a /

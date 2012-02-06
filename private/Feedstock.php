@@ -73,7 +73,15 @@ class Feedstock
 			{
 				// builds a cacherCreator object so we can create caching objects for the database
 				require_once("includes/CacherCreator.php");
-				$this->cacherCreator = new CacherCreator($this->config['cacheName'], $this->config['cachePrefix'], $this->config['cacheExpireTime'], $this->config['baseLocation']);
+
+				// setting up the cacheOpts variable that is sent to the cachers.  It must be an array.
+				$cacheOpts = null;
+				if(isset($this->config['cacheOptions']) && is_array($this->config['cacheOptions']))
+				{
+					$cacheOpts = $this->config['cacheOptions'];
+				}
+
+				$this->cacherCreator = new CacherCreator($this->config['cacheName'], $this->config['cachePrefix'], $this->config['cacheExpireTime'], $this->config['baseLocation'], $cacheOpts);
 				
 				// checks to see if caching is enabled and if its set to static caching we make a static page cacher.
 				if($this->config['cacheEnable'] && $this->config['cacheType'] === "static" && $this->cacherCreator->createCacher())

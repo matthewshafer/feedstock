@@ -11,6 +11,7 @@ class CacherCreator
 	private $cacheObj = null;
 	private $baseLocation = "";
 	private $expireTime = 0;
+	private $options = null;
 	
 	
 	
@@ -24,12 +25,13 @@ class CacherCreator
 	 * @param string $baseLocation
 	 * @return void
 	 */
-	public function __construct($cacheName, $prefix, $expireTime, $baseLocation)
+	public function __construct($cacheName, $prefix, $expireTime, $baseLocation, $options = null)
 	{
 		$this->cacheName = $cacheName;
 		$this->prefix = $prefix;
 		$this->expireTime = $expireTime;
 		$this->baseLocation = $baseLocation;
+		$this->options = $options;
 	}
 	
 	
@@ -62,7 +64,7 @@ class CacherCreator
 		require_once("interfaces/GenericCacher.php");
 		require_once("caching/" . $this->cacheName . ".php");
 		
-		$this->cacheObj = new $this->cacheName($this->prefix, $this->expireTime, $this->baseLocation . "/private/cache/");
+		$this->cacheObj = new $this->cacheName($this->prefix, $this->expireTime, $this->baseLocation . "/private/cache/", $this->options);
 		
 		if($this->cacheObj instanceof GenericCacher && $this->cacheObj->cacheWritable())
 		{

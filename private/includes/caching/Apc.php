@@ -23,7 +23,7 @@ class Apc implements GenericCacher
 	 * @param string $location (default: "")
 	 * @return void
 	 */
-	public function __construct($prefix, $expireTime, $location = "")
+	public function __construct($prefix, $expireTime, $location = "", $options = null)
 	{
 		$this->prefix = $prefix;
 		$this->expireTime = $expireTime;
