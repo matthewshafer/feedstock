@@ -9,7 +9,7 @@ class RedisCache implements GenericCacher
 	private $redisAddress = null;
 	private $redisPort = null;
 	private $redisDatabase = null;
-	private $redis;
+	private $redisStore;
 
 
 	/**
@@ -38,6 +38,60 @@ class RedisCache implements GenericCacher
 	}
 
 	/**
+	 * checkExists function.
+	 * 
+	 * Checks to see if something in the cache exists
+	 * @access public
+	 * @param mixed $lookup
+	 * @return boolean True if it exists, false if it doesn't
+	 */
+	 public function checkExists($lookup)
+	 {
+	 	$key = sha1($lookup);
+	 	$return = false;
+
+	 	try
+	 	{
+	 		if($this->redisStore->exists($key))
+	 		{
+	 			$tmp = $this->redisStore->get($key);
+	 			$this->store[] = $tmp;
+	 			$this->storePos++;
+	 			$return = true;
+	 		}
+	 	}
+	 	catch (Exception $e)
+	 	{
+
+	 	}
+
+	 	return $return;
+	 }
+
+	/**
+	 * getCachedData function.
+	 * 
+	 * Gets cached data from the cache. Data is stored when you call checkExists. This way we do one lookup rather than two
+	 * @access public
+	 * @return mixed
+	 */
+	public function getCachedData()
+	{
+	
+		if($this->storePos > -1)
+		{
+			$tmp = array_pop($this->store);
+			$this->storePos--;
+		}
+		else
+		{
+			$tmp = null;
+		}
+		
+		return $tmp;
+	}
+
+	/**
 	 * writeCachedFile function.
 	 * 
 	 * Writes something to the cache. toHash is what you want the hash for that data to be
@@ -54,7 +108,7 @@ class RedisCache implements GenericCacher
 		// if writes fail its not a huge deal at this point.  May possibly change things so it can fall back but we will have to see first.
 		try
 		{
-			$this->redis->setex($key, $this->expireTime, $data);
+			$this->redisStore->setex($key, $this->expireTime, $data);
 		}
 		catch (Exception $e)
 		{
@@ -71,7 +125,7 @@ class RedisCache implements GenericCacher
 	 */
 	public function purgeCache()
 	{
-		$this->redis->flushDB();
+		$this->redisStore->flushDB();
 	}
 
 
@@ -85,23 +139,23 @@ class RedisCache implements GenericCacher
 			// trying to create the redis object
 			try
 			{
-				$this->redis = new Redis();
+				$this->redisStore = new Redis();
 				// if we are able to connect (timeout of 2.5 seconds) we set the cacheWritable to true
-				if($this->redis->connect($this->redisAddress, $this->redisPort, 2.5))
+				if($this->redisStore->connect($this->redisAddress, $this->redisPort, 2.5))
 				{
 					$ret = true;
 
-					if(!$this->redis->select($this->redisDatabase))
+					if(!$this->redisStore->select($this->redisDatabase))
 					{
 						$ret = false;
 					}
 
-					if(!$this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY))
+					if(!$this->redisStore->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY))
 					{
 						$ret = false;
 					}
 
-					if(!$this->redis->setOption(Redis::OPT_PREFIX, $this->prefix))
+					if(!$this->redisStore->setOption(Redis::OPT_PREFIX, $this->prefix))
 					{
 						$ret = false;
 					}
