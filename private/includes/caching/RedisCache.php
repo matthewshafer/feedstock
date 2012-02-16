@@ -24,7 +24,7 @@ class RedisCache implements GenericCacher
 	 * @param array $options
 	 * @return void
 	 */
-	public function __construct($prefix, $exipreTime, $location = "0", $options)
+	public function __construct($prefix, $expireTime, $location = "0", $options = null)
 	{
 		$this->prefix = $prefix;
 		$this->expireTime = (int)$expireTime;
