@@ -1,4 +1,5 @@
 <?php
+require('Traits/CacherStoredData.php');
 /**
  * Handles writing responses to the disk for fast retrival
  * @author Matthew Shafer <matt@niftystopwatch.com>
@@ -7,6 +8,8 @@
  */
 class FileCache implements GenericCacher
 {
+	// bringing in the trait
+	use CacherStoredData;
 	private $cacheLoc = null;
 	private $prefix = null;
 	private $store = array();
@@ -134,26 +137,6 @@ class FileCache implements GenericCacher
 		}
 	}
 	
-	/**
-	 * getCachedData function.
-	 * 
-	 * Gets cached data from the cache. Data is stored when you call checkExists. This way we do one lookup rather than two
-	 * @access public
-	 * @return mixed
-	 */
-	public function getCachedData()
-	{
-		$tmp = null;
-		
-		if($this->storePos > -1)
-		{
-			$tmp = array_pop($this->store);
-			$this->storePos--;
-		}
-		
-		return $tmp;
-	}
-	
 	
 	/**
 	 * purgeCache function.
@@ -193,18 +176,5 @@ class FileCache implements GenericCacher
 		
 		return $return;
 	}
-	
-	/**
-	 * clearStoredData function.
-	 * 
-	 * Cleares the data that is stored inside the cacher's temporary array.
-	 * @access public
-	 *
-	 */
-	 public function clearStoredData()
-	 {
-	 	$this->store = array();
-	 	$this->storePos = -1;
-	 }
 }
 ?>

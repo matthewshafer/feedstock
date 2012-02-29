@@ -1,4 +1,5 @@
 <?php
+require('Traits/CacherStoredData.php');
 /**
  * Xcache caching class for feedstock
  * @author Matthew Shafer <matt@niftystopwatch.com>
@@ -7,6 +8,8 @@
  */
 class Xcache implements GenericCacher
 {
+	// bringing in the trait
+	use CacherStoredData;
 	private $prefix = null;
 	private $prefixArr = null;
 	private $store = array();
@@ -53,29 +56,6 @@ class Xcache implements GenericCacher
 		}
 		
 		return $return;
-	}
-	
-	/**
-	 * getCachedData function.
-	 * 
-	 * Gets cached data from the cache. Data is stored when you call checkExists. This way we do one lookup rather than two
-	 * @access public
-	 * @return mixed
-	 */
-	public function getCachedData()
-	{
-	
-		if($this->storePos > -1)
-		{
-			$tmp = array_pop($this->store);
-			$this->storePos--;
-		}
-		else
-		{
-			$tmp = null;
-		}
-		
-		return $tmp;
 	}
 	
 	/**
@@ -146,18 +126,5 @@ class Xcache implements GenericCacher
 		
 		return $ret;
 	}
-	
-	/**
-	 * clearStoredData function.
-	 * 
-	 * Cleares the data that is stored inside the cacher's temporary array.
-	 * @access public
-	 *
-	 */
-	 public function clearStoredData()
-	 {
-	 	$this->store = array();
-	 	$this->storePos = -1;
-	 }
 }
 ?>
