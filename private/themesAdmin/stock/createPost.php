@@ -1,9 +1,9 @@
 <?php require_once("header.php"); ?>
-			<form name="createPost" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminUrl(), '/index.php'); ?>">
+			<form name="createPost" class="well" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminUrl(), '/index.php'); ?>">
 				Post Title: (We create a URI based off this)<br>
-				<input name="postTitle" type="text" class="textInput" value="<?php echo $this->templateEngine->postTitleId(); ?>"><br>
+				<input name="postTitle" type="text" class="span5" value="<?php echo $this->templateEngine->postTitleId(); ?>"><br>
 				Post Body: <br>
-				<textarea name="postorpagedata"><?php echo $this->templateEngine->postBodyId(); ?></textarea>
+				<textarea class="span5" name="postorpagedata"><?php echo $this->templateEngine->postBodyId(); ?></textarea>
 				<br>
 				Categories: (This is going to be a formatted list where you check boxes.)<br>
 				<!-- <input name="postCategories" type="text" value="<?php echo $this->templateEngine->postCategoriesId(); ?>"><br> -->
@@ -31,6 +31,6 @@
 				<input name="type" type="hidden" value="postAdd">
 				<input name="id" type="hidden" value="<?php echo $this->templateEngine->postId(); ?>">
 				<br>
-				<input name="submit" type=submit value="Post" class="button">
+				<input name="submit" type=submit value="Post" class="btn btn-primary">
 			</form>
 <?php require_once("footer.php"); ?>
