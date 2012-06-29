@@ -4,7 +4,7 @@
 				<input name="categoryTitle" type="text" value="<?php echo $this->templateEngine->categoryTitleId(); ?>"><br>
 				<input name="type" type="hidden" value="categoryAdd">
 				<input name="id" type="hidden" value="<?php echo $this->templateEngine->categoryId(); ?>">
-				<input name="submit" type=submit value="Post">
+				<input name="submit" type="submit" value="Post">
 			</form>
 			<br><br>
 			<?php

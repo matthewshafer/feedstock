@@ -32,7 +32,7 @@ foreach($this->templateEngine->getTheData() as $key)
 </table>
 
 		<input name="type" type="hidden" value="postsRemove">
-		<input name="submit" type=submit value="Delete" class="btn btn-danger">
+		<input name="submit" type="submit" value="Delete" class="btn btn-danger">
 </form>
 
 <?php
