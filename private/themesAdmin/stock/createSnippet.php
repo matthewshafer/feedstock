@@ -8,6 +8,6 @@
 				<input name="type" type="hidden" value="snippetAdd">
 				<input name="id" type="hidden" value="<?php echo $this->templateEngine->snippetId(); ?>">
 				<br>
-				<input name="submit" type=submit value="Submit" class="button">
+				<input name="submit" type="submit" value="Submit" class="button">
 			</form>
 <?php require_once("footer.php"); ?>

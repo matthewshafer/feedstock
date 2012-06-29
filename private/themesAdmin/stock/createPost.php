@@ -67,6 +67,6 @@
 				</div>
 				<input name="type" type="hidden" value="postAdd">
 				<input name="id" type="hidden" value="<?php echo $this->templateEngine->postId(); ?>">
-				<input name="submit" type=submit value="Post" class="btn btn-primary">
+				<input name="submit" type="submit" value="Post" class="btn btn-primary">
 			</form>
 <?php require_once("footer.php"); ?>
