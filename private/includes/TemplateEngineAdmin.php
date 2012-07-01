@@ -260,9 +260,10 @@ class TemplateEngineAdmin
 		{
 			$return = "/tagPosts.php";
 			
-			if($this->db->checkCategoryTagName((string)$this->router->getUriPosition(2), 1))
+			if($this->db->checkCategoryOrTagName((string)$this->router->getUriPosition(2), 1))
 			{
-				$this->theData = $this->db->getPostsInCategoryOrTag((string)$this->router->getUriPosition(2), 1, 99999, 0, true);
+				// used to specify the tag name but now knows the value from checkCategoryOrTagName automatically
+				$this->theData = $this->db->getPostsInCategoryOrTag(1, 99999, 0, true);
 				//print_r($this->theData);
 				
 				$this->htmlPageTitle = sprintf("%s%s", $this->router->getUriPosition(2), " :: Tag");
