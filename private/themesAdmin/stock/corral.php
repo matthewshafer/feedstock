@@ -1,5 +1,17 @@
 <?php require_once("header.php"); ?>
-<div id="corralBox">
+
+			<form name="createCorral" class="well form-inline" method="post" action="<?php printf("%s%s", $this->templateEngine->getAdminUrl(), '/index.php'); ?>">
+				<div class="control-group">
+					<label class="control-label"><h4>Corral Name:</h4></label>
+				</div>
+				<div class="control-group">
+					<input name="corralTitle" type="text" placeholder="Name">
+					<input name="type" type="hidden" value="corralAdd">
+					<input name="submit" type="submit" class="btn btn-primary" value="Post">
+				</div>
+			</form>
+
+<div class="well">
 
 <?php
 
