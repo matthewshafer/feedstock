@@ -1,9 +1,13 @@
       </div>
     </div>
 
-    <footer class="footer">
+    <div class="navbar navbar-fixed-bottom">
+      <div class="color-white">
+      <div class="center">
       For the latest version of Feedstock be sure to check <a href="http://niftystopwatch.com">niftystopwatch.com</a>
-    </footer>
+      </div>
+    </div>
+    </div>
 
 	</div>
 
