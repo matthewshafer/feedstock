@@ -2,5 +2,6 @@
 	require("../private/Feedstock.php");
 	
 	$feedstock = new Feedstock();
+	$feedstock->run();
 
 ?>

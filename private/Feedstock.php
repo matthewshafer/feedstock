@@ -24,9 +24,21 @@ class Feedstock
 	 */
 	public function __construct()
 	{
+		// loading the config file with all of our config data
 		require("../config.php");
-		// We need to set these because they are used in another function in this class. If we didn't they would be in the wrong scope (that wouldn't be a good thing)
-		
+	}
+
+	/**
+	* run function
+	*
+	* @access public
+	* @return void
+	*
+	**/
+	public function run()
+	{
+
+		// loading and creating the objects we need
 		require_once("includes/Router.php");
 		$this->router = new Router($this->config['htaccess'], $this->config['siteUrlBase']);
 		// this is the fun part where we break down the URI, it just stores the stuff for us to use later
