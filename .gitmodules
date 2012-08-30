@@ -1,0 +1,3 @@
+[submodule "tests/Teency"]
+	path = tests/Teency
+	url = https://github.com/matthewshafer/Teency.git
