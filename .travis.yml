@@ -11,4 +11,4 @@ before_script:
 
 script: 
   - "phing -f ci-build.xml"
-  - "php tests/AllTests.php"
+  #- "php tests/AllTests.php"
