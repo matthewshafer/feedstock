@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="feedstock" default="all">
+
+	<target name="cleanUp">
+		<delete dir="build" />
+	</target>
+	
+	<target name="prepare">
+		<echo msg="Making ./build Director" />
+		<mkdir dir="build" />
+		<mkdir dir="build/reports"/>
+	</target>
+	
+	<target name="lint">
+	
+		<copy todir="build/lint">
+			<fileset dir=".">
+				<include name="**/*.php"/>
+				<exclude name="config.php" />
+				<exclude name="build/"/>
+			</fileset>
+		</copy>
+		
+		<phplint deprecatedAsError="true" haltonfailure="true">
+			<fileset dir="build/lint">
+				<include name="**/*.php"/>
+			</fileset>
+		</phplint>
+		
+		<delete dir="build/lint" />
+	</target>
+
+	<target name="all" depends="cleanUp, prepare, lint" />
+</project>
