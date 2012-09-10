@@ -829,7 +829,7 @@ class TemplateEngine
 	*/
 	public function siteUrl($uri = null)
 	{
-		return $uri === null ? $this->siteUrl : $this->generateUrlFromUri($uri);
+		return $uri ? $this->generateUrlFromUri($uri) : $this->siteUrl;
 	}
 	
 	/**
