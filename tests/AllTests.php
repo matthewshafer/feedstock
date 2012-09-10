@@ -1,5 +1,5 @@
 <?php
-require_once( __DIR__ . '/Teency/Teency/Teency.php');
+require_once(getcwd() . '/tests/Teency/Teency/Teency.php');
 
 
 class AllTests extends TestSuite

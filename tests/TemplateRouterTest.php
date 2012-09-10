@@ -1,7 +1,7 @@
 <?php
-require_once('../private/includes/TemplateRouter.php');
-require_once('../private/includes/TemplateData.php');
-require_once('../private/includes/Router.php');
+require_once('private/includes/TemplateRouter.php');
+require_once('private/includes/TemplateData.php');
+require_once('private/includes/Router.php');
 
 class TemplateRouterTest extends UnitTest
 {
@@ -25,6 +25,7 @@ class TemplateRouterTest extends UnitTest
 		unset($_SERVER['REQUEST_METHOD']);
 	}
 	
+	/*
 	public function testCategoryPass()
 	{
 		$refObj = new ReflectClass('Router', array(true, "/"));
@@ -80,6 +81,8 @@ class TemplateRouterTest extends UnitTest
 		// need to make some checks for this array
 		print_r($database->getFakeMethodArgumentsArray());
 	}
+
+	*/
 
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-require_once('../private/includes/IpChecker.php');
+require_once('private/includes/IpChecker.php');
 
 class IpCheckerTest extends UnitTest
 {

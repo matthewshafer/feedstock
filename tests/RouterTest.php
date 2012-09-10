@@ -1,5 +1,5 @@
 <?php
-require_once('../private/includes/Router.php');
+require_once('private/includes/Router.php');
 
 class RouterTest extends UnitTest
 {
