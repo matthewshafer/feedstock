@@ -94,7 +94,7 @@ class TemplateEngine
 	 */
 	public function haveNextPost()
 	{
-		$return = null;
+		$return = false;
 		// since we are starting at 0 so everything else works we need this to start at -1 so that we don't miss the first page when we are in a loop
 		// this allows us to not have to call other functions when we are doing a page/single post
 		// because haveNextPost is called before the first post we need to make this one less than it is since we are going to increment it anyway
@@ -113,8 +113,6 @@ class TemplateEngine
 			$return = true;
 			$runOnce = true;
 		}
-		else
-			$return = false;
 			
 		return $return;
 	}
@@ -128,13 +126,7 @@ class TemplateEngine
 	 */
 	public function getPostTitle()
 	{
-		$return = null;
-		
-		if(isset($this->pageData[$this->arrayPosition]["Title"]))
-		{
-			$return = $this->pageData[$this->arrayPosition]["Title"];
-		}
-		return $return;
+		return isset($this->pageData[$this->arrayPosition]["Title"]) ? $this->pageData[$this->arrayPosition]["Title"] : null;
 	}
 	
 	/**
@@ -146,13 +138,7 @@ class TemplateEngine
 	 */
 	public function getPostUri()
 	{
-		$return = null;
-		
-		if(isset($this->pageData[$this->arrayPosition]["URI"]))
-		{
-			$return = $this->pageData[$this->arrayPosition]["URI"];
-		}
-		return $return;
+		return isset($this->pageData[$this->arrayPosition]["URI"]) ? $this->pageData[$this->arrayPosition]["URI"] : null;
 	}
 	
 	/**
@@ -164,17 +150,7 @@ class TemplateEngine
 	 */
 	public function getPostUrl()
 	{
-
-		if(isset($this->pageData[$this->arrayPosition]["URI"]))
-		{
-			$return = $this->siteUrl . $this->pageData[$this->arrayPosition]["URI"];
-		}
-		else
-		{
-			$return = null;
-		}
-		
-		return $return;
+		return isset($this->pageData[$this->arrayPosition]["URI"]) ? $this->siteUrl . $this->pageData[$this->arrayPosition]["URI"] : null;
 	}
 	
 	/**
@@ -245,13 +221,7 @@ class TemplateEngine
 	 */
 	public function getPostBody()
 	{
-		$return = null;
-		
-		if(isset($this->pageData[$this->arrayPosition]["PostData"]))
-		{
-			$return = stripslashes($this->pageData[$this->arrayPosition]["PostData"]);
-		}
-		return $return;
+		return isset($this->pageData[$this->arrayPosition]["PostData"]) ? stripslashes($this->pageData[$this->arrayPosition]["PostData"]) : null;
 	}
 	
 	/**
@@ -284,13 +254,7 @@ class TemplateEngine
 	 */
 	public function getPostAuthor()
 	{
-		$return = null;
-		
-		if(isset($this->pageData[$this->arrayPosition]["Author"]))
-		{
-			$return = $this->pageData[$this->arrayPosition]["Author"];
-		}
-		return $return;
+		return isset($this->pageData[$this->arrayPosition]["Author"]) ? $this->pageData[$this->arrayPosition]["Author"] : null;
 	}
 	
 	/**
@@ -304,13 +268,12 @@ class TemplateEngine
 	 */
 	public function getPostTime($format)
 	{
-		$return = null;
-		
-		if($format != null && isset($this->pageData[$this->arrayPosition]["Date"]))
+		if($format === null && !isset($this->pageData[$this->arrayPosition]["Date"]))
 		{
-			$return = date($format, strtotime($this->pageData[$this->arrayPosition]["Date"]));
+			return null;
 		}
-		return $return;
+
+		return date($format, strtotime($this->pageData[$this->arrayPosition]["Date"]));;
 	}
 	
 	
@@ -323,17 +286,20 @@ class TemplateEngine
 	 */
 	public function getPostTags()
 	{
-		$return = null;
-		if(isset($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
+		$return = "";
+
+		if(!isset($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
-			foreach($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
-			{
-				$return .= $key["Name"] . ", ";
-			}
-		
-			$return = substr($return, 0, -2);
+			return null;
 		}
-		return $return;
+
+		foreach($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+		{
+			$return .= $key["Name"] . ", ";
+		}
+		
+		// cutting off the ", " at the end of the strinf
+		return substr($return, 0, -2);
 	}
 	
 	/**
@@ -345,25 +311,22 @@ class TemplateEngine
 	 */
 	public function getPostTagsFormatted()
 	{
-		$return = null;
+		$return = "";
 		
 		//print_r($this->postTag);
-		if(isset($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
+		if(!isset($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
-			foreach($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
-			{				
-				// for some reason I feel like its good to set a null to a string before I use it
-				if($return === null)
-				{
-					$return = "";
-				}
-				
-				// might want to make sure $key["Name"] is valid before using it.
-				$return .= sprintf('<a href="%s/tag/%s">%s</a>, ', $this->siteUrl, $this->generateSubTagUri($key), $key["Name"]);
-			}
-			$return = substr($return, 0, -2);
+			return null;
 		}
-		return $return;
+
+		foreach($this->postTag[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+		{				
+			// might want to make sure $key["Name"] is valid before using it.
+			$return .= sprintf('<a href="%s/tag/%s">%s</a>, ', $this->siteUrl, $this->generateSubTagUri($key), $key["Name"]);
+		}
+
+		// cutting off the ", " at the end of the string
+		return substr($return, 0, -2);
 	}
 	
 	
@@ -376,18 +339,20 @@ class TemplateEngine
 	 */
 	public function getPostCategories()
 	{
-		$return = null;
+		$return = "";
 		
-		if(isset($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
+		if(!isset($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
-			foreach($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
-			{
-				$return .= $key["Name"] . ", ";
-			}
-			
-			$return = substr($return, 0, -2);
+			return null;
 		}
-		return $return;
+
+		foreach($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+		{
+			$return .= $key["Name"] . ", ";
+		}
+		
+		// cutting off the ", " at the end of the string	
+		return substr($return, 0, -2);
 	}
 	
 	
@@ -400,24 +365,20 @@ class TemplateEngine
 	 */
 	public function getPostCategoriesFormatted()
 	{
-		$return = null;
-		if(isset($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
+		$return = "";
+
+		if(!isset($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]]))
 		{
-			foreach($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
-			{
-				// feels like a good idea to make the null a string before I use it
-				if($return === null)
-				{
-					$return = "";
-				}
-				
-				// might want to make sure $key["Name"] is valid before using it.
-				$return .= sprintf('<a href="%s/category/%s">%s</a>, ', $this->siteUrl, $this->generateSubCategoryUri($key), $key["Name"]);
-			}
-			
-			$return = substr($return, 0, -2);
+			return null;
 		}
-		return $return;
+
+		foreach($this->postCategory[$this->pageData[$this->arrayPosition]["PrimaryKey"]] as $key)
+		{
+			// might want to make sure $key["Name"] is valid before using it.
+			$return .= sprintf('<a href="%s/category/%s">%s</a>, ', $this->siteUrl, $this->generateSubCategoryUri($key), $key["Name"]);
+		}
+		
+		return substr($return, 0, -2);
 	}
 	
 	/**
@@ -465,13 +426,7 @@ class TemplateEngine
 	 */
 	public function getPageBody()
 	{
-		$return = null;
-		
-		if(isset($this->pageData[$this->arrayPosition]["PageData"]))
-		{
-			$return = stripslashes($this->pageData[$this->arrayPosition]["PageData"]);
-		}
-		return $return;
+		return isset($this->pageData[$this->arrayPosition]["PageData"]) ? stripslashes($this->pageData[$this->arrayPosition]["PageData"]) : null;
 	}
 	
 	/**
@@ -874,18 +829,7 @@ class TemplateEngine
 	*/
 	public function siteUrl($uri = null)
 	{
-		$return = null;
-		
-		if($uri === null)
-		{
-			$return = $this->siteUrl;
-		}
-		else
-		{
-			$return = $this->generateUrlFromUri($uri);
-		}
-		
-		return $return;
+		return $uri === null ? $this->siteUrl : $this->generateUrlFromUri($uri);
 	}
 	
 	/**
