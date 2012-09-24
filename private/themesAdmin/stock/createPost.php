@@ -18,23 +18,20 @@
 								<th>Name</th>
 							</thead>
 							<tbody>
-				<?php foreach($this->templateEngine->getCategoryData() as $key)
-				{
-					echo '<tr>';
+				<?php foreach($this->templateEngine->getCategoryData() as $key): ?>
+					<tr>
 
-					if(isset($key["Checked"]) and $key["Checked"] == 1)
+					<?php if(isset($key["Checked"]) and $key["Checked"] == 1)
 					{
 						echo '<td><input name="postCategories[]" type="checkbox" value="' . $key["PrimaryKey"] . '" checked></td>' . '<td>' . $key["Name"] . '</td>';
 					}
 					else
 					{
 						echo '<td><input name="postCategories[]" type="checkbox" value="' . $key["PrimaryKey"] . '"></td>' . '<td>' . $key["Name"] . '</td>';
-					}
+					} ?>
 
-					echo '</tr>';
-				} 
-				echo "\n";
-				?>	
+					</tr>
+					<?php endforeach; ?>	
 							</tbody>
 						</table>
 					</div>
