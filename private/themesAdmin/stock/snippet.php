@@ -23,7 +23,7 @@ foreach($this->templateEngine->getTheData() as $key): ?>
 		printf('<a href="../snippet/%s">%s</a>', $key["PrimaryKey"], $key["Name"]);
 	}
 	?>
-			</td>
+		</td>
 	</tr>
 
 <?php endforeach; ?>
